@@ -290,7 +290,9 @@ pub(crate) fn apply_limits(style: &mut Style, limits: &jian_ops_schema::sizing::
 /// measure them correctly. If the node declares an explicit `x` or
 /// `y`, it's treated as absolutely positioned within its parent
 /// (mirrors Figma / design-tool semantics where an overlay icon sits
-/// at a fixed offset inside a layer).
+/// at a fixed offset inside a layer). Inside a vertical / horizontal
+/// parent `LayoutEngine::build` puts it back into flow unless it is an
+/// overlay or constrained (see `flow_child`).
 pub fn node_to_style(n: &jian_ops_schema::node::PenNode) -> Style {
     use jian_ops_schema::node::PenNode;
     let mut style = match n {
@@ -339,6 +341,24 @@ pub fn node_to_style(n: &jian_ops_schema::node::PenNode) -> Style {
     style
 }
 
+/// A `textGrowth: "auto"` text hugs its content on both axes, so a numeric
+/// width / height (often left behind by generation) must not pin it. Sizing
+/// keywords still apply; an absent `textGrowth` keeps the authored numbers.
+/// Read through `leaf_size_and_limits`, so the style and the flex-shrink
+/// pin (`main_axis_is_fixed_number`) agree.
+fn auto_growth_text_size(
+    t: &jian_ops_schema::node::TextNode,
+) -> (Option<&SizingBehavior>, Option<&SizingBehavior>) {
+    fn unpin(s: Option<&SizingBehavior>) -> Option<&SizingBehavior> {
+        s.filter(|s| !matches!(s, SizingBehavior::Number(_)))
+    }
+    let (w, h) = (t.width.as_ref(), t.height.as_ref());
+    if t.text_growth != Some(jian_ops_schema::node::TextGrowth::Auto) {
+        return (w, h);
+    }
+    (unpin(w), unpin(h))
+}
+
 /// Responsive style conversion: legacy conversion plus sanitized min/max bounds.
 pub(crate) fn node_to_style_responsive(
     node: &jian_ops_schema::node::PenNode,
@@ -358,8 +378,9 @@ pub(crate) fn node_to_style_responsive(
 /// `pub(crate)` (not just a `node_to_style` implementation detail):
 /// `LayoutEngine` records a document root's authored origin while building.
 /// Taffy has no containing block for a root node, so the `Position::Absolute`
-/// inset this function drives is honoured for children but silently dropped
-/// for roots; `node_rect` restores the recorded offset after compute.
+/// inset this function drives is honoured for children (outside auto-layout
+/// parents, see `flow_child`) but silently dropped for roots; `node_rect`
+/// restores the recorded offset after compute.
 pub(crate) fn explicit_position(n: &jian_ops_schema::node::PenNode) -> Option<(f32, f32)> {
     let base = node_base(n)?;
     match (base.x, base.y) {
@@ -368,7 +389,7 @@ pub(crate) fn explicit_position(n: &jian_ops_schema::node::PenNode) -> Option<(f
     }
 }
 
-fn node_base(
+pub(crate) fn node_base(
     n: &jian_ops_schema::node::PenNode,
 ) -> Option<&jian_ops_schema::node::base::PenNodeBase> {
     use jian_ops_schema::node::PenNode;
@@ -434,7 +455,10 @@ fn leaf_size_and_limits(
 ) {
     use jian_ops_schema::node::PenNode;
     match n {
-        PenNode::Text(t) => (t.width.as_ref(), t.height.as_ref(), Some(&t.limits)),
+        PenNode::Text(t) => {
+            let (w, h) = auto_growth_text_size(t);
+            (w, h, Some(&t.limits))
+        }
         PenNode::TextInput(t) => (t.width.as_ref(), t.height.as_ref(), Some(&t.limits)),
         PenNode::IconFont(i) => (i.width.as_ref(), i.height.as_ref(), Some(&i.limits)),
         PenNode::Image(i) => (i.width.as_ref(), i.height.as_ref(), Some(&i.limits)),

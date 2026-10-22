@@ -10,10 +10,11 @@
 //! `SkiaMeasure` under the `textlayout` cargo feature.
 //!
 //! Wrapping is governed by the text node's `text_growth` field
-//! (`Auto` / `FixedWidth` / `FixedWidthHeight`); the budget-resolution
-//! rules live in the private `measure_text_for_taffy` callback.
+//! (`Auto` / `FixedWidth` / `FixedWidthHeight`): wrap budgets live in the
+//! private `measure_text_for_taffy`, auto-growth box sizing in `resolve`.
 
 pub mod constraints;
+mod flow_child;
 pub mod measure;
 pub mod resolve;
 mod responsive;
@@ -270,14 +271,15 @@ impl LayoutEngine {
             // wrap and sibling cards stay equal-height (otherwise an overflowing
             // row squeezes the cards into ragged, uneven heights).
             if let Some(p) = data.parent {
-                if resolve::node_is_stack_container(&doc_tree.nodes[p].schema) {
+                let parent = &doc_tree.nodes[p].schema;
+                if resolve::node_is_stack_container(parent) {
                     // `layout: "none"` parent: children share one grid cell
                     // and overlap. The flex hints below all assume a flow
                     // line and would fight the stack (`main_axis` has no
                     // meaning when every child starts at the same origin).
                     resolve::apply_stack_child(&mut style);
                 } else {
-                    let parent_horizontal = resolve::node_is_horizontal(&doc_tree.nodes[p].schema);
+                    let parent_horizontal = resolve::node_is_horizontal(parent);
                     if resolve::main_axis_is_fixed_number(&data.schema, parent_horizontal) {
                         style.flex_shrink = 0.0;
                     }
@@ -285,6 +287,8 @@ impl LayoutEngine {
                     // (so a space_between sidebar's footer reaches the bottom)
                     // instead of collapsing on an indefinite-height parent.
                     resolve::apply_fill_container_axes(&mut style, &data.schema, parent_horizontal);
+                    // Auto-layout owns both axes: stale x/y must not pull a child out of flow.
+                    flow_child::apply_flow_child(&mut style, &data.schema, parent);
                 }
             }
             self.base_styles.insert(key, style.clone());
@@ -653,6 +657,7 @@ fn text_measure_for(n: &jian_ops_schema::node::PenNode) -> Option<TextMeasure> {
     let growth = match t.text_growth {
         Some(jian_ops_schema::node::TextGrowth::FixedWidth) => TextGrowth::FixedWidth,
         Some(jian_ops_schema::node::TextGrowth::FixedWidthHeight) => TextGrowth::FixedWidthHeight,
+        // Absent measures like `Auto` but keeps a numeric box (`auto_growth_text_size`).
         Some(jian_ops_schema::node::TextGrowth::Auto) | None => TextGrowth::Auto,
     };
     Some(TextMeasure {
@@ -708,16 +713,16 @@ fn resolve_style(s: Option<&jian_ops_schema::node::TextFontStyle>) -> FontStyleK
 ///
 /// The `text_growth` field on the node decides how the wrap budget
 /// is computed:
-/// - `Auto`: use the container's available width (default).
+/// - `Auto`: never wraps; reports the natural extent (default).
 /// - `FixedWidth`: use the node's authored width *only*. When the
 ///   node was authored as `width: auto` the budget falls back to
 ///   a *definite* available width (taffy's `MinContent` /
 ///   `MaxContent` intrinsic probes pass through as `None`, so the
 ///   backend reports natural extent during sizing rounds) — same
 ///   effective behaviour as `Auto` in the definite corner, since
-///   there's no fixed budget to honour. Authors who want a hard
-///   wrap to the container should use `Auto`; `FixedWidth` is
-///   intended for nodes with an explicit numeric width.
+///   there's no fixed budget to honour. Authors who want a wrap to
+///   the container pair `FixedWidth` with `fill_container`; it is
+///   also the mode for nodes with an explicit numeric width.
 /// - `FixedWidthHeight`: no wrap; report the natural single-line
 ///   extent. The renderer is responsible for clipping at the
 ///   authored bounds.
