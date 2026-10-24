@@ -24,13 +24,15 @@ use std::rc::Rc;
 use skia_safe::shaper::run_handler::{Buffer, RunHandler, RunInfo};
 use skia_safe::{Font, GlyphId, Point, Shaper, TextBlob, TextBlobBuilder};
 
-/// Distinct tokens kept per face before that face's table is dropped. A
-/// full refill costs one shaping pass over the visible text, far cheaper
-/// than LRU bookkeeping on every lookup.
-const MAX_WORDS_PER_FACE: usize = 16_384;
+/// Distinct tokens kept, over every face and size, before the word table is
+/// dropped. A size animation shapes the same words at many sizes, so the
+/// cap is global. A full refill costs one shaping pass over the visible
+/// text, far cheaper than LRU bookkeeping on every lookup. The CanvasKit
+/// bridge (`op_ck_bridge.js`) uses the same caps.
+const MAX_WORDS: usize = 16_384;
 
 /// Distinct shaped runs (paint blobs) kept before the table is dropped.
-const MAX_RUNS: usize = 8_192;
+const MAX_RUNS: usize = 4_096;
 
 /// Wrap budget handed to the shaper. The shaper never wraps, but Skia
 /// requires a finite width.
@@ -74,14 +76,14 @@ pub struct ShapedRun {
 /// does not allocate.
 #[derive(Clone, Copy, PartialEq, Eq, Hash)]
 pub(crate) struct RunStyle<'a> {
-    pub family: &'a str,
+    pub family: Option<&'a str>,
     pub size_bits: u32,
     pub weight: u16,
     pub italic: bool,
 }
 
 struct RunEntry {
-    family: String,
+    family: Option<String>,
     size_bits: u32,
     weight: u16,
     italic: bool,
@@ -93,6 +95,7 @@ struct RunEntry {
 pub(crate) struct ShapedWords {
     shaper: Option<Shaper>,
     words: HashMap<FaceKey, HashMap<String, Rc<ShapedWord>>>,
+    word_count: usize,
     runs: HashMap<u64, Vec<RunEntry>>,
     run_count: usize,
 }
@@ -101,6 +104,7 @@ impl ShapedWords {
     /// Forget every shaped token and run (the font set changed).
     pub(crate) fn clear(&mut self) {
         self.words.clear();
+        self.word_count = 0;
         self.runs.clear();
         self.run_count = 0;
     }
@@ -147,7 +151,7 @@ impl ShapedWords {
                 entry.size_bits == style.size_bits
                     && entry.weight == style.weight
                     && entry.italic == style.italic
-                    && entry.family == style.family
+                    && entry.family.as_deref() == style.family
                     && entry.text == text
             })
             .map(|entry| Rc::clone(&entry.run))
@@ -162,7 +166,7 @@ impl ShapedWords {
             .entry(run_hash(style, text))
             .or_default()
             .push(RunEntry {
-                family: style.family.to_string(),
+                family: style.family.map(str::to_string),
                 size_bits: style.size_bits,
                 weight: style.weight,
                 italic: style.italic,
@@ -178,11 +182,15 @@ impl ShapedWords {
         }
         let shaper = self.shaper.get_or_insert_with(new_shaper);
         let word = Rc::new(shape_token(shaper, font, token));
-        let words = self.words.entry(face).or_default();
-        if words.len() >= MAX_WORDS_PER_FACE {
-            words.clear();
+        if self.word_count >= MAX_WORDS {
+            self.words.clear();
+            self.word_count = 0;
         }
-        words.insert(token.to_string(), Rc::clone(&word));
+        self.words
+            .entry(face)
+            .or_default()
+            .insert(token.to_string(), Rc::clone(&word));
+        self.word_count += 1;
         word
     }
 }
@@ -319,7 +327,10 @@ pub(crate) fn tokens(text: &str) -> impl Iterator<Item = &str> {
     })
 }
 
-/// Same predicate as the line wrap's per-character break set.
+/// The line wrap's per-character break set. Copies that must stay equal:
+/// `de_editor_core::text_wrap::is_cjk` and `isShapeCjk` in the CanvasKit
+/// bridge (`de-host-web/src/op_ck_bridge.js`); jian cannot depend on
+/// either crate.
 fn is_cjk(ch: char) -> bool {
     let c = ch as u32;
     (0x4e00..=0x9fff).contains(&c)
