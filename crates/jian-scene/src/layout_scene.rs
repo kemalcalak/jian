@@ -208,9 +208,31 @@ pub struct BlurEffect {
     pub radius: f32,
 }
 
-/// A visual effect painted with a [`SceneNode`]. Ships drop shadow
-/// plus a Gaussian layer blur.
-#[derive(Debug, Clone, Copy, PartialEq)]
+/// The texture a [`ShaderEffect`] samples.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum ShaderEffectInput {
+    /// The node's own rendered output (`uniform shader object;`).
+    Object,
+    /// The already-painted backdrop within the node silhouette
+    /// (`uniform shader background;`).
+    Background,
+}
+
+/// An SkSL post-process pass. `sksl` is the RAW (untrusted) source with
+/// entrypoint `half4 main(float2 p)`, `p` in node-local document px;
+/// `uniforms` are resolved like a [`SceneShader`]'s (the loader writes the
+/// node `size`). A backend that can't run the program leaves the node
+/// unaffected.
+#[derive(Debug, Clone, PartialEq)]
+pub struct ShaderEffect {
+    pub sksl: String,
+    pub uniforms: Vec<SceneShaderUniform>,
+    pub input: ShaderEffectInput,
+}
+
+/// A visual effect painted with a [`SceneNode`]. Ships drop shadow,
+/// Gaussian layer / backdrop blur and SkSL shader passes.
+#[derive(Debug, Clone, PartialEq)]
 pub enum Effect {
     DropShadow(DropShadow),
     /// Blur the node's own content (Figma "Layer blur").
@@ -219,6 +241,8 @@ pub enum Effect {
     BackgroundBlur {
         radius: f32,
     },
+    /// Run an SkSL program over the node's output or its backdrop.
+    Shader(ShaderEffect),
 }
 
 /// A paint-only, layout-resolved render scene.

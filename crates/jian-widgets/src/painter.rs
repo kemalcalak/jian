@@ -443,6 +443,29 @@ pub trait Painter {
         self.save();
     }
 
+    /// Begin an SkSL shader-effect layer over `rect` (the node box in
+    /// paint coordinates). With `backdrop == false` the draws until the
+    /// matching [`Painter::restore`] are captured and the program's
+    /// `uniform shader object;` child samples them; with `backdrop ==
+    /// true` the layer starts from the program's output over the
+    /// already-painted backdrop (child `background`), and the caller owns
+    /// the silhouette clip as for [`Painter::push_backdrop_blur_layer`].
+    /// The program runs in node-local coordinates scaled by the `size`
+    /// uniform, like [`Painter::fill_round_rect_shader`], and its output
+    /// is cropped to `rect`. Backends without runtime effects, and
+    /// programs that fail to compile, fall back to `save` (no effect) so
+    /// callers stay balanced.
+    fn push_shader_effect_layer(
+        &mut self,
+        rect: Rect,
+        sksl: &str,
+        uniforms: &[(&str, &[f32])],
+        backdrop: bool,
+    ) {
+        let _ = (rect, sksl, uniforms, backdrop);
+        self.save();
+    }
+
     fn fill_oval(&mut self, bounds: Rect, color: Color) {
         let radius = bounds.size.x.min(bounds.size.y) / 2.0;
         self.fill_round_rect(bounds, radius, color);

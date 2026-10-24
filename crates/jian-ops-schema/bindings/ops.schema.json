@@ -9774,6 +9774,42 @@
               "type": "string"
             }
           }
+        },
+        {
+          "description": "SkSL post-process over the node's rendering or its backdrop.",
+          "type": "object",
+          "required": [
+            "sksl",
+            "type"
+          ],
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": [
+                "shader"
+              ]
+            },
+            "sksl": {
+              "description": "RAW SkSL source. Entrypoint: `half4 main(float2 p)`.",
+              "type": "string"
+            },
+            "uniforms": {
+              "description": "Optional named-uniform map, same wire form as a shader fill's.",
+              "type": [
+                "object",
+                "null"
+              ],
+              "additionalProperties": {
+                "$ref": "#/definitions/ShaderUniformValue"
+              }
+            },
+            "visible": {
+              "type": [
+                "boolean",
+                "null"
+              ]
+            }
+          }
         }
       ]
     },
