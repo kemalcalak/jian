@@ -571,6 +571,17 @@
                 "$ref": "#/definitions/NodeAnimation"
               }
             },
+            "slideTransition": {
+              "description": "The transition a presentation plays when it arrives on this node as a slide. Read on top-level frames only.",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/SlideTransition"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
             "width": {
               "anyOf": [
                 {
@@ -969,6 +980,17 @@
                 "$ref": "#/definitions/NodeAnimation"
               }
             },
+            "slideTransition": {
+              "description": "The transition a presentation plays when it arrives on this node as a slide. Read on top-level frames only.",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/SlideTransition"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
             "width": {
               "anyOf": [
                 {
@@ -1366,6 +1388,17 @@
               "items": {
                 "$ref": "#/definitions/NodeAnimation"
               }
+            },
+            "slideTransition": {
+              "description": "The transition a presentation plays when it arrives on this node as a slide. Read on top-level frames only.",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/SlideTransition"
+                },
+                {
+                  "type": "null"
+                }
+              ]
             },
             "width": {
               "anyOf": [
@@ -1832,6 +1865,17 @@
                 "$ref": "#/definitions/NodeAnimation"
               }
             },
+            "slideTransition": {
+              "description": "The transition a presentation plays when it arrives on this node as a slide. Read on top-level frames only.",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/SlideTransition"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
             "minWidth": {
               "type": [
                 "number",
@@ -2129,6 +2173,17 @@
               "items": {
                 "$ref": "#/definitions/NodeAnimation"
               }
+            },
+            "slideTransition": {
+              "description": "The transition a presentation plays when it arrives on this node as a slide. Read on top-level frames only.",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/SlideTransition"
+                },
+                {
+                  "type": "null"
+                }
+              ]
             }
           }
         },
@@ -2435,6 +2490,17 @@
               "items": {
                 "$ref": "#/definitions/NodeAnimation"
               }
+            },
+            "slideTransition": {
+              "description": "The transition a presentation plays when it arrives on this node as a slide. Read on top-level frames only.",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/SlideTransition"
+                },
+                {
+                  "type": "null"
+                }
+              ]
             },
             "minWidth": {
               "type": [
@@ -2792,6 +2858,17 @@
               "items": {
                 "$ref": "#/definitions/NodeAnimation"
               }
+            },
+            "slideTransition": {
+              "description": "The transition a presentation plays when it arrives on this node as a slide. Read on top-level frames only.",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/SlideTransition"
+                },
+                {
+                  "type": "null"
+                }
+              ]
             },
             "minWidth": {
               "type": [
@@ -3189,6 +3266,17 @@
                 "$ref": "#/definitions/NodeAnimation"
               }
             },
+            "slideTransition": {
+              "description": "The transition a presentation plays when it arrives on this node as a slide. Read on top-level frames only.",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/SlideTransition"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
             "minWidth": {
               "type": [
                 "number",
@@ -3563,6 +3651,17 @@
               "items": {
                 "$ref": "#/definitions/NodeAnimation"
               }
+            },
+            "slideTransition": {
+              "description": "The transition a presentation plays when it arrives on this node as a slide. Read on top-level frames only.",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/SlideTransition"
+                },
+                {
+                  "type": "null"
+                }
+              ]
             },
             "minWidth": {
               "type": [
@@ -3953,6 +4052,17 @@
                 "$ref": "#/definitions/NodeAnimation"
               }
             },
+            "slideTransition": {
+              "description": "The transition a presentation plays when it arrives on this node as a slide. Read on top-level frames only.",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/SlideTransition"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
             "minWidth": {
               "type": [
                 "number",
@@ -4277,6 +4387,17 @@
               "items": {
                 "$ref": "#/definitions/NodeAnimation"
               }
+            },
+            "slideTransition": {
+              "description": "The transition a presentation plays when it arrives on this node as a slide. Read on top-level frames only.",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/SlideTransition"
+                },
+                {
+                  "type": "null"
+                }
+              ]
             },
             "minWidth": {
               "type": [
@@ -4654,6 +4775,17 @@
                 "$ref": "#/definitions/NodeAnimation"
               }
             },
+            "slideTransition": {
+              "description": "The transition a presentation plays when it arrives on this node as a slide. Read on top-level frames only.",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/SlideTransition"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
             "minWidth": {
               "type": [
                 "number",
@@ -5010,6 +5142,17 @@
                 "$ref": "#/definitions/NodeAnimation"
               }
             },
+            "slideTransition": {
+              "description": "The transition a presentation plays when it arrives on this node as a slide. Read on top-level frames only.",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/SlideTransition"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
             "minWidth": {
               "type": [
                 "number",
@@ -5352,6 +5495,17 @@
               "items": {
                 "$ref": "#/definitions/NodeAnimation"
               }
+            },
+            "slideTransition": {
+              "description": "The transition a presentation plays when it arrives on this node as a slide. Read on top-level frames only.",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/SlideTransition"
+                },
+                {
+                  "type": "null"
+                }
+              ]
             },
             "minWidth": {
               "type": [
@@ -5701,6 +5855,17 @@
               "items": {
                 "$ref": "#/definitions/NodeAnimation"
               }
+            },
+            "slideTransition": {
+              "description": "The transition a presentation plays when it arrives on this node as a slide. Read on top-level frames only.",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/SlideTransition"
+                },
+                {
+                  "type": "null"
+                }
+              ]
             },
             "minWidth": {
               "type": [
@@ -6066,6 +6231,17 @@
                 "$ref": "#/definitions/NodeAnimation"
               }
             },
+            "slideTransition": {
+              "description": "The transition a presentation plays when it arrives on this node as a slide. Read on top-level frames only.",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/SlideTransition"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
             "minWidth": {
               "type": [
                 "number",
@@ -6414,6 +6590,17 @@
               "items": {
                 "$ref": "#/definitions/NodeAnimation"
               }
+            },
+            "slideTransition": {
+              "description": "The transition a presentation plays when it arrives on this node as a slide. Read on top-level frames only.",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/SlideTransition"
+                },
+                {
+                  "type": "null"
+                }
+              ]
             },
             "minWidth": {
               "type": [
@@ -6806,6 +6993,17 @@
                 "$ref": "#/definitions/NodeAnimation"
               }
             },
+            "slideTransition": {
+              "description": "The transition a presentation plays when it arrives on this node as a slide. Read on top-level frames only.",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/SlideTransition"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
             "minWidth": {
               "type": [
                 "number",
@@ -7161,6 +7359,17 @@
               "items": {
                 "$ref": "#/definitions/NodeAnimation"
               }
+            },
+            "slideTransition": {
+              "description": "The transition a presentation plays when it arrives on this node as a slide. Read on top-level frames only.",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/SlideTransition"
+                },
+                {
+                  "type": "null"
+                }
+              ]
             },
             "minWidth": {
               "type": [
@@ -7522,6 +7731,17 @@
                 "$ref": "#/definitions/NodeAnimation"
               }
             },
+            "slideTransition": {
+              "description": "The transition a presentation plays when it arrives on this node as a slide. Read on top-level frames only.",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/SlideTransition"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
             "minWidth": {
               "type": [
                 "number",
@@ -7806,6 +8026,17 @@
               "items": {
                 "$ref": "#/definitions/NodeAnimation"
               }
+            },
+            "slideTransition": {
+              "description": "The transition a presentation plays when it arrives on this node as a slide. Read on top-level frames only.",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/SlideTransition"
+                },
+                {
+                  "type": "null"
+                }
+              ]
             }
           }
         }
@@ -8787,11 +9018,13 @@
       "additionalProperties": true
     },
     "MotionTrigger": {
-      "description": "The two P1 lifecycle triggers.",
+      "description": "What starts a node animation: the lifecycle (`mount`, `inView`) or the pointer (`hover`, `tap`). A pointer animation plays forward while the pointer hovers / presses the node and back to the node's own look when it leaves / releases.",
       "type": "string",
       "enum": [
         "mount",
-        "inView"
+        "inView",
+        "hover",
+        "tap"
       ]
     },
     "Keyframe": {
@@ -8819,6 +9052,68 @@
       "enum": [
         "forwards",
         "none"
+      ]
+    },
+    "SlideTransition": {
+      "description": "The transition a presentation plays when it arrives on this slide (a top-level frame). Going back plays the same transition reversed.",
+      "type": "object",
+      "properties": {
+        "kind": {
+          "default": "none",
+          "allOf": [
+            {
+              "$ref": "#/definitions/SlideTransitionKind"
+            }
+          ]
+        },
+        "durationMs": {
+          "default": 400,
+          "type": "integer",
+          "format": "uint64",
+          "minimum": 0.0
+        },
+        "easing": {
+          "default": "standard",
+          "allOf": [
+            {
+              "$ref": "#/definitions/Easing"
+            }
+          ]
+        }
+      },
+      "additionalProperties": true
+    },
+    "SlideTransitionKind": {
+      "description": "How a presentation moves from one slide to the next.",
+      "oneOf": [
+        {
+          "description": "An instant cut.",
+          "type": "string",
+          "enum": [
+            "none"
+          ]
+        },
+        {
+          "description": "Cross-fade from the old slide to the new one.",
+          "type": "string",
+          "enum": [
+            "fade"
+          ]
+        },
+        {
+          "description": "The new slide slides in over the old one.",
+          "type": "string",
+          "enum": [
+            "slide"
+          ]
+        },
+        {
+          "description": "The new slide pushes the old one out.",
+          "type": "string",
+          "enum": [
+            "push"
+          ]
+        }
       ]
     },
     "SizingBehavior": {

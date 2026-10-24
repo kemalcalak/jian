@@ -100,7 +100,12 @@ maskType?: MaskType | null,
  * Composite this node's complete rendered subtree with the backdrop.
  * Absence is the source-over default; pass-through groups also stay absent.
  */
-blendMode?: BlendMode | null, theme: { [key in string]?: string } | null, transition: Transition | null, animations: Array<NodeAnimation> | null, minWidth: number | null, maxWidth: number | null, minHeight: number | null, maxHeight: number | null, };
+blendMode?: BlendMode | null, theme: { [key in string]?: string } | null, transition: Transition | null, animations: Array<NodeAnimation> | null,
+/**
+ * The transition a presentation plays when it arrives on this node
+ * as a slide. Read on top-level frames only.
+ */
+slideTransition: SlideTransition | null, minWidth: number | null, maxWidth: number | null, minHeight: number | null, maxHeight: number | null, };
 
 /**
  * Figma-style per-axis anchoring for absolutely positioned nodes.
@@ -190,7 +195,12 @@ maskType?: MaskType | null,
  * Composite this node's complete rendered subtree with the backdrop.
  * Absence is the source-over default; pass-through groups also stay absent.
  */
-blendMode?: BlendMode | null, theme: { [key in string]?: string } | null, transition: Transition | null, animations: Array<NodeAnimation> | null, minWidth: number | null, maxWidth: number | null, minHeight: number | null, maxHeight: number | null, };
+blendMode?: BlendMode | null, theme: { [key in string]?: string } | null, transition: Transition | null, animations: Array<NodeAnimation> | null,
+/**
+ * The transition a presentation plays when it arrives on this node
+ * as a slide. Read on top-level frames only.
+ */
+slideTransition: SlideTransition | null, minWidth: number | null, maxWidth: number | null, minHeight: number | null, maxHeight: number | null, };
 
 /**
  * All supported event hook keys. Note: input events (`onChange`, `onSubmit`, `onFocus`,
@@ -256,7 +266,12 @@ maskType?: MaskType | null,
  * Composite this node's complete rendered subtree with the backdrop.
  * Absence is the source-over default; pass-through groups also stay absent.
  */
-blendMode?: BlendMode | null, theme: { [key in string]?: string } | null, transition: Transition | null, animations: Array<NodeAnimation> | null, width: SizingBehavior | null, height: SizingBehavior | null, layout: LayoutMode | null, gap: NumberOrExpression | null, padding: Padding | null, justifyContent: JustifyContent | null, alignItems: AlignItems | null, clipContent: boolean | null,
+blendMode?: BlendMode | null, theme: { [key in string]?: string } | null, transition: Transition | null, animations: Array<NodeAnimation> | null,
+/**
+ * The transition a presentation plays when it arrives on this node
+ * as a slide. Read on top-level frames only.
+ */
+slideTransition: SlideTransition | null, width: SizingBehavior | null, height: SizingBehavior | null, layout: LayoutMode | null, gap: NumberOrExpression | null, padding: Padding | null, justifyContent: JustifyContent | null, alignItems: AlignItems | null, clipContent: boolean | null,
 /**
  * Direct child ids that remain pinned while this container scrolls.
  */
@@ -335,7 +350,12 @@ maskType?: MaskType | null,
  * Composite this node's complete rendered subtree with the backdrop.
  * Absence is the source-over default; pass-through groups also stay absent.
  */
-blendMode?: BlendMode | null, theme: { [key in string]?: string } | null, transition: Transition | null, animations: Array<NodeAnimation> | null, width: SizingBehavior | null, height: SizingBehavior | null, layout: LayoutMode | null, gap: NumberOrExpression | null, padding: Padding | null, justifyContent: JustifyContent | null, alignItems: AlignItems | null, clipContent: boolean | null,
+blendMode?: BlendMode | null, theme: { [key in string]?: string } | null, transition: Transition | null, animations: Array<NodeAnimation> | null,
+/**
+ * The transition a presentation plays when it arrives on this node
+ * as a slide. Read on top-level frames only.
+ */
+slideTransition: SlideTransition | null, width: SizingBehavior | null, height: SizingBehavior | null, layout: LayoutMode | null, gap: NumberOrExpression | null, padding: Padding | null, justifyContent: JustifyContent | null, alignItems: AlignItems | null, clipContent: boolean | null,
 /**
  * Direct child ids that remain pinned while this container scrolls.
  */
@@ -366,7 +386,12 @@ maskType?: MaskType | null,
  * Composite this node's complete rendered subtree with the backdrop.
  * Absence is the source-over default; pass-through groups also stay absent.
  */
-blendMode?: BlendMode | null, theme: { [key in string]?: string } | null, transition: Transition | null, animations: Array<NodeAnimation> | null, minWidth: number | null, maxWidth: number | null, minHeight: number | null, maxHeight: number | null, };
+blendMode?: BlendMode | null, theme: { [key in string]?: string } | null, transition: Transition | null, animations: Array<NodeAnimation> | null,
+/**
+ * The transition a presentation plays when it arrives on this node
+ * as a slide. Read on top-level frames only.
+ */
+slideTransition: SlideTransition | null, minWidth: number | null, maxWidth: number | null, minHeight: number | null, maxHeight: number | null, };
 
 export type ImageFillBody = { url: string, mode: ImageFillMode | null, originalSize: ImageOriginalSize | null, transform: ImageTransform | null,
 /**
@@ -399,7 +424,12 @@ maskType?: MaskType | null,
  * Composite this node's complete rendered subtree with the backdrop.
  * Absence is the source-over default; pass-through groups also stay absent.
  */
-blendMode?: BlendMode | null, theme: { [key in string]?: string } | null, transition: Transition | null, animations: Array<NodeAnimation> | null, minWidth: number | null, maxWidth: number | null, minHeight: number | null, maxHeight: number | null, };
+blendMode?: BlendMode | null, theme: { [key in string]?: string } | null, transition: Transition | null, animations: Array<NodeAnimation> | null,
+/**
+ * The transition a presentation plays when it arrives on this node
+ * as a slide. Read on top-level frames only.
+ */
+slideTransition: SlideTransition | null, minWidth: number | null, maxWidth: number | null, minHeight: number | null, maxHeight: number | null, };
 
 export type ImageOriginalSize = { width: number, height: number, };
 
@@ -429,7 +459,12 @@ maskType?: MaskType | null,
  * Composite this node's complete rendered subtree with the backdrop.
  * Absence is the source-over default; pass-through groups also stay absent.
  */
-blendMode?: BlendMode | null, theme: { [key in string]?: string } | null, transition: Transition | null, animations: Array<NodeAnimation> | null, };
+blendMode?: BlendMode | null, theme: { [key in string]?: string } | null, transition: Transition | null, animations: Array<NodeAnimation> | null,
+/**
+ * The transition a presentation plays when it arrives on this node
+ * as a slide. Read on top-level frames only.
+ */
+slideTransition: SlideTransition | null, };
 
 export type LinearGradientBody = { angle: number | null, stops: Array<GradientStop>, explain: string | null, opacity: number | null, blendMode: BlendMode | null, };
 
@@ -471,9 +506,12 @@ export type MeshVertexStop = { row: number, col: number, color: string, };
 export type MotionPreference = "full" | "reduced";
 
 /**
- * The two P1 lifecycle triggers.
+ * What starts a node animation: the lifecycle (`mount`, `inView`) or the
+ * pointer (`hover`, `tap`). A pointer animation plays forward while the
+ * pointer hovers / presses the node and back to the node's own look when
+ * it leaves / releases.
  */
-export type MotionTrigger = "mount" | "inView";
+export type MotionTrigger = "mount" | "inView" | "hover" | "tap";
 
 /**
  * Declarative per-node navigation: clicking the node pushes/replaces/pops a route.
@@ -537,7 +575,12 @@ maskType?: MaskType | null,
  * Composite this node's complete rendered subtree with the backdrop.
  * Absence is the source-over default; pass-through groups also stay absent.
  */
-blendMode?: BlendMode | null, theme: { [key in string]?: string } | null, transition: Transition | null, animations: Array<NodeAnimation> | null, minWidth: number | null, maxWidth: number | null, minHeight: number | null, maxHeight: number | null, };
+blendMode?: BlendMode | null, theme: { [key in string]?: string } | null, transition: Transition | null, animations: Array<NodeAnimation> | null,
+/**
+ * The transition a presentation plays when it arrives on this node
+ * as a slide. Read on top-level frames only.
+ */
+slideTransition: SlideTransition | null, minWidth: number | null, maxWidth: number | null, minHeight: number | null, maxHeight: number | null, };
 
 /**
  * Opacity can be a number or a `$variable` reference string.
@@ -585,7 +628,12 @@ maskType?: MaskType | null,
  * Composite this node's complete rendered subtree with the backdrop.
  * Absence is the source-over default; pass-through groups also stay absent.
  */
-blendMode?: BlendMode | null, theme: { [key in string]?: string } | null, transition: Transition | null, animations: Array<NodeAnimation> | null, minWidth: number | null, maxWidth: number | null, minHeight: number | null, maxHeight: number | null, };
+blendMode?: BlendMode | null, theme: { [key in string]?: string } | null, transition: Transition | null, animations: Array<NodeAnimation> | null,
+/**
+ * The transition a presentation plays when it arrives on this node
+ * as a slide. Read on top-level frames only.
+ */
+slideTransition: SlideTransition | null, minWidth: number | null, maxWidth: number | null, minHeight: number | null, maxHeight: number | null, };
 
 export type PenDocument = {
 /**
@@ -675,7 +723,12 @@ maskType?: MaskType | null,
  * Composite this node's complete rendered subtree with the backdrop.
  * Absence is the source-over default; pass-through groups also stay absent.
  */
-blendMode?: BlendMode | null, theme: { [key in string]?: string } | null, transition: Transition | null, animations: Array<NodeAnimation> | null, minWidth: number | null, maxWidth: number | null, minHeight: number | null, maxHeight: number | null, };
+blendMode?: BlendMode | null, theme: { [key in string]?: string } | null, transition: Transition | null, animations: Array<NodeAnimation> | null,
+/**
+ * The transition a presentation plays when it arrives on this node
+ * as a slide. Read on top-level frames only.
+ */
+slideTransition: SlideTransition | null, minWidth: number | null, maxWidth: number | null, minHeight: number | null, maxHeight: number | null, };
 
 export type PrimitiveType = "int" | "float" | "number" | "string" | "bool" | "array" | "object" | "date";
 
@@ -700,7 +753,12 @@ maskType?: MaskType | null,
  * Composite this node's complete rendered subtree with the backdrop.
  * Absence is the source-over default; pass-through groups also stay absent.
  */
-blendMode?: BlendMode | null, theme: { [key in string]?: string } | null, transition: Transition | null, animations: Array<NodeAnimation> | null, minWidth: number | null, maxWidth: number | null, minHeight: number | null, maxHeight: number | null, };
+blendMode?: BlendMode | null, theme: { [key in string]?: string } | null, transition: Transition | null, animations: Array<NodeAnimation> | null,
+/**
+ * The transition a presentation plays when it arrives on this node
+ * as a slide. Read on top-level frames only.
+ */
+slideTransition: SlideTransition | null, minWidth: number | null, maxWidth: number | null, minHeight: number | null, maxHeight: number | null, };
 
 export type RadialGradientBody = { cx: number | null, cy: number | null, radius: number | null, stops: Array<GradientStop>, explain: string | null, opacity: number | null, blendMode: BlendMode | null, };
 
@@ -726,7 +784,12 @@ maskType?: MaskType | null,
  * Composite this node's complete rendered subtree with the backdrop.
  * Absence is the source-over default; pass-through groups also stay absent.
  */
-blendMode?: BlendMode | null, theme: { [key in string]?: string } | null, transition: Transition | null, animations: Array<NodeAnimation> | null, minWidth: number | null, maxWidth: number | null, minHeight: number | null, maxHeight: number | null, };
+blendMode?: BlendMode | null, theme: { [key in string]?: string } | null, transition: Transition | null, animations: Array<NodeAnimation> | null,
+/**
+ * The transition a presentation plays when it arrives on this node
+ * as a slide. Read on top-level frames only.
+ */
+slideTransition: SlideTransition | null, minWidth: number | null, maxWidth: number | null, minHeight: number | null, maxHeight: number | null, };
 
 export type RectangleNode = { children: Array<PenNode> | null, state: { [key in string]?: StateEntry } | null, bindings: { [key in string]?: Expression } | null, events: EventHandlers | null, lifecycle: NodeLifecycleHooks | null, semantics: SemanticsMeta | null, gestures: GestureOverrides | null, route: NavigationRoute | null, id: string, name: string | null, role: string | null, explain: string | null, x: number | null, y: number | null, rotation: number | null, constraints: Constraints | null, opacity: NumberOrExpression | null, enabled: BoolOrExpression | null, visible: boolean | null, locked: boolean | null,
 /**
@@ -742,7 +805,12 @@ maskType?: MaskType | null,
  * Composite this node's complete rendered subtree with the backdrop.
  * Absence is the source-over default; pass-through groups also stay absent.
  */
-blendMode?: BlendMode | null, theme: { [key in string]?: string } | null, transition: Transition | null, animations: Array<NodeAnimation> | null, width: SizingBehavior | null, height: SizingBehavior | null, layout: LayoutMode | null, gap: NumberOrExpression | null, padding: Padding | null, justifyContent: JustifyContent | null, alignItems: AlignItems | null, clipContent: boolean | null,
+blendMode?: BlendMode | null, theme: { [key in string]?: string } | null, transition: Transition | null, animations: Array<NodeAnimation> | null,
+/**
+ * The transition a presentation plays when it arrives on this node
+ * as a slide. Read on top-level frames only.
+ */
+slideTransition: SlideTransition | null, width: SizingBehavior | null, height: SizingBehavior | null, layout: LayoutMode | null, gap: NumberOrExpression | null, padding: Padding | null, justifyContent: JustifyContent | null, alignItems: AlignItems | null, clipContent: boolean | null,
 /**
  * Direct child ids that remain pinned while this container scrolls.
  */
@@ -762,7 +830,12 @@ maskType?: MaskType | null,
  * Composite this node's complete rendered subtree with the backdrop.
  * Absence is the source-over default; pass-through groups also stay absent.
  */
-blendMode?: BlendMode | null, theme: { [key in string]?: string } | null, transition: Transition | null, animations: Array<NodeAnimation> | null, };
+blendMode?: BlendMode | null, theme: { [key in string]?: string } | null, transition: Transition | null, animations: Array<NodeAnimation> | null,
+/**
+ * The transition a presentation plays when it arrives on this node
+ * as a slide. Read on top-level frames only.
+ */
+slideTransition: SlideTransition | null, };
 
 export type RouteSpec = { pageId: string, preload: boolean | null, guards: Array<Action> | null,
 /**
@@ -805,7 +878,12 @@ maskType?: MaskType | null,
  * Composite this node's complete rendered subtree with the backdrop.
  * Absence is the source-over default; pass-through groups also stay absent.
  */
-blendMode?: BlendMode | null, theme: { [key in string]?: string } | null, transition: Transition | null, animations: Array<NodeAnimation> | null, minWidth: number | null, maxWidth: number | null, minHeight: number | null, maxHeight: number | null, };
+blendMode?: BlendMode | null, theme: { [key in string]?: string } | null, transition: Transition | null, animations: Array<NodeAnimation> | null,
+/**
+ * The transition a presentation plays when it arrives on this node
+ * as a slide. Read on top-level frames only.
+ */
+slideTransition: SlideTransition | null, minWidth: number | null, maxWidth: number | null, minHeight: number | null, maxHeight: number | null, };
 
 /**
  * A single dropdown option: the persisted `value` and its display `label`.
@@ -920,6 +998,17 @@ export type SizingBehavior = number | SizingKeyword | string;
 export type SizingKeyword = "fit_content" | "fill_container";
 
 /**
+ * The transition a presentation plays when it arrives on this slide (a
+ * top-level frame). Going back plays the same transition reversed.
+ */
+export type SlideTransition = { kind: SlideTransitionKind, durationMs: bigint, easing: Easing, } & ({ [key in string]?: JsonValue });
+
+/**
+ * How a presentation moves from one slide to the next.
+ */
+export type SlideTransitionKind = "none" | "fade" | "slide" | "push";
+
+/**
  * Range slider. `value` two-way binds via `bindings.bind:value`;
  * `min`/`max`/`step` default to 0/100/1 at runtime when omitted.
  */
@@ -937,7 +1026,12 @@ maskType?: MaskType | null,
  * Composite this node's complete rendered subtree with the backdrop.
  * Absence is the source-over default; pass-through groups also stay absent.
  */
-blendMode?: BlendMode | null, theme: { [key in string]?: string } | null, transition: Transition | null, animations: Array<NodeAnimation> | null, minWidth: number | null, maxWidth: number | null, minHeight: number | null, maxHeight: number | null, };
+blendMode?: BlendMode | null, theme: { [key in string]?: string } | null, transition: Transition | null, animations: Array<NodeAnimation> | null,
+/**
+ * The transition a presentation plays when it arrives on this node
+ * as a slide. Read on top-level frames only.
+ */
+slideTransition: SlideTransition | null, minWidth: number | null, maxWidth: number | null, minHeight: number | null, maxHeight: number | null, };
 
 export type SolidFillBody = { color: string, explain: string | null, opacity: number | null, blendMode: BlendMode | null, };
 
@@ -979,7 +1073,12 @@ maskType?: MaskType | null,
  * Composite this node's complete rendered subtree with the backdrop.
  * Absence is the source-over default; pass-through groups also stay absent.
  */
-blendMode?: BlendMode | null, theme: { [key in string]?: string } | null, transition: Transition | null, animations: Array<NodeAnimation> | null, minWidth: number | null, maxWidth: number | null, minHeight: number | null, maxHeight: number | null, };
+blendMode?: BlendMode | null, theme: { [key in string]?: string } | null, transition: Transition | null, animations: Array<NodeAnimation> | null,
+/**
+ * The transition a presentation plays when it arrives on this node
+ * as a slide. Read on top-level frames only.
+ */
+slideTransition: SlideTransition | null, minWidth: number | null, maxWidth: number | null, minHeight: number | null, maxHeight: number | null, };
 
 /**
  * Tabbed panel switcher. Unlike the leaf widgets this is a CONTAINER:
@@ -1013,7 +1112,12 @@ maskType?: MaskType | null,
  * Composite this node's complete rendered subtree with the backdrop.
  * Absence is the source-over default; pass-through groups also stay absent.
  */
-blendMode?: BlendMode | null, theme: { [key in string]?: string } | null, transition: Transition | null, animations: Array<NodeAnimation> | null, minWidth: number | null, maxWidth: number | null, minHeight: number | null, maxHeight: number | null, };
+blendMode?: BlendMode | null, theme: { [key in string]?: string } | null, transition: Transition | null, animations: Array<NodeAnimation> | null,
+/**
+ * The transition a presentation plays when it arrives on this node
+ * as a slide. Read on top-level frames only.
+ */
+slideTransition: SlideTransition | null, minWidth: number | null, maxWidth: number | null, minHeight: number | null, maxHeight: number | null, };
 
 export type TextAlign = "left" | "center" | "right" | "justify";
 
@@ -1057,7 +1161,12 @@ maskType?: MaskType | null,
  * Composite this node's complete rendered subtree with the backdrop.
  * Absence is the source-over default; pass-through groups also stay absent.
  */
-blendMode?: BlendMode | null, theme: { [key in string]?: string } | null, transition: Transition | null, animations: Array<NodeAnimation> | null, minWidth: number | null, maxWidth: number | null, minHeight: number | null, maxHeight: number | null, };
+blendMode?: BlendMode | null, theme: { [key in string]?: string } | null, transition: Transition | null, animations: Array<NodeAnimation> | null,
+/**
+ * The transition a presentation plays when it arrives on this node
+ * as a slide. Read on top-level frames only.
+ */
+slideTransition: SlideTransition | null, minWidth: number | null, maxWidth: number | null, minHeight: number | null, maxHeight: number | null, };
 
 export type TextContent = string | Array<StyledTextSegment>;
 
@@ -1115,7 +1224,12 @@ maskType?: MaskType | null,
  * Composite this node's complete rendered subtree with the backdrop.
  * Absence is the source-over default; pass-through groups also stay absent.
  */
-blendMode?: BlendMode | null, theme: { [key in string]?: string } | null, transition: Transition | null, animations: Array<NodeAnimation> | null, minWidth: number | null, maxWidth: number | null, minHeight: number | null, maxHeight: number | null, };
+blendMode?: BlendMode | null, theme: { [key in string]?: string } | null, transition: Transition | null, animations: Array<NodeAnimation> | null,
+/**
+ * The transition a presentation plays when it arrives on this node
+ * as a slide. Read on top-level frames only.
+ */
+slideTransition: SlideTransition | null, minWidth: number | null, maxWidth: number | null, minHeight: number | null, maxHeight: number | null, };
 
 export type TextNode = { width: SizingBehavior | null, height: SizingBehavior | null, content: TextContent, fontFamily: string | null, fontSize: number | null, fontWeight: FontWeight | null, fontStyle: FontStyleKind | null, letterSpacing: number | null, lineHeight: number | null, textAlign: TextAlign | null, textAlignVertical: TextAlignVertical | null, textGrowth: TextGrowth | null, underline: boolean | null, strikethrough: boolean | null, fill: Array<PenFill> | null, effects: Array<PenEffect> | null, state: { [key in string]?: StateEntry } | null, bindings: { [key in string]?: Expression } | null, events: EventHandlers | null, lifecycle: NodeLifecycleHooks | null, semantics: SemanticsMeta | null, gestures: GestureOverrides | null, route: NavigationRoute | null, id: string, name: string | null, role: string | null, explain: string | null, x: number | null, y: number | null, rotation: number | null, constraints: Constraints | null, opacity: NumberOrExpression | null, enabled: BoolOrExpression | null, visible: boolean | null, locked: boolean | null,
 /**
@@ -1131,11 +1245,19 @@ maskType?: MaskType | null,
  * Composite this node's complete rendered subtree with the backdrop.
  * Absence is the source-over default; pass-through groups also stay absent.
  */
-blendMode?: BlendMode | null, theme: { [key in string]?: string } | null, transition: Transition | null, animations: Array<NodeAnimation> | null, minWidth: number | null, maxWidth: number | null, minHeight: number | null, maxHeight: number | null, };
+blendMode?: BlendMode | null, theme: { [key in string]?: string } | null, transition: Transition | null, animations: Array<NodeAnimation> | null,
+/**
+ * The transition a presentation plays when it arrives on this node
+ * as a slide. Read on top-level frames only.
+ */
+slideTransition: SlideTransition | null, minWidth: number | null, maxWidth: number | null, minHeight: number | null, maxHeight: number | null, };
 
 export type ThemedValue = { value: VariableScalar, theme: { [key in string]?: string } | null, };
 
-export type Transition = "push" | "fade" | "modal" | "none";
+/**
+ * A node-level transition applied to runtime paint changes.
+ */
+export type Transition = { durationMs: bigint, easing: Easing, properties: Array<string> | null, } & ({ [key in string]?: JsonValue });
 
 /**
  * Vertical anchoring for an absolutely positioned node.

@@ -207,3 +207,39 @@ fn flat_keyframes_serialize_canonical_values_wrapper() {
     assert!(animation["keyframes"][0].get("opacity").is_none());
     assert!(animation["keyframes"][0].get("translateY").is_none());
 }
+
+#[test]
+fn pointer_triggers_and_size_properties_load_and_round_trip() {
+    let source = motion_document(
+        r##""animations":[
+                    {"trigger":"hover","keyframes":{"from":{"width":100},"to":{"width":120}},"durationMs":150},
+                    {"trigger":"tap","keyframes":{"from":{"height":40},"to":{"height":36}},"durationMs":100}
+                ]"##,
+    );
+    let loaded = load_str(&source).expect("pointer motion document");
+    let animations = loaded.value.children[0].motion_declarations().1.unwrap();
+    assert_eq!(animations[0].trigger, jian_ops_schema::MotionTrigger::Hover);
+    assert_eq!(animations[1].trigger, jian_ops_schema::MotionTrigger::Tap);
+    assert!(animations.iter().all(|a| a.trigger.is_pointer()));
+    assert!(jian_ops_schema::motion::P1_MOTION_PROPERTIES.contains(&"width"));
+    let json = serde_json::to_value(&loaded.value).unwrap();
+    assert_eq!(json["children"][0]["animations"][0]["trigger"], "hover");
+    assert_eq!(json["children"][0]["animations"][1]["trigger"], "tap");
+}
+
+#[test]
+fn slide_transition_defaults_and_round_trips() {
+    let source = motion_document(r##""slideTransition":{"kind":"push","futureToken":1}"##);
+    let loaded = load_str(&source).expect("slide transition document");
+    let json = serde_json::to_value(&loaded.value.children[0]).unwrap();
+    assert_eq!(json["slideTransition"]["kind"], "push");
+    assert_eq!(json["slideTransition"]["durationMs"], 400);
+    assert_eq!(json["slideTransition"]["futureToken"], 1);
+    let parsed: jian_ops_schema::SlideTransition =
+        serde_json::from_value(json["slideTransition"].clone()).unwrap();
+    assert_eq!(parsed.kind, jian_ops_schema::SlideTransitionKind::Push);
+    assert_eq!(
+        jian_ops_schema::SlideTransition::default().kind,
+        jian_ops_schema::SlideTransitionKind::None
+    );
+}
