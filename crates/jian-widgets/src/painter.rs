@@ -203,7 +203,7 @@ pub trait Painter {
     }
 
     /// Cap / join / dash for the stroke calls that follow, until the next
-    /// call; [`StrokeStyle::default`] restores the backend's defaults.
+    /// call; `StrokeStyle::default()` restores the backend's defaults.
     /// Dash lengths are in the coordinate space of those calls. Backends
     /// without stroke styling ignore it; wrapping painters must forward it.
     fn set_stroke_style(&mut self, style: crate::StrokeStyle) {

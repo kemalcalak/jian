@@ -945,7 +945,7 @@ pub struct SceneStroke {
     /// the rect by half a width per [`SceneStrokeAlign`].
     pub align: SceneStrokeAlign,
     /// Authored cap / join / dash, in document px. Plain
-    /// ([`StrokeStyle::default`]) when the source sets none, so painters
+    /// (`StrokeStyle::default()`) when the source sets none, so painters
     /// keep their per-primitive defaults.
     pub style: StrokeStyle,
 }

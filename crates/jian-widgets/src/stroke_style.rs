@@ -2,7 +2,7 @@
 //!
 //! A host sets the style with [`Painter::set_stroke_style`](crate::Painter::set_stroke_style)
 //! before the stroke calls it applies to and resets it with
-//! [`StrokeStyle::default`] afterwards. Unset fields keep the backend's own
+//! `StrokeStyle::default()` afterwards. Unset fields keep the backend's own
 //! per-primitive default, so a plain stroke paints exactly as before.
 //! Every type here is `Copy`, so it rides inside `Copy` scene strokes.
 
