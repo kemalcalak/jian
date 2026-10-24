@@ -364,6 +364,28 @@ pub trait Painter {
         );
     }
 
+    /// Fill an SVG path with an angular (conic / sweep) gradient centred
+    /// at (`cx_frac`, `cy_frac`) of `rect`. `rotation_deg` uses CSS
+    /// `conic-gradient` semantics (0° = 12 o'clock, clockwise). The
+    /// default impl is the first-stop solid fallback.
+    #[allow(clippy::too_many_arguments)]
+    fn fill_svg_path_in_rect_angular_gradient_with_fill_rule(
+        &mut self,
+        d: &str,
+        rect: Rect,
+        stops: &[(f32, Color)],
+        _cx_frac: f32,
+        _cy_frac: f32,
+        _rotation_deg: f32,
+        opacity: f32,
+        even_odd: bool,
+    ) {
+        let _ = even_odd;
+        if let Some((_, c)) = stops.first() {
+            self.fill_svg_path_in_rect(d, rect, fold_alpha(*c, opacity));
+        }
+    }
+
     fn fill_drop_shadow(&mut self, rect: Rect, radius: f32, blur: f32, color: Color) {
         let _ = blur;
         self.fill_round_rect(rect, radius, color);
@@ -656,6 +678,43 @@ pub trait Painter {
         _cx_frac: f32,
         _cy_frac: f32,
         _radius_frac: f32,
+        opacity: f32,
+    ) {
+        if let Some((_, c)) = stops.first() {
+            self.fill_round_rect_per_corner(rect, radii, fold_alpha(*c, opacity));
+        }
+    }
+
+    /// Paint an angular (conic / sweep) gradient centred at
+    /// (`cx_frac`, `cy_frac`) of `rect`. `rotation_deg` uses CSS
+    /// `conic-gradient` semantics (0° = 12 o'clock, clockwise). The
+    /// default impl is the first-stop solid fallback; the Skia hosts
+    /// override it with a sweep shader.
+    #[allow(clippy::too_many_arguments)]
+    fn fill_round_rect_angular_gradient(
+        &mut self,
+        rect: Rect,
+        radius: f32,
+        stops: &[(f32, Color)],
+        _cx_frac: f32,
+        _cy_frac: f32,
+        _rotation_deg: f32,
+        opacity: f32,
+    ) {
+        if let Some((_, c)) = stops.first() {
+            self.fill_round_rect(rect, radius, fold_alpha(*c, opacity));
+        }
+    }
+
+    #[allow(clippy::too_many_arguments)]
+    fn fill_round_rect_angular_gradient_per_corner(
+        &mut self,
+        rect: Rect,
+        radii: [f32; 4],
+        stops: &[(f32, Color)],
+        _cx_frac: f32,
+        _cy_frac: f32,
+        _rotation_deg: f32,
         opacity: f32,
     ) {
         if let Some((_, c)) = stops.first() {

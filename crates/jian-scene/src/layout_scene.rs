@@ -149,6 +149,19 @@ pub enum SceneGradient {
         opacity: f32,
         stops: Vec<SceneGradientStop>,
     },
+    /// Angular (conic / sweep) gradient. Stops run clockwise around the
+    /// centre; `rotation_deg` follows CSS `conic-gradient` (0° = first
+    /// stop at 12 o'clock, positive = clockwise).
+    Angular {
+        /// Centre x as a 0.0..=1.0 fraction of bounds width (0.5 = centre).
+        cx: f32,
+        /// Centre y as a 0.0..=1.0 fraction of bounds height.
+        cy: f32,
+        /// Start angle in degrees (0° = 12 o'clock, clockwise).
+        rotation_deg: f32,
+        opacity: f32,
+        stops: Vec<SceneGradientStop>,
+    },
     /// Uniform-grid mesh gradient (v1). `colors` is a row-major
     /// `rows`×`cols` lattice (length == `rows * cols`); vertex `(r, c)`
     /// lives at `colors[r * cols + c]` and Gouraud-interpolates across
@@ -567,11 +580,11 @@ pub struct SceneNode {
     /// scene came from a legacy payload and the single-fill fields apply.
     pub fill_layers: Vec<SceneFillLayer>,
     /// Fill paint mode — `Solid` / `LinearGradient` / `RadialGradient`
-    /// / `Image`. The current canvas paints all of them as the solid
+    /// / `AngularGradient` / `Image`. The current canvas paints all of them as the solid
     /// `fill` colour; carried so a richer painter can branch later.
     pub fill_type: SceneFillType,
     /// Resolved gradient body — populated when `fill_type` is
-    /// `LinearGradient` or `RadialGradient`. `fill` still holds the
+    /// `LinearGradient`, `RadialGradient` or `AngularGradient`. `fill` still holds the
     /// first stop's colour so non-gradient code paths (Polygon /
     /// Path / Ellipse / Line painters that have no gradient overload
     /// yet) keep a sensible fallback.
@@ -968,6 +981,7 @@ pub enum SceneFillType {
     Solid,
     LinearGradient,
     RadialGradient,
+    AngularGradient,
     MeshGradient,
     Shader,
     Image,

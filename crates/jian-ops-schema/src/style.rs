@@ -75,6 +75,7 @@ pub enum PenFill {
     Solid(SolidFillBody),
     LinearGradient(LinearGradientBody),
     RadialGradient(RadialGradientBody),
+    AngularGradient(AngularGradientBody),
     MeshGradient(MeshGradientBody),
     Shader(ShaderFillBody),
     Image(ImageFillBody),
@@ -121,6 +122,31 @@ pub struct RadialGradientBody {
     pub cy: Option<f32>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub radius: Option<f32>,
+    pub stops: Vec<GradientStop>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub explain: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub opacity: Option<f32>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub blend_mode: Option<BlendMode>,
+}
+
+/// Angular (conic / sweep) gradient. Stops run clockwise around the
+/// centre (`cx`, `cy` as 0.0..=1.0 fractions of the node bounds,
+/// default 0.5). `rotation` is in degrees with CSS `conic-gradient`
+/// semantics: 0° puts the first stop at 12 o'clock, positive turns
+/// clockwise (Figma `GRADIENT_ANGULAR`).
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, schemars::JsonSchema)]
+#[cfg_attr(feature = "export-ts", derive(ts_rs::TS))]
+#[cfg_attr(feature = "export-ts", ts(export, export_to = "ops.ts"))]
+#[serde(rename_all = "camelCase")]
+pub struct AngularGradientBody {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub cx: Option<f32>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub cy: Option<f32>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub rotation: Option<f32>,
     pub stops: Vec<GradientStop>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub explain: Option<String>,
@@ -468,6 +494,20 @@ mod tests {
         let m: BlendMode = serde_json::from_str(json).unwrap();
         assert_eq!(m, BlendMode::Multiply);
         assert_eq!(serde_json::to_string(&m).unwrap(), json);
+    }
+
+    #[test]
+    fn angular_gradient_fill_roundtrip() {
+        let json = r##"{"type":"angular_gradient","cx":0.25,"rotation":45.0,"stops":[{"offset":0.0,"color":"#ff0000"},{"offset":1.0,"color":"#0000ff"}]}"##;
+        let f: PenFill = serde_json::from_str(json).unwrap();
+        let PenFill::AngularGradient(body) = &f else {
+            panic!("expected angular gradient, got {f:?}");
+        };
+        assert_eq!(body.cx, Some(0.25));
+        assert_eq!(body.cy, None);
+        assert_eq!(body.rotation, Some(45.0));
+        assert_eq!(body.stops.len(), 2);
+        assert_eq!(serde_json::to_string(&f).unwrap(), json);
     }
 
     #[test]
