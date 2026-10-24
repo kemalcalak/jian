@@ -449,6 +449,51 @@ pub trait Painter {
         self.save();
     }
 
+    /// Whether this backend keeps shader textures: the frame-scoped
+    /// textures [`Painter::capture_shader_backdrop`] and
+    /// [`Painter::begin_shader_texture`] make, which a shader child binds
+    /// by id like an image. Callers skip the capture work otherwise.
+    fn supports_shader_textures(&self) -> bool {
+        false
+    }
+
+    /// Store what is already painted under `rect` (paint coordinates) as
+    /// shader texture `id`, replacing an older one of that id.
+    fn capture_shader_backdrop(&mut self, id: u64, rect: Rect) {
+        let _ = (id, rect);
+    }
+
+    /// Redirect the draws until the matching
+    /// [`Painter::end_shader_texture`] into shader texture `id` covering
+    /// `rect` (paint coordinates), over transparent. Nothing reaches the
+    /// canvas. The default keeps callers balanced with a `save`.
+    fn begin_shader_texture(&mut self, id: u64, rect: Rect) {
+        let _ = (id, rect);
+        self.save();
+    }
+
+    /// Finish the texture the last [`Painter::begin_shader_texture`]
+    /// started. With `sdf`, the texture stores the signed distance field
+    /// of the drawn alpha instead (edge at 50% alpha): red the distance in
+    /// paint units divided by `sdf_scale`, positive inside, green / blue
+    /// the unit gradient of increasing distance, in paint axes.
+    fn end_shader_texture(&mut self, sdf: bool, sdf_scale: f32) {
+        let _ = (sdf, sdf_scale);
+        self.restore();
+    }
+
+    /// Forget shader texture `id`.
+    fn release_shader_texture(&mut self, id: u64) {
+        let _ = id;
+    }
+
+    /// Whether shader texture `id` is still stored, so a caller whose
+    /// content is unchanged can bind it without drawing it again.
+    fn shader_texture_ready(&self, id: u64) -> bool {
+        let _ = id;
+        false
+    }
+
     /// Begin an SkSL shader-effect layer over `rect` (the node box in
     /// paint coordinates). With `backdrop == false` the draws until the
     /// matching [`Painter::restore`] are captured and the program's
