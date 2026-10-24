@@ -75,13 +75,20 @@ impl SkiaMeasure {
     /// Use a host-supplied `FontMgr` — for example one that wraps a
     /// `TypefaceFontProvider` populated with bundled `.ttf` blobs.
     pub fn with_font_manager(font_mgr: FontMgr) -> Self {
+        crate::font_lock::with_font_lock(|| Self::with_font_resolver(FontResolver::new(font_mgr)))
+    }
+
+    /// Measure through a host-built resolver — for example one whose
+    /// last-resort face is the typeface the host paints with, so layout and
+    /// paint fall back to the same glyphs. [`Self::font_resolver`] hands it
+    /// back for measurements of the host's own.
+    pub fn with_font_resolver(font_resolver: FontResolver) -> Self {
         crate::font_lock::with_font_lock(|| {
             // Read the generation BEFORE building the collection so an import
             // landing mid-construction is caught by the next `refresh_if_stale`
             // rather than recorded as already-applied against a stale
             // collection (see the same reasoning in `FontResolver`).
             let built_generation = crate::bundled_fonts::generation();
-            let font_resolver = FontResolver::new(font_mgr);
             let fc = build_collection(&font_resolver);
             Self {
                 font_collection: RefCell::new(Rc::new(fc)),
@@ -89,6 +96,12 @@ impl SkiaMeasure {
                 built_generation: Cell::new(built_generation),
             }
         })
+    }
+
+    /// The resolver behind the natural-width measure and the collection's
+    /// fallback order.
+    pub fn font_resolver(&self) -> &FontResolver {
+        &self.font_resolver
     }
 
     /// Rebuild the cached `FontCollection` when the font registry

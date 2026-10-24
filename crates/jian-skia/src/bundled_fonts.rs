@@ -390,28 +390,8 @@ fn typeface_from_bytes(mgr: &FontMgr, bytes: &[u8]) -> Option<Typeface> {
 /// faces and faces whose default already sits at 400 pass through untouched;
 /// a `wght` range that cannot reach 400 is clamped to its nearest bound.
 fn normalize_variable_default_weight(typeface: Typeface) -> Typeface {
-    const WGHT: skia_safe::FourByteTag = skia_safe::FourByteTag::from_chars('w', 'g', 'h', 't');
-    let Some(axes) = typeface.variation_design_parameters() else {
-        return typeface;
-    };
-    let Some(axis) = axes.iter().find(|axis| axis.tag == WGHT) else {
-        return typeface;
-    };
-    let target = 400.0_f32.clamp(axis.min, axis.max);
-    if (axis.def - target).abs() < f32::EPSILON {
-        return typeface;
-    }
-    let coordinates = [skia_safe::font_arguments::variation_position::Coordinate {
-        axis: WGHT,
-        value: target,
-    }];
-    let arguments = skia_safe::FontArguments::new().set_variation_design_position(
-        skia_safe::font_arguments::VariationPosition {
-            coordinates: &coordinates,
-        },
-    );
-    typeface
-        .clone_with_arguments(&arguments)
+    crate::variable_weight::instance_at_weight(&typeface, 400.0)
+        .map(|(instance, _)| instance)
         .unwrap_or(typeface)
 }
 

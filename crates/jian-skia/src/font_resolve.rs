@@ -8,7 +8,10 @@
 use std::{
     cell::{Cell, RefCell},
     collections::HashMap,
+    rc::Rc,
 };
+
+use crate::shaped_words::{RunStyle, ShapedRun, ShapedSegment, ShapedWords};
 
 use skia_safe::{
     font_style::{Slant, Weight, Width},
@@ -55,6 +58,10 @@ pub struct ResolvedTypeface {
 #[derive(Default)]
 struct FontResolverCache {
     chars: HashMap<FontKey, Option<ResolvedTypeface>>,
+    /// Variable-font `wght` instances by (base typeface id, weight), so
+    /// every character of a run resolves to the same instance and stays in
+    /// one segment.
+    weight_instances: HashMap<(u32, u16), Option<(Typeface, f32)>>,
 }
 
 #[derive(Clone, Hash, PartialEq, Eq)]
@@ -80,6 +87,7 @@ pub struct FontResolver {
     imported_family_names: RefCell<HashMap<String, String>>,
     default_typeface: Option<Typeface>,
     cache: RefCell<FontResolverCache>,
+    shaped: RefCell<ShapedWords>,
     built_generation: Cell<u64>,
 }
 
@@ -124,6 +132,7 @@ impl FontResolver {
                 imported_family_names: RefCell::new(imported_family_names),
                 default_typeface,
                 cache: RefCell::new(FontResolverCache::default()),
+                shaped: RefCell::new(ShapedWords::default()),
                 built_generation: Cell::new(built_generation),
             }
         })
@@ -160,7 +169,12 @@ impl FontResolver {
         *self.bundled_family_names.borrow_mut() = bundled_family_names;
         *self.imported_mgr.borrow_mut() = imported_mgr;
         *self.imported_family_names.borrow_mut() = imported_family_names;
-        self.cache.borrow_mut().chars.clear();
+        {
+            let mut cache = self.cache.borrow_mut();
+            cache.chars.clear();
+            cache.weight_instances.clear();
+        }
+        self.shaped.borrow_mut().clear();
         self.built_generation.set(current);
     }
 
@@ -248,10 +262,36 @@ impl FontResolver {
         // Cache miss → `match_family_style_character` (DirectWrite system font
         // scan on Windows). Serialize just this call so the per-char cached
         // fast path above stays lock-free.
-        let resolved =
-            crate::font_lock::with_font_lock(|| self.resolve_uncached(families, c, weight, italic));
+        let resolved = crate::font_lock::with_font_lock(|| {
+            self.resolve_uncached(families, c, weight, italic)
+                .map(|resolved| self.at_variable_weight(resolved, weight))
+        });
         self.cache.borrow_mut().chars.insert(key, resolved.clone());
         resolved
+    }
+
+    /// Move a variable face onto the requested `wght`, so bold paints with
+    /// the font's own bold design instead of a synthetic stroke.
+    fn at_variable_weight(&self, resolved: ResolvedTypeface, weight: u16) -> ResolvedTypeface {
+        let key = (resolved.typeface.unique_id(), weight);
+        let instance = self
+            .cache
+            .borrow_mut()
+            .weight_instances
+            .entry(key)
+            .or_insert_with(|| {
+                crate::variable_weight::instance_at_weight(&resolved.typeface, f32::from(weight))
+            })
+            .clone();
+        let Some((typeface, face_weight)) = instance else {
+            return resolved;
+        };
+        ResolvedTypeface {
+            typeface,
+            synthetic_bold: weight >= BOLD_WEIGHT_MIN
+                && face_weight < f32::from(SYNTHETIC_BOLD_FACE_WEIGHT_MAX),
+            synthetic_italic: resolved.synthetic_italic,
+        }
     }
 
     pub fn segment_text(
@@ -291,6 +331,10 @@ impl FontResolver {
         segments
     }
 
+    /// Kerned advance of `text`: HarfBuzz-shaped per typeface segment and
+    /// per word (see [`crate::shaped_words`]), with the synthetic-bold
+    /// allowance on segments the face cannot carry. [`Self::shape_run`]
+    /// paints the same advances.
     pub fn measure_text(
         &self,
         text: &str,
@@ -300,22 +344,75 @@ impl FontResolver {
         italic: bool,
     ) -> f32 {
         // Serialize segmentation (resolves system typefaces via DirectWrite)
-        // + glyph-advance measurement with all other font work. Reentrant, so
-        // this is a no-op re-lock when called from within `SkiaMeasure`.
+        // + shaping with all other font work. Reentrant, so this is a no-op
+        // re-lock when called from within `SkiaMeasure`.
         crate::font_lock::with_font_lock(|| {
+            // Segment first: it may refresh the resolver, which clears the
+            // shaped-word cache borrowed below.
+            let segments = self.segment_text(text, family, weight, italic);
+            let mut shaped = self.shaped.borrow_mut();
             let mut width = 0.0_f32;
-            for segment in self.segment_text(text, family, weight, italic) {
-                let mut font = Font::new(&segment.typeface, font_size);
-                if segment.synthetic_italic {
-                    font.set_skew_x(SYNTHETIC_ITALIC_SKEW);
-                }
-                let (mut advance, _) = font.measure_str(&segment.text, None);
-                if segment.synthetic_bold {
-                    advance *= SYNTHETIC_BOLD_WIDTH_FACTOR;
-                }
-                width += advance;
+            for segment in segments {
+                let font = segment_font(&segment, font_size);
+                width += shaped.width(&font, &segment.text) * stretch(&segment);
             }
             width
+        })
+    }
+
+    /// `text` shaped for paint: one positioned glyph blob per typeface
+    /// segment, laid out with exactly the advances [`Self::measure_text`]
+    /// reports. Cached per (text, family, size, weight, slant) so a
+    /// repainted line costs one lookup.
+    pub fn shape_run(
+        &self,
+        text: &str,
+        font_size: f32,
+        family: Option<&str>,
+        weight: u16,
+        italic: bool,
+    ) -> Rc<ShapedRun> {
+        crate::font_lock::with_font_lock(|| {
+            self.refresh_if_stale();
+            let style = RunStyle {
+                family: family.unwrap_or(""),
+                size_bits: font_size.to_bits(),
+                weight,
+                italic,
+            };
+            if let Some(run) = self.shaped.borrow().cached_run(style, text) {
+                return run;
+            }
+            // Segment before borrowing: segmentation may refresh the
+            // resolver, which clears the shaped caches.
+            let font_segments = self.segment_text(text, family, weight, italic);
+            let mut shaped = self.shaped.borrow_mut();
+            let mut segments = Vec::new();
+            let mut x = 0.0_f32;
+            let mut glyphs = Vec::new();
+            let mut positions = Vec::new();
+            for segment in font_segments {
+                let font = segment_font(&segment, font_size);
+                glyphs.clear();
+                positions.clear();
+                let width = shaped.push_glyphs(
+                    &font,
+                    &segment.text,
+                    x,
+                    stretch(&segment),
+                    &mut glyphs,
+                    &mut positions,
+                );
+                segments.push(ShapedSegment {
+                    blob: crate::shaped_words::segment_blob(&font, &glyphs, &positions),
+                    synthetic_bold: segment.synthetic_bold,
+                    width,
+                });
+                x += width;
+            }
+            let run = Rc::new(ShapedRun { segments, width: x });
+            shaped.store_run(style, text, Rc::clone(&run));
+            run
         })
     }
 
@@ -403,6 +500,30 @@ impl FontResolver {
             }
         }
         None
+    }
+}
+
+/// The font a segment measures and paints with: unhinted, fractional
+/// advances placed at subpixel offsets, as browsers lay text out. Hinted
+/// advances round every glyph to whole pixels, which over a paragraph adds
+/// up to more than the kerning takes away.
+fn segment_font(segment: &FontSegment, font_size: f32) -> Font {
+    let mut font = Font::new(&segment.typeface, font_size);
+    font.set_subpixel(true);
+    font.set_linear_metrics(true);
+    if segment.synthetic_italic {
+        font.set_skew_x(SYNTHETIC_ITALIC_SKEW);
+    }
+    font
+}
+
+/// Advance scale for a segment: synthetic bold strokes the outline, so
+/// its glyphs take a little more room than the face's own advances.
+fn stretch(segment: &FontSegment) -> f32 {
+    if segment.synthetic_bold {
+        SYNTHETIC_BOLD_WIDTH_FACTOR
+    } else {
+        1.0
     }
 }
 

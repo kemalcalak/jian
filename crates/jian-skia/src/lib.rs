@@ -50,10 +50,14 @@ pub mod image_registry;
 pub mod measure;
 pub mod path;
 pub mod shader_cache;
+#[cfg(feature = "textlayout")]
+pub mod shaped_words;
 pub mod startup;
 pub mod surface;
 #[cfg(feature = "textlayout")]
 pub mod text_geometry;
+#[cfg(feature = "textlayout")]
+pub(crate) mod variable_weight;
 
 pub use backend::SkiaBackend;
 #[cfg(feature = "textlayout")]
@@ -74,6 +78,8 @@ pub use image_registry::{InstanceImageRegistry, RegisteredBackend};
 #[cfg(feature = "textlayout")]
 pub use measure::SkiaMeasure;
 pub use shader_cache::ShaderCache;
+#[cfg(feature = "textlayout")]
+pub use shaped_words::{ShapedRun, ShapedSegment};
 pub use surface::SkiaSurface;
 #[cfg(feature = "textlayout")]
 pub use text_geometry::{SkiaTextField, SkiaTextGeometry};
