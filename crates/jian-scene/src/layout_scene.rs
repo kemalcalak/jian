@@ -35,6 +35,7 @@ pub use crate::scene_geometry::{
 };
 pub use jian_ops_schema::node::MaskType;
 use jian_widgets::{Color, ImageAdjustments, ImageBlendMode, ImageDrawMode, Point2D, Rect};
+pub use jian_widgets::{StrokeCap, StrokeDash, StrokeJoin, StrokeStyle};
 #[cfg(any(test, feature = "test-support"))]
 use std::cell::Cell;
 use std::sync::Arc;
@@ -943,6 +944,10 @@ pub struct SceneStroke {
     /// default is INSIDE; painters that only stroke centered adjust
     /// the rect by half a width per [`SceneStrokeAlign`].
     pub align: SceneStrokeAlign,
+    /// Authored cap / join / dash, in document px. Plain
+    /// (`StrokeStyle::default()`) when the source sets none, so painters
+    /// keep their per-primitive defaults.
+    pub style: StrokeStyle,
 }
 
 /// Stroke band placement relative to the node edge.
