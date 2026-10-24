@@ -664,6 +664,7 @@ mod tests {
             width: 2.0,
             sides: None,
             align: crate::layout_scene::SceneStrokeAlign::Center,
+            style: Default::default(),
         });
         let scene = one_page(vec![outlined]);
         assert_eq!(
@@ -838,6 +839,7 @@ mod tests {
             width: 1.0,
             sides: None,
             align: crate::layout_scene::SceneStrokeAlign::Center,
+            style: Default::default(),
         });
         let scene = one_page(vec![line]);
         // Right on the horizontal segment.
