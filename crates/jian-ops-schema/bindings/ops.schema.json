@@ -411,6 +411,13 @@
                 }
               ]
             },
+            "placeholder": {
+              "description": "In-progress marker: an agent is still building this frame. Editors show a working state on it; the agent clears it (or sets `false`) when the frame is done. pen.dev's `placeholder`. Additive 1.x.",
+              "type": [
+                "boolean",
+                "null"
+              ]
+            },
             "id": {
               "type": "string"
             },
@@ -8643,7 +8650,9 @@
         "color_dodge",
         "color_burn",
         "hard_light",
-        "exclusion"
+        "exclusion",
+        "linear_burn",
+        "linear_dodge"
       ]
     },
     "Transition": {

@@ -280,11 +280,47 @@ fn set_node_stroke_color_only_patches_an_existing_stroke() {
 }
 
 #[test]
+fn set_node_stroke_color_leaves_a_rich_stroke_paint_to_the_rebuild() {
+    let black = Color {
+        r: 0.0,
+        g: 0.0,
+        b: 0.0,
+        a: 1.0,
+    };
+    let mut rich = SceneNode::leaf("rich", NodeKind::Rect);
+    rich.stroke = Some(SceneStroke {
+        color: black,
+        width: 2.0,
+        sides: None,
+        align: SceneStrokeAlign::Center,
+        style: Default::default(),
+    });
+    rich.stroke_fill_layers = vec![SceneFillLayer::Solid {
+        color: black,
+        blend_mode: ImageBlendMode::Multiply,
+    }];
+    let mut scene = LayoutScene {
+        pages: vec![ScenePage {
+            id: "p".into(),
+            name: "P".into(),
+            children: vec![rich],
+        }],
+        active_page_index: 0,
+    };
+    let blue = Color { b: 1.0, ..black };
+    assert!(!scene.set_node_stroke_color(&["rich".into()], blue));
+    let node = scene.active_page().and_then(|p| p.find("rich")).unwrap();
+    assert_eq!(node.stroke.map(|s| s.color), Some(black));
+}
+
+#[test]
 fn leaf_node_clears_paint_fields() {
     let n = SceneNode::leaf("n1", NodeKind::Rect);
     assert_eq!(n.bounds, Rect::ZERO);
     assert!(n.fill.is_none());
     assert!(n.stroke.is_none());
+    assert!(n.stroke_fill_layers.is_empty());
+    assert!(!n.placeholder);
     assert!(n.children.is_empty());
     assert_eq!(n.fill_type, SceneFillType::Solid);
 }

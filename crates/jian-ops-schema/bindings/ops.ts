@@ -66,7 +66,7 @@ interactionOrder: Array<string> | null, } & ({ [key in string]?: JsonValue });
 
 export type AxisLock = "auto" | "horizontal" | "vertical";
 
-export type BlendMode = "normal" | "darken" | "multiply" | "screen" | "overlay" | "lighten" | "difference" | "hue" | "saturation" | "color" | "luminosity" | "soft_light" | "color_dodge" | "color_burn" | "hard_light" | "exclusion";
+export type BlendMode = "normal" | "darken" | "multiply" | "screen" | "overlay" | "lighten" | "difference" | "hue" | "saturation" | "color" | "luminosity" | "soft_light" | "color_dodge" | "color_burn" | "hard_light" | "exclusion" | "linear_burn" | "linear_dodge";
 
 export type BlurBody = { radius: number, visible: boolean | null, };
 
@@ -236,7 +236,13 @@ screen: string | null,
  * Breakpoint range for screen variants. Invalid ranges are stripped
  * during responsive screen projection.
  */
-breakpoint: BreakpointRange | null, id: string, name: string | null, role: string | null, explain: string | null, x: number | null, y: number | null, rotation: number | null, constraints: Constraints | null, opacity: NumberOrExpression | null, enabled: BoolOrExpression | null, visible: boolean | null, locked: boolean | null,
+breakpoint: BreakpointRange | null,
+/**
+ * In-progress marker: an agent is still building this frame. Editors
+ * show a working state on it; the agent clears it (or sets `false`)
+ * when the frame is done. pen.dev's `placeholder`. Additive 1.x.
+ */
+placeholder: boolean | null, id: string, name: string | null, role: string | null, explain: string | null, x: number | null, y: number | null, rotation: number | null, constraints: Constraints | null, opacity: NumberOrExpression | null, enabled: BoolOrExpression | null, visible: boolean | null, locked: boolean | null,
 /**
  * Keep this node at its authored viewport position while its nearest
  * scrollable ancestor moves ordinary content.
