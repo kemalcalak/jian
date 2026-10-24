@@ -623,7 +623,7 @@ conversion: ConversionSpec | null,
  */
 motion: MotionPreference | null, };
 
-export type PenEffect = { "type": "blur" } & BlurBody | { "type": "background_blur" } & BlurBody | { "type": "shadow" } & ShadowBody;
+export type PenEffect = { "type": "blur" } & BlurBody | { "type": "background_blur" } & BlurBody | { "type": "shadow" } & ShadowBody | { "type": "shader" } & ShaderEffectBody;
 
 export type PenFill = { "type": "solid" } & SolidFillBody | { "type": "linear_gradient" } & LinearGradientBody | { "type": "radial_gradient" } & RadialGradientBody | { "type": "angular_gradient" } & AngularGradientBody | { "type": "mesh_gradient" } & MeshGradientBody | { "type": "shader" } & ShaderFillBody | { "type": "image" } & ImageFillBody;
 
@@ -838,6 +838,26 @@ aiHidden: boolean | null,
  * not surfaced by `list_available_actions`. See §9.
  */
 aiAliases: Array<string> | null, };
+
+/**
+ * SkSL shader effect (v1). The program names the texture it samples:
+ * `uniform shader object;` reads the node's own rendered output (shadows,
+ * fill, stroke, children) and `uniform shader background;` reads what is
+ * already painted behind the node, clipped to its silhouette. The
+ * entrypoint is `half4 main(float2 p)` with `p` in node-local document
+ * pixels; hosts bind `size` (and `time` / `mouse` when declared) the way
+ * they do for a shader fill. Effects run in list order. The source is
+ * untrusted: a program that fails to compile leaves the node unaffected.
+ */
+export type ShaderEffectBody = {
+/**
+ * RAW SkSL source. Entrypoint: `half4 main(float2 p)`.
+ */
+sksl: string,
+/**
+ * Optional named-uniform map, same wire form as a shader fill's.
+ */
+uniforms: { [key in string]?: ShaderUniformValue } | null, visible: boolean | null, };
 
 /**
  * Native SkSL shader fill (v1). Authors may provide RAW source in `sksl`
@@ -1109,10 +1129,7 @@ blendMode?: BlendMode | null, theme: { [key in string]?: string } | null, transi
 
 export type ThemedValue = { value: VariableScalar, theme: { [key in string]?: string } | null, };
 
-/**
- * A node-level transition applied to runtime paint changes.
- */
-export type Transition = { durationMs: bigint, easing: Easing, properties: Array<string> | null, } & ({ [key in string]?: JsonValue });
+export type Transition = "push" | "fade" | "modal" | "none";
 
 /**
  * Vertical anchoring for an absolutely positioned node.

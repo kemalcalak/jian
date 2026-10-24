@@ -401,6 +401,30 @@ pub enum PenEffect {
     BackgroundBlur(BlurBody),
     #[serde(alias = "drop-shadow")]
     Shadow(ShadowBody),
+    /// SkSL post-process over the node's rendering or its backdrop.
+    Shader(ShaderEffectBody),
+}
+
+/// SkSL shader effect (v1). The program names the texture it samples:
+/// `uniform shader object;` reads the node's own rendered output (shadows,
+/// fill, stroke, children) and `uniform shader background;` reads what is
+/// already painted behind the node, clipped to its silhouette. The
+/// entrypoint is `half4 main(float2 p)` with `p` in node-local document
+/// pixels; hosts bind `size` (and `time` / `mouse` when declared) the way
+/// they do for a shader fill. Effects run in list order. The source is
+/// untrusted: a program that fails to compile leaves the node unaffected.
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, schemars::JsonSchema)]
+#[cfg_attr(feature = "export-ts", derive(ts_rs::TS))]
+#[cfg_attr(feature = "export-ts", ts(export, export_to = "ops.ts"))]
+#[serde(rename_all = "camelCase")]
+pub struct ShaderEffectBody {
+    /// RAW SkSL source. Entrypoint: `half4 main(float2 p)`.
+    pub sksl: String,
+    /// Optional named-uniform map, same wire form as a shader fill's.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub uniforms: Option<std::collections::BTreeMap<String, ShaderUniformValue>>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub visible: Option<bool>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, schemars::JsonSchema)]
@@ -430,7 +454,25 @@ pub struct ShadowBody {
 
 #[cfg(test)]
 mod effect_visibility_tests {
-    use super::{BlurBody, ShadowBody};
+    use super::{BlurBody, PenEffect, ShaderUniformValue, ShadowBody};
+
+    #[test]
+    fn shader_effect_round_trips() {
+        let json = r##"{"type":"shader","sksl":"uniform shader object; half4 main(float2 p){ return object.eval(p); }","uniforms":{"amount":4.0},"visible":false}"##;
+        let effect: PenEffect = serde_json::from_str(json).unwrap();
+        let PenEffect::Shader(body) = &effect else {
+            panic!("shader effect expected: {effect:?}");
+        };
+        assert!(body.sksl.contains("uniform shader object"));
+        assert_eq!(body.visible, Some(false));
+        assert_eq!(
+            body.uniforms.as_ref().and_then(|u| u.get("amount")),
+            Some(&ShaderUniformValue::Float(4.0))
+        );
+        let back: PenEffect =
+            serde_json::from_value(serde_json::to_value(&effect).unwrap()).unwrap();
+        assert_eq!(back, effect);
+    }
 
     #[test]
     fn effect_visibility_is_optional_and_round_trips() {
