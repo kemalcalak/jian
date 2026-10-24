@@ -26,7 +26,10 @@ pub const ANIMATION_REGISTRY_PROPERTIES: &[&str] = &[
     "height",
 ];
 
-/// P1 properties that are safe to animate without relayout.
+/// Properties node motion declarations (`transition`, `animations`)
+/// animate. All but `width` / `height` are safe to animate without
+/// relayout; a size tween resizes the painted box and leaves the layout
+/// of its children as solved.
 pub const P1_MOTION_PROPERTIES: &[&str] = &[
     "opacity",
     "translateX",
@@ -37,6 +40,8 @@ pub const P1_MOTION_PROPERTIES: &[&str] = &[
     "fill",
     "stroke",
     "cornerRadius",
+    "width",
+    "height",
 ];
 
 /// CSS/Material-style easing names accepted by document motion declarations.
@@ -151,7 +156,10 @@ impl<'de> Deserialize<'de> for Keyframe {
     }
 }
 
-/// The two P1 lifecycle triggers.
+/// What starts a node animation: the lifecycle (`mount`, `inView`) or the
+/// pointer (`hover`, `tap`). A pointer animation plays forward while the
+/// pointer hovers / presses the node and back to the node's own look when
+/// it leaves / releases.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, schemars::JsonSchema)]
 #[cfg_attr(feature = "export-ts", derive(ts_rs::TS))]
 #[cfg_attr(feature = "export-ts", ts(export, export_to = "ops.ts"))]
@@ -162,6 +170,70 @@ pub enum MotionTrigger {
     #[serde(rename = "inView")]
     #[cfg_attr(feature = "export-ts", ts(rename = "inView"))]
     InView,
+    #[serde(rename = "hover")]
+    #[cfg_attr(feature = "export-ts", ts(rename = "hover"))]
+    Hover,
+    #[serde(rename = "tap")]
+    #[cfg_attr(feature = "export-ts", ts(rename = "tap"))]
+    Tap,
+}
+
+impl MotionTrigger {
+    /// `hover` / `tap`: played while the pointer is on / pressing the node.
+    pub fn is_pointer(self) -> bool {
+        matches!(self, MotionTrigger::Hover | MotionTrigger::Tap)
+    }
+}
+
+/// How a presentation moves from one slide to the next.
+#[derive(
+    Debug, Clone, Copy, Default, PartialEq, Eq, Serialize, Deserialize, schemars::JsonSchema,
+)]
+#[cfg_attr(feature = "export-ts", derive(ts_rs::TS))]
+#[cfg_attr(feature = "export-ts", ts(export, export_to = "ops.ts"))]
+#[serde(rename_all = "lowercase")]
+pub enum SlideTransitionKind {
+    /// An instant cut.
+    #[default]
+    None,
+    /// Cross-fade from the old slide to the new one.
+    Fade,
+    /// The new slide slides in over the old one.
+    Slide,
+    /// The new slide pushes the old one out.
+    Push,
+}
+
+/// The transition a presentation plays when it arrives on this slide (a
+/// top-level frame). Going back plays the same transition reversed.
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, schemars::JsonSchema)]
+#[cfg_attr(feature = "export-ts", derive(ts_rs::TS))]
+#[cfg_attr(feature = "export-ts", ts(export, export_to = "ops.ts"))]
+#[serde(rename_all = "camelCase")]
+pub struct SlideTransition {
+    #[serde(default)]
+    pub kind: SlideTransitionKind,
+    #[serde(default = "default_slide_transition_duration")]
+    pub duration_ms: u64,
+    #[serde(default)]
+    pub easing: Easing,
+    #[serde(default, flatten)]
+    pub extra: ExtraJson,
+}
+
+impl Default for SlideTransition {
+    fn default() -> Self {
+        Self {
+            kind: SlideTransitionKind::None,
+            duration_ms: default_slide_transition_duration(),
+            easing: Easing::Standard,
+            extra: ExtraJson::default(),
+        }
+    }
+}
+
+fn default_slide_transition_duration() -> u64 {
+    400
 }
 
 /// Fill policy for a node declaration. P1 intentionally keeps only the CSS

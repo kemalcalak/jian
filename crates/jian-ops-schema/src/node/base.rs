@@ -87,6 +87,10 @@ pub struct PenNodeBase {
     pub transition: Option<crate::motion::Transition>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub animations: Option<Vec<crate::motion::NodeAnimation>>,
+    /// The transition a presentation plays when it arrives on this node
+    /// as a slide. Read on top-level frames only.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub slide_transition: Option<crate::motion::SlideTransition>,
 }
 
 #[cfg(test)]
