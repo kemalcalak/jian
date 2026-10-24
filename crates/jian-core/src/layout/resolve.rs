@@ -414,6 +414,7 @@ pub(crate) fn node_base(
         PenNode::NumberInput(n) => &n.base,
         PenNode::Progress(p) => &p.base,
         PenNode::Tabs(t) => &t.base,
+        PenNode::Note(n) | PenNode::Context(n) | PenNode::Prompt(n) => &n.base,
         _ => return None,
     })
 }
@@ -442,7 +443,11 @@ fn node_limits(
         PenNode::NumberInput(node) => Some(&node.limits),
         PenNode::Progress(node) => Some(&node.limits),
         PenNode::Tabs(node) => Some(&node.limits),
-        PenNode::Line(_) | PenNode::Ref(_) => None,
+        PenNode::Line(_)
+        | PenNode::Ref(_)
+        | PenNode::Note(_)
+        | PenNode::Context(_)
+        | PenNode::Prompt(_) => None,
     }
 }
 
@@ -483,6 +488,9 @@ fn leaf_size_and_limits(
         PenNode::NumberInput(n) => (n.width.as_ref(), n.height.as_ref(), Some(&n.limits)),
         PenNode::Progress(p) => (p.width.as_ref(), p.height.as_ref(), Some(&p.limits)),
         PenNode::Tabs(t) => (t.width.as_ref(), t.height.as_ref(), Some(&t.limits)),
+        PenNode::Note(n) | PenNode::Context(n) | PenNode::Prompt(n) => {
+            (n.width.as_ref(), n.height.as_ref(), None)
+        }
         _ => (None, None, None),
     }
 }

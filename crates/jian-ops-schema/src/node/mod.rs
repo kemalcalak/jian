@@ -7,6 +7,7 @@ pub mod icon_font;
 pub mod image;
 pub mod image_src;
 pub mod line;
+pub mod note;
 pub mod number_input;
 pub mod path;
 pub mod polygon;
@@ -34,6 +35,7 @@ pub use icon_font::IconFontNode;
 pub use image::{ImageFitMode, ImageNode};
 pub use image_src::ImageSrc;
 pub use line::LineNode;
+pub use note::{AnnotationKind, NoteNode};
 pub use number_input::NumberInputNode;
 pub use path::{PathFillRule, PathNode, PenPathAnchor, PenPathHandle, PenPathPointType};
 pub use polygon::PolygonNode;
@@ -82,6 +84,12 @@ pub enum PenNode {
     Progress(ProgressNode),
     Tabs(TabsNode),
     Ref(RefNode),
+    /// A sticky note on the canvas (pen.dev `note`).
+    Note(NoteNode),
+    /// Background the AI reads (pen.dev `context`).
+    Context(NoteNode),
+    /// An instruction for a model (pen.dev `prompt`).
+    Prompt(NoteNode),
 }
 
 impl PenNode {
@@ -135,6 +143,9 @@ impl PenNode {
             }
             PenNode::Tabs(node) => (node.base.transition.as_ref(), node.base.animations.as_ref()),
             PenNode::Ref(node) => (node.base.transition.as_ref(), node.base.animations.as_ref()),
+            PenNode::Note(node) | PenNode::Context(node) | PenNode::Prompt(node) => {
+                (node.base.transition.as_ref(), node.base.animations.as_ref())
+            }
         }
     }
 
@@ -187,6 +198,7 @@ impl PenNode {
             PenNode::Progress(n) => (n.gestures.as_ref(), n.semantics.as_ref()),
             PenNode::Tabs(n) => (n.gestures.as_ref(), n.semantics.as_ref()),
             PenNode::Ref(n) => (n.gestures.as_ref(), n.semantics.as_ref()),
+            PenNode::Note(_) | PenNode::Context(_) | PenNode::Prompt(_) => (None, None),
         }
     }
 
@@ -218,7 +230,68 @@ impl PenNode {
             PenNode::Progress(n) => n.lifecycle.as_ref(),
             PenNode::Tabs(n) => n.lifecycle.as_ref(),
             PenNode::Ref(n) => n.lifecycle.as_ref(),
+            PenNode::Note(_) | PenNode::Context(_) | PenNode::Prompt(_) => None,
         }
+    }
+
+    /// The node's JSON `"type"` tag (`"frame"`, `"text_input"`, `"note"`,
+    /// …). One table for every consumer that names a kind, so a new
+    /// variant is spelled once.
+    pub fn type_tag(&self) -> &'static str {
+        match self {
+            PenNode::Frame(_) => "frame",
+            PenNode::Group(_) => "group",
+            PenNode::Rectangle(_) => "rectangle",
+            PenNode::Ellipse(_) => "ellipse",
+            PenNode::Line(_) => "line",
+            PenNode::Polygon(_) => "polygon",
+            PenNode::Path(_) => "path",
+            PenNode::Text(_) => "text",
+            PenNode::TextInput(_) => "text_input",
+            PenNode::Image(_) => "image",
+            PenNode::IconFont(_) => "icon_font",
+            PenNode::TextArea(_) => "text_area",
+            PenNode::Select(_) => "select",
+            PenNode::Switch(_) => "switch",
+            PenNode::Checkbox(_) => "checkbox",
+            PenNode::Slider(_) => "slider",
+            PenNode::RadioGroup(_) => "radio_group",
+            PenNode::NumberInput(_) => "number_input",
+            PenNode::Progress(_) => "progress",
+            PenNode::Tabs(_) => "tabs",
+            PenNode::Ref(_) => "ref",
+            PenNode::Note(_) => "note",
+            PenNode::Context(_) => "context",
+            PenNode::Prompt(_) => "prompt",
+        }
+    }
+
+    /// The annotation kind and body of a `note` / `context` / `prompt`
+    /// node, `None` for every other kind.
+    pub fn annotation(&self) -> Option<(AnnotationKind, &NoteNode)> {
+        match self {
+            PenNode::Note(n) => Some((AnnotationKind::Note, n)),
+            PenNode::Context(n) => Some((AnnotationKind::Context, n)),
+            PenNode::Prompt(n) => Some((AnnotationKind::Prompt, n)),
+            _ => None,
+        }
+    }
+
+    /// Mutable twin of [`PenNode::annotation`].
+    pub fn annotation_mut(&mut self) -> Option<(AnnotationKind, &mut NoteNode)> {
+        match self {
+            PenNode::Note(n) => Some((AnnotationKind::Note, n)),
+            PenNode::Context(n) => Some((AnnotationKind::Context, n)),
+            PenNode::Prompt(n) => Some((AnnotationKind::Prompt, n)),
+            _ => None,
+        }
+    }
+
+    /// True for nodes that live on the editing canvas only: exports and
+    /// code generation skip them (and their subtree) by default. Today
+    /// these are the annotation kinds; other editor-only kinds join here.
+    pub fn is_canvas_only(&self) -> bool {
+        self.annotation().is_some()
     }
 }
 
@@ -340,6 +413,30 @@ mod tests {
         .unwrap();
         let PenNode::TextInput(ti) = &n else { panic!() };
         assert!(ti.states.is_some());
+    }
+
+    #[test]
+    fn annotation_kinds_roundtrip_by_type_tag() {
+        for kind in AnnotationKind::ALL {
+            let json = format!(
+                r#"{{"type":"{}","id":"n","width":240,"height":160,"content":"Ship it","model":"m1","fontSize":16}}"#,
+                kind.tag()
+            );
+            let n: PenNode = serde_json::from_str(&json).unwrap();
+            let (got, body) = n.annotation().expect("annotation");
+            assert_eq!(got, kind);
+            assert_eq!(body.plain_content(), "Ship it");
+            assert_eq!(body.model.as_deref(), Some("m1"));
+            assert!(n.is_canvas_only());
+            let back = serde_json::to_value(&n).unwrap();
+            assert_eq!(back["type"], kind.tag());
+            assert_eq!(n.type_tag(), kind.tag());
+            assert_eq!(AnnotationKind::from_tag(kind.tag()), Some(kind));
+        }
+        let text: PenNode =
+            serde_json::from_str(r#"{"type":"text","id":"t","content":"hi"}"#).unwrap();
+        assert!(text.annotation().is_none());
+        assert!(!text.is_canvas_only());
     }
 
     #[test]

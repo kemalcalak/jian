@@ -159,6 +159,7 @@ fn visit_own_sources<'a>(
             node.children.as_deref()
         }
         PenNode::Ref(node) => node.children.as_deref(),
+        PenNode::Note(_) | PenNode::Context(_) | PenNode::Prompt(_) => None,
     }
 }
 

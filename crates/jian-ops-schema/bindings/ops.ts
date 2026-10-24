@@ -545,6 +545,40 @@ disabledEvents: Array<string> | null,
 interactionOrder: Array<string> | null, } & ({ [key in string]?: JsonValue });
 
 /**
+ * Body of the canvas annotation kinds: `note` (a sticky note),
+ * `context` (background the AI reads) and `prompt` (an instruction for
+ * a model). They share one shape and differ only in the `type` tag, so
+ * `PenNode::Note`, `PenNode::Context` and
+ * `PenNode::Prompt` all carry this struct. Annotations are
+ * editor-side: exports and code generation leave them out.
+ */
+export type NoteNode = { width: SizingBehavior | null, height: SizingBehavior | null, content: TextContent | null,
+/**
+ * The model a `prompt` is meant for. Kept on the other kinds too,
+ * so switching the kind back and forth loses nothing.
+ */
+model: string | null, fontFamily: string | null, fontSize: number | null, fontWeight: FontWeight | null, fontStyle: FontStyleKind | null, letterSpacing: number | null, lineHeight: number | null, textAlign: TextAlign | null, textAlignVertical: TextAlignVertical | null, id: string, name: string | null, role: string | null, explain: string | null, x: number | null, y: number | null, rotation: number | null, constraints: Constraints | null, opacity: NumberOrExpression | null, enabled: BoolOrExpression | null, visible: boolean | null, locked: boolean | null,
+/**
+ * Keep this node at its authored viewport position while its nearest
+ * scrollable ancestor moves ordinary content.
+ */
+pin: boolean | null, flipX: boolean | null, flipY: boolean | null,
+/**
+ * Sibling-mask semantics. Absence means this node is painted normally.
+ */
+maskType?: MaskType | null,
+/**
+ * Composite this node's complete rendered subtree with the backdrop.
+ * Absence is the source-over default; pass-through groups also stay absent.
+ */
+blendMode?: BlendMode | null, theme: { [key in string]?: string } | null, transition: Transition | null, animations: Array<NodeAnimation> | null,
+/**
+ * The transition a presentation plays when it arrives on this node
+ * as a slide. Read on top-level frames only.
+ */
+slideTransition: SlideTransition | null, };
+
+/**
  * Numeric input with optional +/- steppers. Precise complement to
  * `slider`; `value` two-way binds via `bindings.bind:value`. When
  * omitted, `min`/`max`/`step` default to none/none/1 at runtime.
@@ -685,7 +719,7 @@ export type PenFill = { "type": "solid" } & SolidFillBody | { "type": "linear_gr
  * Union of all concrete node types.
  * Tag is the JSON `"type"` field.
  */
-export type PenNode = { "type": "frame" } & FrameNode | { "type": "group" } & GroupNode | { "type": "rectangle" } & RectangleNode | { "type": "ellipse" } & EllipseNode | { "type": "line" } & LineNode | { "type": "polygon" } & PolygonNode | { "type": "path" } & PathNode | { "type": "text" } & TextNode | { "type": "text_input" } & TextInputNode | { "type": "image" } & ImageNode | { "type": "icon_font" } & IconFontNode | { "type": "text_area" } & TextAreaNode | { "type": "select" } & SelectNode | { "type": "switch" } & SwitchNode | { "type": "checkbox" } & CheckboxNode | { "type": "slider" } & SliderNode | { "type": "radio_group" } & RadioGroupNode | { "type": "number_input" } & NumberInputNode | { "type": "progress" } & ProgressNode | { "type": "tabs" } & TabsNode | { "type": "ref" } & RefNode;
+export type PenNode = { "type": "frame" } & FrameNode | { "type": "group" } & GroupNode | { "type": "rectangle" } & RectangleNode | { "type": "ellipse" } & EllipseNode | { "type": "line" } & LineNode | { "type": "polygon" } & PolygonNode | { "type": "path" } & PathNode | { "type": "text" } & TextNode | { "type": "text_input" } & TextInputNode | { "type": "image" } & ImageNode | { "type": "icon_font" } & IconFontNode | { "type": "text_area" } & TextAreaNode | { "type": "select" } & SelectNode | { "type": "switch" } & SwitchNode | { "type": "checkbox" } & CheckboxNode | { "type": "slider" } & SliderNode | { "type": "radio_group" } & RadioGroupNode | { "type": "number_input" } & NumberInputNode | { "type": "progress" } & ProgressNode | { "type": "tabs" } & TabsNode | { "type": "ref" } & RefNode | { "type": "note" } & NoteNode | { "type": "context" } & NoteNode | { "type": "prompt" } & NoteNode;
 
 export type PenPage = { id: string, name: string, children: Array<PenNode>,
 /**

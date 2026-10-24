@@ -8039,6 +8039,858 @@
               ]
             }
           }
+        },
+        {
+          "description": "A sticky note on the canvas (pen.dev `note`).",
+          "type": "object",
+          "required": [
+            "id",
+            "type"
+          ],
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": [
+                "note"
+              ]
+            },
+            "width": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/SizingBehavior"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "height": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/SizingBehavior"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "content": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/TextContent"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "model": {
+              "description": "The model a `prompt` is meant for. Kept on the other kinds too, so switching the kind back and forth loses nothing.",
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "fontFamily": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "fontSize": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "format": "double"
+            },
+            "fontWeight": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/FontWeight"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "fontStyle": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/FontStyleKind2"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "letterSpacing": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "format": "double"
+            },
+            "lineHeight": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "format": "double"
+            },
+            "textAlign": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/TextAlign"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "textAlignVertical": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/TextAlignVertical"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "id": {
+              "type": "string"
+            },
+            "name": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "role": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "explain": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "x": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "format": "double"
+            },
+            "y": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "format": "double"
+            },
+            "rotation": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "format": "double"
+            },
+            "constraints": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/Constraints"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "opacity": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/NumberOrExpression"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "enabled": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/BoolOrExpression"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "visible": {
+              "type": [
+                "boolean",
+                "null"
+              ]
+            },
+            "locked": {
+              "type": [
+                "boolean",
+                "null"
+              ]
+            },
+            "pin": {
+              "description": "Keep this node at its authored viewport position while its nearest scrollable ancestor moves ordinary content.",
+              "type": [
+                "boolean",
+                "null"
+              ]
+            },
+            "flipX": {
+              "type": [
+                "boolean",
+                "null"
+              ]
+            },
+            "flipY": {
+              "type": [
+                "boolean",
+                "null"
+              ]
+            },
+            "maskType": {
+              "description": "Sibling-mask semantics. Absence means this node is painted normally.",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/MaskType"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "blendMode": {
+              "description": "Composite this node's complete rendered subtree with the backdrop. Absence is the source-over default; pass-through groups also stay absent.",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/BlendMode"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "theme": {
+              "type": [
+                "object",
+                "null"
+              ],
+              "additionalProperties": {
+                "type": "string"
+              }
+            },
+            "transition": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/Transition"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "animations": {
+              "type": [
+                "array",
+                "null"
+              ],
+              "items": {
+                "$ref": "#/definitions/NodeAnimation"
+              }
+            },
+            "slideTransition": {
+              "description": "The transition a presentation plays when it arrives on this node as a slide. Read on top-level frames only.",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/SlideTransition"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "description": "Background the AI reads (pen.dev `context`).",
+          "type": "object",
+          "required": [
+            "id",
+            "type"
+          ],
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": [
+                "context"
+              ]
+            },
+            "width": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/SizingBehavior"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "height": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/SizingBehavior"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "content": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/TextContent"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "model": {
+              "description": "The model a `prompt` is meant for. Kept on the other kinds too, so switching the kind back and forth loses nothing.",
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "fontFamily": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "fontSize": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "format": "double"
+            },
+            "fontWeight": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/FontWeight"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "fontStyle": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/FontStyleKind2"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "letterSpacing": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "format": "double"
+            },
+            "lineHeight": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "format": "double"
+            },
+            "textAlign": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/TextAlign"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "textAlignVertical": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/TextAlignVertical"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "id": {
+              "type": "string"
+            },
+            "name": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "role": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "explain": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "x": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "format": "double"
+            },
+            "y": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "format": "double"
+            },
+            "rotation": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "format": "double"
+            },
+            "constraints": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/Constraints"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "opacity": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/NumberOrExpression"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "enabled": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/BoolOrExpression"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "visible": {
+              "type": [
+                "boolean",
+                "null"
+              ]
+            },
+            "locked": {
+              "type": [
+                "boolean",
+                "null"
+              ]
+            },
+            "pin": {
+              "description": "Keep this node at its authored viewport position while its nearest scrollable ancestor moves ordinary content.",
+              "type": [
+                "boolean",
+                "null"
+              ]
+            },
+            "flipX": {
+              "type": [
+                "boolean",
+                "null"
+              ]
+            },
+            "flipY": {
+              "type": [
+                "boolean",
+                "null"
+              ]
+            },
+            "maskType": {
+              "description": "Sibling-mask semantics. Absence means this node is painted normally.",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/MaskType"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "blendMode": {
+              "description": "Composite this node's complete rendered subtree with the backdrop. Absence is the source-over default; pass-through groups also stay absent.",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/BlendMode"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "theme": {
+              "type": [
+                "object",
+                "null"
+              ],
+              "additionalProperties": {
+                "type": "string"
+              }
+            },
+            "transition": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/Transition"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "animations": {
+              "type": [
+                "array",
+                "null"
+              ],
+              "items": {
+                "$ref": "#/definitions/NodeAnimation"
+              }
+            },
+            "slideTransition": {
+              "description": "The transition a presentation plays when it arrives on this node as a slide. Read on top-level frames only.",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/SlideTransition"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "description": "An instruction for a model (pen.dev `prompt`).",
+          "type": "object",
+          "required": [
+            "id",
+            "type"
+          ],
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": [
+                "prompt"
+              ]
+            },
+            "width": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/SizingBehavior"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "height": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/SizingBehavior"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "content": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/TextContent"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "model": {
+              "description": "The model a `prompt` is meant for. Kept on the other kinds too, so switching the kind back and forth loses nothing.",
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "fontFamily": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "fontSize": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "format": "double"
+            },
+            "fontWeight": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/FontWeight"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "fontStyle": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/FontStyleKind2"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "letterSpacing": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "format": "double"
+            },
+            "lineHeight": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "format": "double"
+            },
+            "textAlign": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/TextAlign"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "textAlignVertical": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/TextAlignVertical"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "id": {
+              "type": "string"
+            },
+            "name": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "role": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "explain": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "x": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "format": "double"
+            },
+            "y": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "format": "double"
+            },
+            "rotation": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "format": "double"
+            },
+            "constraints": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/Constraints"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "opacity": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/NumberOrExpression"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "enabled": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/BoolOrExpression"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "visible": {
+              "type": [
+                "boolean",
+                "null"
+              ]
+            },
+            "locked": {
+              "type": [
+                "boolean",
+                "null"
+              ]
+            },
+            "pin": {
+              "description": "Keep this node at its authored viewport position while its nearest scrollable ancestor moves ordinary content.",
+              "type": [
+                "boolean",
+                "null"
+              ]
+            },
+            "flipX": {
+              "type": [
+                "boolean",
+                "null"
+              ]
+            },
+            "flipY": {
+              "type": [
+                "boolean",
+                "null"
+              ]
+            },
+            "maskType": {
+              "description": "Sibling-mask semantics. Absence means this node is painted normally.",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/MaskType"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "blendMode": {
+              "description": "Composite this node's complete rendered subtree with the backdrop. Absence is the source-over default; pass-through groups also stay absent.",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/BlendMode"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "theme": {
+              "type": [
+                "object",
+                "null"
+              ],
+              "additionalProperties": {
+                "type": "string"
+              }
+            },
+            "transition": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/Transition"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "animations": {
+              "type": [
+                "array",
+                "null"
+              ],
+              "items": {
+                "$ref": "#/definitions/NodeAnimation"
+              }
+            },
+            "slideTransition": {
+              "description": "The transition a presentation plays when it arrives on this node as a slide. Read on top-level frames only.",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/SlideTransition"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          }
         }
       ]
     },
