@@ -1,19 +1,25 @@
 //! Shared Skia typeface resolution for measuring and painting text.
 //!
-//! Hosts that draw text directly with `Canvas::draw_str` and layout
+//! Hosts that paint text through [`FontResolver::shape_run`] and layout
 //! code that measures through `SkiaMeasure` must choose the same
 //! typeface for the same family / weight / character tuple. This
-//! resolver owns that policy and caches the per-character result.
+//! resolver owns that policy and caches the per-character result; the
+//! shaping half lives in `font_resolve_shaped.rs`.
 
 use std::{
     cell::{Cell, RefCell},
     collections::HashMap,
 };
 
+use crate::shaped_words::ShapedWords;
+
+#[path = "font_resolve_shaped.rs"]
+mod shaped;
+
 use skia_safe::{
     font_style::{Slant, Weight, Width},
     utils::OrderedFontMgr,
-    Font, FontMgr, FontStyle, Typeface,
+    FontMgr, FontStyle, Typeface,
 };
 
 /// Native paint uses a stroke fill to synthesize bold when the
@@ -55,6 +61,10 @@ pub struct ResolvedTypeface {
 #[derive(Default)]
 struct FontResolverCache {
     chars: HashMap<FontKey, Option<ResolvedTypeface>>,
+    /// Variable-font `wght` instances by (base typeface id, weight), so
+    /// every character of a run resolves to the same instance and stays in
+    /// one segment.
+    weight_instances: HashMap<(u32, u16), Option<(Typeface, f32)>>,
 }
 
 #[derive(Clone, Hash, PartialEq, Eq)]
@@ -80,6 +90,7 @@ pub struct FontResolver {
     imported_family_names: RefCell<HashMap<String, String>>,
     default_typeface: Option<Typeface>,
     cache: RefCell<FontResolverCache>,
+    shaped: RefCell<ShapedWords>,
     built_generation: Cell<u64>,
 }
 
@@ -124,6 +135,7 @@ impl FontResolver {
                 imported_family_names: RefCell::new(imported_family_names),
                 default_typeface,
                 cache: RefCell::new(FontResolverCache::default()),
+                shaped: RefCell::new(ShapedWords::default()),
                 built_generation: Cell::new(built_generation),
             }
         })
@@ -160,7 +172,12 @@ impl FontResolver {
         *self.bundled_family_names.borrow_mut() = bundled_family_names;
         *self.imported_mgr.borrow_mut() = imported_mgr;
         *self.imported_family_names.borrow_mut() = imported_family_names;
-        self.cache.borrow_mut().chars.clear();
+        {
+            let mut cache = self.cache.borrow_mut();
+            cache.chars.clear();
+            cache.weight_instances.clear();
+        }
+        self.shaped.borrow_mut().clear();
         self.built_generation.set(current);
     }
 
@@ -248,8 +265,10 @@ impl FontResolver {
         // Cache miss → `match_family_style_character` (DirectWrite system font
         // scan on Windows). Serialize just this call so the per-char cached
         // fast path above stays lock-free.
-        let resolved =
-            crate::font_lock::with_font_lock(|| self.resolve_uncached(families, c, weight, italic));
+        let resolved = crate::font_lock::with_font_lock(|| {
+            self.resolve_uncached(families, c, weight, italic)
+                .map(|resolved| self.at_variable_weight(resolved, weight))
+        });
         self.cache.borrow_mut().chars.insert(key, resolved.clone());
         resolved
     }
@@ -289,34 +308,6 @@ impl FontResolver {
             }
         }
         segments
-    }
-
-    pub fn measure_text(
-        &self,
-        text: &str,
-        font_size: f32,
-        family: Option<&str>,
-        weight: u16,
-        italic: bool,
-    ) -> f32 {
-        // Serialize segmentation (resolves system typefaces via DirectWrite)
-        // + glyph-advance measurement with all other font work. Reentrant, so
-        // this is a no-op re-lock when called from within `SkiaMeasure`.
-        crate::font_lock::with_font_lock(|| {
-            let mut width = 0.0_f32;
-            for segment in self.segment_text(text, family, weight, italic) {
-                let mut font = Font::new(&segment.typeface, font_size);
-                if segment.synthetic_italic {
-                    font.set_skew_x(SYNTHETIC_ITALIC_SKEW);
-                }
-                let (mut advance, _) = font.measure_str(&segment.text, None);
-                if segment.synthetic_bold {
-                    advance *= SYNTHETIC_BOLD_WIDTH_FACTOR;
-                }
-                width += advance;
-            }
-            width
-        })
     }
 
     pub fn cache_len(&self) -> usize {
