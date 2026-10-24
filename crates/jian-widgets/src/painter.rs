@@ -465,8 +465,10 @@ pub trait Painter {
 
     /// Redirect the draws until the matching
     /// [`Painter::end_shader_texture`] into shader texture `id` covering
-    /// `rect` (paint coordinates), over transparent. Nothing reaches the
-    /// canvas. The default keeps callers balanced with a `save`.
+    /// `rect` (paint coordinates), over transparent; on a backend whose
+    /// [`Painter::supports_shader_textures`] is true nothing reaches the
+    /// canvas. The default only saves, so callers stay balanced (and the
+    /// draws land on the canvas: callers check support first).
     fn begin_shader_texture(&mut self, id: u64, rect: Rect) {
         let _ = (id, rect);
         self.save();
