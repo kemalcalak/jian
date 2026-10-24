@@ -18,7 +18,7 @@
 //! through its canvas name label, which hit-tests ahead of this walk.
 
 use crate::layout_scene::NodeKind;
-use crate::layout_scene::{regular_polygon_points, LayoutScene, SceneNode};
+use crate::layout_scene::{polygon_points, LayoutScene, SceneNode};
 use crate::path_geometry::{flatten_path_points, PathPoints};
 use jian_widgets::geometry::{Point2D, Rect};
 
@@ -351,7 +351,8 @@ fn point_in_node(
             r2 >= inner * inner
         }
         NodeKind::Polygon => {
-            let points = regular_polygon_points(bounds, node.polygon_sides);
+            // A star carries its inner radius in `arc_inner_radius`.
+            let points = polygon_points(bounds, node.polygon_sides, node.arc_inner_radius);
             point_in_polygon(local, &points)
         }
         // Frame, Group, Rect, Text, Other, Path — bounds-only hit.

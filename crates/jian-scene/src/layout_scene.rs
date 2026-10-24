@@ -29,7 +29,10 @@
 
 pub use crate::layout_scene_fill::SceneFillLayer;
 use crate::scene_geometry::rect_has_extent;
-pub use crate::scene_geometry::{regular_polygon_points, stable_image_source_id};
+pub use crate::scene_geometry::{
+    polygon_points, regular_polygon_points, stable_image_source_id, star_polygon_points,
+    STAR_MAX_INNER_RADIUS, STAR_MIN_INNER_RADIUS,
+};
 pub use jian_ops_schema::node::MaskType;
 use jian_widgets::{Color, ImageAdjustments, ImageBlendMode, ImageDrawMode, Point2D, Rect};
 #[cfg(any(test, feature = "test-support"))]
@@ -638,7 +641,8 @@ pub struct SceneNode {
     /// Ellipse arc sweep angle in degrees. `None` = full ellipse.
     pub arc_sweep_angle: Option<f32>,
     /// Ellipse donut-hole radius (0.0..=1.0 fraction). `None` / 0 =
-    /// solid.
+    /// solid. On a `Polygon` it carries the star inner radius instead
+    /// (`PolygonNode::inner_radius`); `None` = a regular polygon.
     pub arc_inner_radius: Option<f32>,
     /// Polygon side count. `3` is the canonical triangle default.
     pub polygon_sides: u32,
