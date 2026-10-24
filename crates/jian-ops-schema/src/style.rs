@@ -455,6 +455,10 @@ pub struct ShadowBody {
     pub blur: f32,
     pub spread: f32,
     pub color: String,
+    /// How the shadow composites onto what is behind it; `None` is normal.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[cfg_attr(feature = "export-ts", ts(optional = nullable))]
+    pub blend_mode: Option<BlendMode>,
 }
 
 #[cfg(test)]

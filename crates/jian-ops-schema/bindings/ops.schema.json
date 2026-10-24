@@ -10076,6 +10076,17 @@
             },
             "color": {
               "type": "string"
+            },
+            "blendMode": {
+              "description": "How the shadow composites onto what is behind it; `None` is normal.",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/BlendMode"
+                },
+                {
+                  "type": "null"
+                }
+              ]
             }
           }
         },

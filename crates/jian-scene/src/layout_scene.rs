@@ -110,6 +110,8 @@ pub struct DropShadow {
     pub color: Color,
     /// `true` = inset (inner) shadow; `false` = outer drop shadow.
     pub inner: bool,
+    /// How the shadow composites onto what is behind it.
+    pub blend_mode: ImageBlendMode,
 }
 
 /// One resolved gradient stop — offset 0.0..=1.0 plus the stop's
