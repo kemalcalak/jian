@@ -105,7 +105,15 @@ blendMode?: BlendMode | null, theme: { [key in string]?: string } | null, transi
  * The transition a presentation plays when it arrives on this node
  * as a slide. Read on top-level frames only.
  */
-slideTransition: SlideTransition | null, minWidth: number | null, maxWidth: number | null, minHeight: number | null, maxHeight: number | null, };
+slideTransition: SlideTransition | null,
+/**
+ * Typed fields of this node that follow a design variable, keyed by
+ * the field's JSON path in the node (`fontSize`, `padding/1`,
+ * `stroke/thickness/top`). The field keeps a concrete value every
+ * consumer can read; the renderer replaces it with the variable's value
+ * for the active theme while the field still holds that value.
+ */
+variableBindings: { [key in string]?: VariableBinding } | null, minWidth: number | null, maxWidth: number | null, minHeight: number | null, maxHeight: number | null, };
 
 /**
  * Figma-style per-axis anchoring for absolutely positioned nodes.
@@ -200,7 +208,15 @@ blendMode?: BlendMode | null, theme: { [key in string]?: string } | null, transi
  * The transition a presentation plays when it arrives on this node
  * as a slide. Read on top-level frames only.
  */
-slideTransition: SlideTransition | null, minWidth: number | null, maxWidth: number | null, minHeight: number | null, maxHeight: number | null, };
+slideTransition: SlideTransition | null,
+/**
+ * Typed fields of this node that follow a design variable, keyed by
+ * the field's JSON path in the node (`fontSize`, `padding/1`,
+ * `stroke/thickness/top`). The field keeps a concrete value every
+ * consumer can read; the renderer replaces it with the variable's value
+ * for the active theme while the field still holds that value.
+ */
+variableBindings: { [key in string]?: VariableBinding } | null, minWidth: number | null, maxWidth: number | null, minHeight: number | null, maxHeight: number | null, };
 
 /**
  * All supported event hook keys. Note: input events (`onChange`, `onSubmit`, `onFocus`,
@@ -271,7 +287,15 @@ blendMode?: BlendMode | null, theme: { [key in string]?: string } | null, transi
  * The transition a presentation plays when it arrives on this node
  * as a slide. Read on top-level frames only.
  */
-slideTransition: SlideTransition | null, width: SizingBehavior | null, height: SizingBehavior | null, layout: LayoutMode | null, gap: NumberOrExpression | null, padding: Padding | null, justifyContent: JustifyContent | null, alignItems: AlignItems | null, clipContent: boolean | null,
+slideTransition: SlideTransition | null,
+/**
+ * Typed fields of this node that follow a design variable, keyed by
+ * the field's JSON path in the node (`fontSize`, `padding/1`,
+ * `stroke/thickness/top`). The field keeps a concrete value every
+ * consumer can read; the renderer replaces it with the variable's value
+ * for the active theme while the field still holds that value.
+ */
+variableBindings: { [key in string]?: VariableBinding } | null, width: SizingBehavior | null, height: SizingBehavior | null, layout: LayoutMode | null, gap: NumberOrExpression | null, padding: Padding | null, justifyContent: JustifyContent | null, alignItems: AlignItems | null, clipContent: boolean | null,
 /**
  * Direct child ids that remain pinned while this container scrolls.
  */
@@ -355,7 +379,15 @@ blendMode?: BlendMode | null, theme: { [key in string]?: string } | null, transi
  * The transition a presentation plays when it arrives on this node
  * as a slide. Read on top-level frames only.
  */
-slideTransition: SlideTransition | null, width: SizingBehavior | null, height: SizingBehavior | null, layout: LayoutMode | null, gap: NumberOrExpression | null, padding: Padding | null, justifyContent: JustifyContent | null, alignItems: AlignItems | null, clipContent: boolean | null,
+slideTransition: SlideTransition | null,
+/**
+ * Typed fields of this node that follow a design variable, keyed by
+ * the field's JSON path in the node (`fontSize`, `padding/1`,
+ * `stroke/thickness/top`). The field keeps a concrete value every
+ * consumer can read; the renderer replaces it with the variable's value
+ * for the active theme while the field still holds that value.
+ */
+variableBindings: { [key in string]?: VariableBinding } | null, width: SizingBehavior | null, height: SizingBehavior | null, layout: LayoutMode | null, gap: NumberOrExpression | null, padding: Padding | null, justifyContent: JustifyContent | null, alignItems: AlignItems | null, clipContent: boolean | null,
 /**
  * Direct child ids that remain pinned while this container scrolls.
  */
@@ -391,7 +423,15 @@ blendMode?: BlendMode | null, theme: { [key in string]?: string } | null, transi
  * The transition a presentation plays when it arrives on this node
  * as a slide. Read on top-level frames only.
  */
-slideTransition: SlideTransition | null, minWidth: number | null, maxWidth: number | null, minHeight: number | null, maxHeight: number | null, };
+slideTransition: SlideTransition | null,
+/**
+ * Typed fields of this node that follow a design variable, keyed by
+ * the field's JSON path in the node (`fontSize`, `padding/1`,
+ * `stroke/thickness/top`). The field keeps a concrete value every
+ * consumer can read; the renderer replaces it with the variable's value
+ * for the active theme while the field still holds that value.
+ */
+variableBindings: { [key in string]?: VariableBinding } | null, minWidth: number | null, maxWidth: number | null, minHeight: number | null, maxHeight: number | null, };
 
 export type ImageFillBody = { url: string, mode: ImageFillMode | null, originalSize: ImageOriginalSize | null, transform: ImageTransform | null,
 /**
@@ -429,7 +469,15 @@ blendMode?: BlendMode | null, theme: { [key in string]?: string } | null, transi
  * The transition a presentation plays when it arrives on this node
  * as a slide. Read on top-level frames only.
  */
-slideTransition: SlideTransition | null, minWidth: number | null, maxWidth: number | null, minHeight: number | null, maxHeight: number | null, };
+slideTransition: SlideTransition | null,
+/**
+ * Typed fields of this node that follow a design variable, keyed by
+ * the field's JSON path in the node (`fontSize`, `padding/1`,
+ * `stroke/thickness/top`). The field keeps a concrete value every
+ * consumer can read; the renderer replaces it with the variable's value
+ * for the active theme while the field still holds that value.
+ */
+variableBindings: { [key in string]?: VariableBinding } | null, minWidth: number | null, maxWidth: number | null, minHeight: number | null, maxHeight: number | null, };
 
 export type ImageOriginalSize = { width: number, height: number, };
 
@@ -464,7 +512,15 @@ blendMode?: BlendMode | null, theme: { [key in string]?: string } | null, transi
  * The transition a presentation plays when it arrives on this node
  * as a slide. Read on top-level frames only.
  */
-slideTransition: SlideTransition | null, };
+slideTransition: SlideTransition | null,
+/**
+ * Typed fields of this node that follow a design variable, keyed by
+ * the field's JSON path in the node (`fontSize`, `padding/1`,
+ * `stroke/thickness/top`). The field keeps a concrete value every
+ * consumer can read; the renderer replaces it with the variable's value
+ * for the active theme while the field still holds that value.
+ */
+variableBindings: { [key in string]?: VariableBinding } | null, };
 
 export type LinearGradientBody = { angle: number | null, stops: Array<GradientStop>, explain: string | null, opacity: number | null, blendMode: BlendMode | null, };
 
@@ -576,7 +632,15 @@ blendMode?: BlendMode | null, theme: { [key in string]?: string } | null, transi
  * The transition a presentation plays when it arrives on this node
  * as a slide. Read on top-level frames only.
  */
-slideTransition: SlideTransition | null, };
+slideTransition: SlideTransition | null,
+/**
+ * Typed fields of this node that follow a design variable, keyed by
+ * the field's JSON path in the node (`fontSize`, `padding/1`,
+ * `stroke/thickness/top`). The field keeps a concrete value every
+ * consumer can read; the renderer replaces it with the variable's value
+ * for the active theme while the field still holds that value.
+ */
+variableBindings: { [key in string]?: VariableBinding } | null, };
 
 /**
  * Numeric input with optional +/- steppers. Precise complement to
@@ -614,7 +678,15 @@ blendMode?: BlendMode | null, theme: { [key in string]?: string } | null, transi
  * The transition a presentation plays when it arrives on this node
  * as a slide. Read on top-level frames only.
  */
-slideTransition: SlideTransition | null, minWidth: number | null, maxWidth: number | null, minHeight: number | null, maxHeight: number | null, };
+slideTransition: SlideTransition | null,
+/**
+ * Typed fields of this node that follow a design variable, keyed by
+ * the field's JSON path in the node (`fontSize`, `padding/1`,
+ * `stroke/thickness/top`). The field keeps a concrete value every
+ * consumer can read; the renderer replaces it with the variable's value
+ * for the active theme while the field still holds that value.
+ */
+variableBindings: { [key in string]?: VariableBinding } | null, minWidth: number | null, maxWidth: number | null, minHeight: number | null, maxHeight: number | null, };
 
 /**
  * Opacity can be a number or a `$variable` reference string.
@@ -667,7 +739,15 @@ blendMode?: BlendMode | null, theme: { [key in string]?: string } | null, transi
  * The transition a presentation plays when it arrives on this node
  * as a slide. Read on top-level frames only.
  */
-slideTransition: SlideTransition | null, minWidth: number | null, maxWidth: number | null, minHeight: number | null, maxHeight: number | null, };
+slideTransition: SlideTransition | null,
+/**
+ * Typed fields of this node that follow a design variable, keyed by
+ * the field's JSON path in the node (`fontSize`, `padding/1`,
+ * `stroke/thickness/top`). The field keeps a concrete value every
+ * consumer can read; the renderer replaces it with the variable's value
+ * for the active theme while the field still holds that value.
+ */
+variableBindings: { [key in string]?: VariableBinding } | null, minWidth: number | null, maxWidth: number | null, minHeight: number | null, maxHeight: number | null, };
 
 export type PenDocument = {
 /**
@@ -762,7 +842,15 @@ blendMode?: BlendMode | null, theme: { [key in string]?: string } | null, transi
  * The transition a presentation plays when it arrives on this node
  * as a slide. Read on top-level frames only.
  */
-slideTransition: SlideTransition | null, minWidth: number | null, maxWidth: number | null, minHeight: number | null, maxHeight: number | null, };
+slideTransition: SlideTransition | null,
+/**
+ * Typed fields of this node that follow a design variable, keyed by
+ * the field's JSON path in the node (`fontSize`, `padding/1`,
+ * `stroke/thickness/top`). The field keeps a concrete value every
+ * consumer can read; the renderer replaces it with the variable's value
+ * for the active theme while the field still holds that value.
+ */
+variableBindings: { [key in string]?: VariableBinding } | null, minWidth: number | null, maxWidth: number | null, minHeight: number | null, maxHeight: number | null, };
 
 export type PrimitiveType = "int" | "float" | "number" | "string" | "bool" | "array" | "object" | "date";
 
@@ -792,7 +880,15 @@ blendMode?: BlendMode | null, theme: { [key in string]?: string } | null, transi
  * The transition a presentation plays when it arrives on this node
  * as a slide. Read on top-level frames only.
  */
-slideTransition: SlideTransition | null, minWidth: number | null, maxWidth: number | null, minHeight: number | null, maxHeight: number | null, };
+slideTransition: SlideTransition | null,
+/**
+ * Typed fields of this node that follow a design variable, keyed by
+ * the field's JSON path in the node (`fontSize`, `padding/1`,
+ * `stroke/thickness/top`). The field keeps a concrete value every
+ * consumer can read; the renderer replaces it with the variable's value
+ * for the active theme while the field still holds that value.
+ */
+variableBindings: { [key in string]?: VariableBinding } | null, minWidth: number | null, maxWidth: number | null, minHeight: number | null, maxHeight: number | null, };
 
 export type RadialGradientBody = { cx: number | null, cy: number | null, radius: number | null, stops: Array<GradientStop>, explain: string | null, opacity: number | null, blendMode: BlendMode | null, };
 
@@ -823,7 +919,15 @@ blendMode?: BlendMode | null, theme: { [key in string]?: string } | null, transi
  * The transition a presentation plays when it arrives on this node
  * as a slide. Read on top-level frames only.
  */
-slideTransition: SlideTransition | null, minWidth: number | null, maxWidth: number | null, minHeight: number | null, maxHeight: number | null, };
+slideTransition: SlideTransition | null,
+/**
+ * Typed fields of this node that follow a design variable, keyed by
+ * the field's JSON path in the node (`fontSize`, `padding/1`,
+ * `stroke/thickness/top`). The field keeps a concrete value every
+ * consumer can read; the renderer replaces it with the variable's value
+ * for the active theme while the field still holds that value.
+ */
+variableBindings: { [key in string]?: VariableBinding } | null, minWidth: number | null, maxWidth: number | null, minHeight: number | null, maxHeight: number | null, };
 
 export type RectangleNode = { children: Array<PenNode> | null, state: { [key in string]?: StateEntry } | null, bindings: { [key in string]?: Expression } | null, events: EventHandlers | null, lifecycle: NodeLifecycleHooks | null, semantics: SemanticsMeta | null, gestures: GestureOverrides | null, route: NavigationRoute | null, id: string, name: string | null, role: string | null, explain: string | null, x: number | null, y: number | null, rotation: number | null, constraints: Constraints | null, opacity: NumberOrExpression | null, enabled: BoolOrExpression | null, visible: boolean | null, locked: boolean | null,
 /**
@@ -844,7 +948,15 @@ blendMode?: BlendMode | null, theme: { [key in string]?: string } | null, transi
  * The transition a presentation plays when it arrives on this node
  * as a slide. Read on top-level frames only.
  */
-slideTransition: SlideTransition | null, width: SizingBehavior | null, height: SizingBehavior | null, layout: LayoutMode | null, gap: NumberOrExpression | null, padding: Padding | null, justifyContent: JustifyContent | null, alignItems: AlignItems | null, clipContent: boolean | null,
+slideTransition: SlideTransition | null,
+/**
+ * Typed fields of this node that follow a design variable, keyed by
+ * the field's JSON path in the node (`fontSize`, `padding/1`,
+ * `stroke/thickness/top`). The field keeps a concrete value every
+ * consumer can read; the renderer replaces it with the variable's value
+ * for the active theme while the field still holds that value.
+ */
+variableBindings: { [key in string]?: VariableBinding } | null, width: SizingBehavior | null, height: SizingBehavior | null, layout: LayoutMode | null, gap: NumberOrExpression | null, padding: Padding | null, justifyContent: JustifyContent | null, alignItems: AlignItems | null, clipContent: boolean | null,
 /**
  * Direct child ids that remain pinned while this container scrolls.
  */
@@ -869,7 +981,15 @@ blendMode?: BlendMode | null, theme: { [key in string]?: string } | null, transi
  * The transition a presentation plays when it arrives on this node
  * as a slide. Read on top-level frames only.
  */
-slideTransition: SlideTransition | null, };
+slideTransition: SlideTransition | null,
+/**
+ * Typed fields of this node that follow a design variable, keyed by
+ * the field's JSON path in the node (`fontSize`, `padding/1`,
+ * `stroke/thickness/top`). The field keeps a concrete value every
+ * consumer can read; the renderer replaces it with the variable's value
+ * for the active theme while the field still holds that value.
+ */
+variableBindings: { [key in string]?: VariableBinding } | null, };
 
 export type RouteSpec = { pageId: string, preload: boolean | null, guards: Array<Action> | null,
 /**
@@ -917,7 +1037,15 @@ blendMode?: BlendMode | null, theme: { [key in string]?: string } | null, transi
  * The transition a presentation plays when it arrives on this node
  * as a slide. Read on top-level frames only.
  */
-slideTransition: SlideTransition | null, minWidth: number | null, maxWidth: number | null, minHeight: number | null, maxHeight: number | null, };
+slideTransition: SlideTransition | null,
+/**
+ * Typed fields of this node that follow a design variable, keyed by
+ * the field's JSON path in the node (`fontSize`, `padding/1`,
+ * `stroke/thickness/top`). The field keeps a concrete value every
+ * consumer can read; the renderer replaces it with the variable's value
+ * for the active theme while the field still holds that value.
+ */
+variableBindings: { [key in string]?: VariableBinding } | null, minWidth: number | null, maxWidth: number | null, minHeight: number | null, maxHeight: number | null, };
 
 /**
  * A single dropdown option: the persisted `value` and its display `label`.
@@ -1069,7 +1197,15 @@ blendMode?: BlendMode | null, theme: { [key in string]?: string } | null, transi
  * The transition a presentation plays when it arrives on this node
  * as a slide. Read on top-level frames only.
  */
-slideTransition: SlideTransition | null, minWidth: number | null, maxWidth: number | null, minHeight: number | null, maxHeight: number | null, };
+slideTransition: SlideTransition | null,
+/**
+ * Typed fields of this node that follow a design variable, keyed by
+ * the field's JSON path in the node (`fontSize`, `padding/1`,
+ * `stroke/thickness/top`). The field keeps a concrete value every
+ * consumer can read; the renderer replaces it with the variable's value
+ * for the active theme while the field still holds that value.
+ */
+variableBindings: { [key in string]?: VariableBinding } | null, minWidth: number | null, maxWidth: number | null, minHeight: number | null, maxHeight: number | null, };
 
 export type SolidFillBody = { color: string, explain: string | null, opacity: number | null, blendMode: BlendMode | null, };
 
@@ -1116,7 +1252,15 @@ blendMode?: BlendMode | null, theme: { [key in string]?: string } | null, transi
  * The transition a presentation plays when it arrives on this node
  * as a slide. Read on top-level frames only.
  */
-slideTransition: SlideTransition | null, minWidth: number | null, maxWidth: number | null, minHeight: number | null, maxHeight: number | null, };
+slideTransition: SlideTransition | null,
+/**
+ * Typed fields of this node that follow a design variable, keyed by
+ * the field's JSON path in the node (`fontSize`, `padding/1`,
+ * `stroke/thickness/top`). The field keeps a concrete value every
+ * consumer can read; the renderer replaces it with the variable's value
+ * for the active theme while the field still holds that value.
+ */
+variableBindings: { [key in string]?: VariableBinding } | null, minWidth: number | null, maxWidth: number | null, minHeight: number | null, maxHeight: number | null, };
 
 /**
  * Tabbed panel switcher. Unlike the leaf widgets this is a CONTAINER:
@@ -1155,7 +1299,15 @@ blendMode?: BlendMode | null, theme: { [key in string]?: string } | null, transi
  * The transition a presentation plays when it arrives on this node
  * as a slide. Read on top-level frames only.
  */
-slideTransition: SlideTransition | null, minWidth: number | null, maxWidth: number | null, minHeight: number | null, maxHeight: number | null, };
+slideTransition: SlideTransition | null,
+/**
+ * Typed fields of this node that follow a design variable, keyed by
+ * the field's JSON path in the node (`fontSize`, `padding/1`,
+ * `stroke/thickness/top`). The field keeps a concrete value every
+ * consumer can read; the renderer replaces it with the variable's value
+ * for the active theme while the field still holds that value.
+ */
+variableBindings: { [key in string]?: VariableBinding } | null, minWidth: number | null, maxWidth: number | null, minHeight: number | null, maxHeight: number | null, };
 
 export type TextAlign = "left" | "center" | "right" | "justify";
 
@@ -1204,7 +1356,15 @@ blendMode?: BlendMode | null, theme: { [key in string]?: string } | null, transi
  * The transition a presentation plays when it arrives on this node
  * as a slide. Read on top-level frames only.
  */
-slideTransition: SlideTransition | null, minWidth: number | null, maxWidth: number | null, minHeight: number | null, maxHeight: number | null, };
+slideTransition: SlideTransition | null,
+/**
+ * Typed fields of this node that follow a design variable, keyed by
+ * the field's JSON path in the node (`fontSize`, `padding/1`,
+ * `stroke/thickness/top`). The field keeps a concrete value every
+ * consumer can read; the renderer replaces it with the variable's value
+ * for the active theme while the field still holds that value.
+ */
+variableBindings: { [key in string]?: VariableBinding } | null, minWidth: number | null, maxWidth: number | null, minHeight: number | null, maxHeight: number | null, };
 
 export type TextContent = string | Array<StyledTextSegment>;
 
@@ -1267,7 +1427,15 @@ blendMode?: BlendMode | null, theme: { [key in string]?: string } | null, transi
  * The transition a presentation plays when it arrives on this node
  * as a slide. Read on top-level frames only.
  */
-slideTransition: SlideTransition | null, minWidth: number | null, maxWidth: number | null, minHeight: number | null, maxHeight: number | null, };
+slideTransition: SlideTransition | null,
+/**
+ * Typed fields of this node that follow a design variable, keyed by
+ * the field's JSON path in the node (`fontSize`, `padding/1`,
+ * `stroke/thickness/top`). The field keeps a concrete value every
+ * consumer can read; the renderer replaces it with the variable's value
+ * for the active theme while the field still holds that value.
+ */
+variableBindings: { [key in string]?: VariableBinding } | null, minWidth: number | null, maxWidth: number | null, minHeight: number | null, maxHeight: number | null, };
 
 export type TextNode = { width: SizingBehavior | null, height: SizingBehavior | null, content: TextContent, fontFamily: string | null, fontSize: number | null, fontWeight: FontWeight | null, fontStyle: FontStyleKind | null, letterSpacing: number | null, lineHeight: number | null, textAlign: TextAlign | null, textAlignVertical: TextAlignVertical | null, textGrowth: TextGrowth | null, underline: boolean | null, strikethrough: boolean | null, fill: Array<PenFill> | null, effects: Array<PenEffect> | null, state: { [key in string]?: StateEntry } | null, bindings: { [key in string]?: Expression } | null, events: EventHandlers | null, lifecycle: NodeLifecycleHooks | null, semantics: SemanticsMeta | null, gestures: GestureOverrides | null, route: NavigationRoute | null, id: string, name: string | null, role: string | null, explain: string | null, x: number | null, y: number | null, rotation: number | null, constraints: Constraints | null, opacity: NumberOrExpression | null, enabled: BoolOrExpression | null, visible: boolean | null, locked: boolean | null,
 /**
@@ -1288,19 +1456,38 @@ blendMode?: BlendMode | null, theme: { [key in string]?: string } | null, transi
  * The transition a presentation plays when it arrives on this node
  * as a slide. Read on top-level frames only.
  */
-slideTransition: SlideTransition | null, minWidth: number | null, maxWidth: number | null, minHeight: number | null, maxHeight: number | null, };
+slideTransition: SlideTransition | null,
+/**
+ * Typed fields of this node that follow a design variable, keyed by
+ * the field's JSON path in the node (`fontSize`, `padding/1`,
+ * `stroke/thickness/top`). The field keeps a concrete value every
+ * consumer can read; the renderer replaces it with the variable's value
+ * for the active theme while the field still holds that value.
+ */
+variableBindings: { [key in string]?: VariableBinding } | null, minWidth: number | null, maxWidth: number | null, minHeight: number | null, maxHeight: number | null, };
 
 export type ThemedValue = { value: VariableScalar, theme: { [key in string]?: string } | null, };
 
-/**
- * A node-level transition applied to runtime paint changes.
- */
-export type Transition = { durationMs: bigint, easing: Easing, properties: Array<string> | null, } & ({ [key in string]?: JsonValue });
+export type Transition = "push" | "fade" | "modal" | "none";
 
 /**
  * Vertical anchoring for an absolutely positioned node.
  */
 export type VConstraint = "top" | "bottom" | "center" | "top_bottom" | "scale";
+
+/**
+ * One field's link to a design variable.
+ */
+export type VariableBinding = {
+/**
+ * The variable's name, without the `$` prefix.
+ */
+variable: string,
+/**
+ * The value the field held when it was bound. A field that no longer
+ * holds it was edited and no longer follows the variable.
+ */
+value: JsonValue, };
 
 export type VariableDefinition = { type: VariableKind, value: VariableValue, };
 

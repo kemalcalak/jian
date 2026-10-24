@@ -91,6 +91,26 @@ pub struct PenNodeBase {
     /// as a slide. Read on top-level frames only.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub slide_transition: Option<crate::motion::SlideTransition>,
+    /// Typed fields of this node that follow a design variable, keyed by
+    /// the field's JSON path in the node (`fontSize`, `padding/1`,
+    /// `stroke/thickness/top`). The field keeps a concrete value every
+    /// consumer can read; the renderer replaces it with the variable's value
+    /// for the active theme while the field still holds that value.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub variable_bindings: Option<BTreeMap<String, VariableBinding>>,
+}
+
+/// One field's link to a design variable.
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, schemars::JsonSchema)]
+#[cfg_attr(feature = "export-ts", derive(ts_rs::TS))]
+#[cfg_attr(feature = "export-ts", ts(export, export_to = "ops.ts"))]
+pub struct VariableBinding {
+    /// The variable's name, without the `$` prefix.
+    pub variable: String,
+    /// The value the field held when it was bound. A field that no longer
+    /// holds it was edited and no longer follows the variable.
+    #[cfg_attr(feature = "export-ts", ts(type = "JsonValue"))]
+    pub value: serde_json::Value,
 }
 
 #[cfg(test)]
