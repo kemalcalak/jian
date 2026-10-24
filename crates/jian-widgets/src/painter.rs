@@ -202,6 +202,14 @@ pub trait Painter {
         self.clip_rect(rect);
     }
 
+    /// Cap / join / dash for the stroke calls that follow, until the next
+    /// call; `StrokeStyle::default()` restores the backend's defaults.
+    /// Dash lengths are in the coordinate space of those calls. Backends
+    /// without stroke styling ignore it; wrapping painters must forward it.
+    fn set_stroke_style(&mut self, style: crate::StrokeStyle) {
+        let _ = style;
+    }
+
     fn stroke_line(&mut self, from: Point2D, to: Point2D, color: Color, width: f32);
     fn fill_round_rect(&mut self, rect: Rect, radius: f32, color: Color);
     fn stroke_round_rect(&mut self, rect: Rect, radius: f32, color: Color, width: f32);
