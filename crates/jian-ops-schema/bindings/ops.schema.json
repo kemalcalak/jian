@@ -582,6 +582,16 @@
                 }
               ]
             },
+            "variableBindings": {
+              "description": "Typed fields of this node that follow a design variable, keyed by the field's JSON path in the node (`fontSize`, `padding/1`, `stroke/thickness/top`). The field keeps a concrete value every consumer can read; the renderer replaces it with the variable's value for the active theme while the field still holds that value.",
+              "type": [
+                "object",
+                "null"
+              ],
+              "additionalProperties": {
+                "$ref": "#/definitions/VariableBinding"
+              }
+            },
             "width": {
               "anyOf": [
                 {
@@ -991,6 +1001,16 @@
                 }
               ]
             },
+            "variableBindings": {
+              "description": "Typed fields of this node that follow a design variable, keyed by the field's JSON path in the node (`fontSize`, `padding/1`, `stroke/thickness/top`). The field keeps a concrete value every consumer can read; the renderer replaces it with the variable's value for the active theme while the field still holds that value.",
+              "type": [
+                "object",
+                "null"
+              ],
+              "additionalProperties": {
+                "$ref": "#/definitions/VariableBinding"
+              }
+            },
             "width": {
               "anyOf": [
                 {
@@ -1399,6 +1419,16 @@
                   "type": "null"
                 }
               ]
+            },
+            "variableBindings": {
+              "description": "Typed fields of this node that follow a design variable, keyed by the field's JSON path in the node (`fontSize`, `padding/1`, `stroke/thickness/top`). The field keeps a concrete value every consumer can read; the renderer replaces it with the variable's value for the active theme while the field still holds that value.",
+              "type": [
+                "object",
+                "null"
+              ],
+              "additionalProperties": {
+                "$ref": "#/definitions/VariableBinding"
+              }
             },
             "width": {
               "anyOf": [
@@ -1876,6 +1906,16 @@
                 }
               ]
             },
+            "variableBindings": {
+              "description": "Typed fields of this node that follow a design variable, keyed by the field's JSON path in the node (`fontSize`, `padding/1`, `stroke/thickness/top`). The field keeps a concrete value every consumer can read; the renderer replaces it with the variable's value for the active theme while the field still holds that value.",
+              "type": [
+                "object",
+                "null"
+              ],
+              "additionalProperties": {
+                "$ref": "#/definitions/VariableBinding"
+              }
+            },
             "minWidth": {
               "type": [
                 "number",
@@ -2184,6 +2224,16 @@
                   "type": "null"
                 }
               ]
+            },
+            "variableBindings": {
+              "description": "Typed fields of this node that follow a design variable, keyed by the field's JSON path in the node (`fontSize`, `padding/1`, `stroke/thickness/top`). The field keeps a concrete value every consumer can read; the renderer replaces it with the variable's value for the active theme while the field still holds that value.",
+              "type": [
+                "object",
+                "null"
+              ],
+              "additionalProperties": {
+                "$ref": "#/definitions/VariableBinding"
+              }
             }
           }
         },
@@ -2501,6 +2551,16 @@
                   "type": "null"
                 }
               ]
+            },
+            "variableBindings": {
+              "description": "Typed fields of this node that follow a design variable, keyed by the field's JSON path in the node (`fontSize`, `padding/1`, `stroke/thickness/top`). The field keeps a concrete value every consumer can read; the renderer replaces it with the variable's value for the active theme while the field still holds that value.",
+              "type": [
+                "object",
+                "null"
+              ],
+              "additionalProperties": {
+                "$ref": "#/definitions/VariableBinding"
+              }
             },
             "minWidth": {
               "type": [
@@ -2869,6 +2929,16 @@
                   "type": "null"
                 }
               ]
+            },
+            "variableBindings": {
+              "description": "Typed fields of this node that follow a design variable, keyed by the field's JSON path in the node (`fontSize`, `padding/1`, `stroke/thickness/top`). The field keeps a concrete value every consumer can read; the renderer replaces it with the variable's value for the active theme while the field still holds that value.",
+              "type": [
+                "object",
+                "null"
+              ],
+              "additionalProperties": {
+                "$ref": "#/definitions/VariableBinding"
+              }
             },
             "minWidth": {
               "type": [
@@ -3277,6 +3347,16 @@
                 }
               ]
             },
+            "variableBindings": {
+              "description": "Typed fields of this node that follow a design variable, keyed by the field's JSON path in the node (`fontSize`, `padding/1`, `stroke/thickness/top`). The field keeps a concrete value every consumer can read; the renderer replaces it with the variable's value for the active theme while the field still holds that value.",
+              "type": [
+                "object",
+                "null"
+              ],
+              "additionalProperties": {
+                "$ref": "#/definitions/VariableBinding"
+              }
+            },
             "minWidth": {
               "type": [
                 "number",
@@ -3662,6 +3742,16 @@
                   "type": "null"
                 }
               ]
+            },
+            "variableBindings": {
+              "description": "Typed fields of this node that follow a design variable, keyed by the field's JSON path in the node (`fontSize`, `padding/1`, `stroke/thickness/top`). The field keeps a concrete value every consumer can read; the renderer replaces it with the variable's value for the active theme while the field still holds that value.",
+              "type": [
+                "object",
+                "null"
+              ],
+              "additionalProperties": {
+                "$ref": "#/definitions/VariableBinding"
+              }
             },
             "minWidth": {
               "type": [
@@ -4063,6 +4153,16 @@
                 }
               ]
             },
+            "variableBindings": {
+              "description": "Typed fields of this node that follow a design variable, keyed by the field's JSON path in the node (`fontSize`, `padding/1`, `stroke/thickness/top`). The field keeps a concrete value every consumer can read; the renderer replaces it with the variable's value for the active theme while the field still holds that value.",
+              "type": [
+                "object",
+                "null"
+              ],
+              "additionalProperties": {
+                "$ref": "#/definitions/VariableBinding"
+              }
+            },
             "minWidth": {
               "type": [
                 "number",
@@ -4398,6 +4498,16 @@
                   "type": "null"
                 }
               ]
+            },
+            "variableBindings": {
+              "description": "Typed fields of this node that follow a design variable, keyed by the field's JSON path in the node (`fontSize`, `padding/1`, `stroke/thickness/top`). The field keeps a concrete value every consumer can read; the renderer replaces it with the variable's value for the active theme while the field still holds that value.",
+              "type": [
+                "object",
+                "null"
+              ],
+              "additionalProperties": {
+                "$ref": "#/definitions/VariableBinding"
+              }
             },
             "minWidth": {
               "type": [
@@ -4786,6 +4896,16 @@
                 }
               ]
             },
+            "variableBindings": {
+              "description": "Typed fields of this node that follow a design variable, keyed by the field's JSON path in the node (`fontSize`, `padding/1`, `stroke/thickness/top`). The field keeps a concrete value every consumer can read; the renderer replaces it with the variable's value for the active theme while the field still holds that value.",
+              "type": [
+                "object",
+                "null"
+              ],
+              "additionalProperties": {
+                "$ref": "#/definitions/VariableBinding"
+              }
+            },
             "minWidth": {
               "type": [
                 "number",
@@ -5153,6 +5273,16 @@
                 }
               ]
             },
+            "variableBindings": {
+              "description": "Typed fields of this node that follow a design variable, keyed by the field's JSON path in the node (`fontSize`, `padding/1`, `stroke/thickness/top`). The field keeps a concrete value every consumer can read; the renderer replaces it with the variable's value for the active theme while the field still holds that value.",
+              "type": [
+                "object",
+                "null"
+              ],
+              "additionalProperties": {
+                "$ref": "#/definitions/VariableBinding"
+              }
+            },
             "minWidth": {
               "type": [
                 "number",
@@ -5506,6 +5636,16 @@
                   "type": "null"
                 }
               ]
+            },
+            "variableBindings": {
+              "description": "Typed fields of this node that follow a design variable, keyed by the field's JSON path in the node (`fontSize`, `padding/1`, `stroke/thickness/top`). The field keeps a concrete value every consumer can read; the renderer replaces it with the variable's value for the active theme while the field still holds that value.",
+              "type": [
+                "object",
+                "null"
+              ],
+              "additionalProperties": {
+                "$ref": "#/definitions/VariableBinding"
+              }
             },
             "minWidth": {
               "type": [
@@ -5866,6 +6006,16 @@
                   "type": "null"
                 }
               ]
+            },
+            "variableBindings": {
+              "description": "Typed fields of this node that follow a design variable, keyed by the field's JSON path in the node (`fontSize`, `padding/1`, `stroke/thickness/top`). The field keeps a concrete value every consumer can read; the renderer replaces it with the variable's value for the active theme while the field still holds that value.",
+              "type": [
+                "object",
+                "null"
+              ],
+              "additionalProperties": {
+                "$ref": "#/definitions/VariableBinding"
+              }
             },
             "minWidth": {
               "type": [
@@ -6242,6 +6392,16 @@
                 }
               ]
             },
+            "variableBindings": {
+              "description": "Typed fields of this node that follow a design variable, keyed by the field's JSON path in the node (`fontSize`, `padding/1`, `stroke/thickness/top`). The field keeps a concrete value every consumer can read; the renderer replaces it with the variable's value for the active theme while the field still holds that value.",
+              "type": [
+                "object",
+                "null"
+              ],
+              "additionalProperties": {
+                "$ref": "#/definitions/VariableBinding"
+              }
+            },
             "minWidth": {
               "type": [
                 "number",
@@ -6601,6 +6761,16 @@
                   "type": "null"
                 }
               ]
+            },
+            "variableBindings": {
+              "description": "Typed fields of this node that follow a design variable, keyed by the field's JSON path in the node (`fontSize`, `padding/1`, `stroke/thickness/top`). The field keeps a concrete value every consumer can read; the renderer replaces it with the variable's value for the active theme while the field still holds that value.",
+              "type": [
+                "object",
+                "null"
+              ],
+              "additionalProperties": {
+                "$ref": "#/definitions/VariableBinding"
+              }
             },
             "minWidth": {
               "type": [
@@ -7004,6 +7174,16 @@
                 }
               ]
             },
+            "variableBindings": {
+              "description": "Typed fields of this node that follow a design variable, keyed by the field's JSON path in the node (`fontSize`, `padding/1`, `stroke/thickness/top`). The field keeps a concrete value every consumer can read; the renderer replaces it with the variable's value for the active theme while the field still holds that value.",
+              "type": [
+                "object",
+                "null"
+              ],
+              "additionalProperties": {
+                "$ref": "#/definitions/VariableBinding"
+              }
+            },
             "minWidth": {
               "type": [
                 "number",
@@ -7370,6 +7550,16 @@
                   "type": "null"
                 }
               ]
+            },
+            "variableBindings": {
+              "description": "Typed fields of this node that follow a design variable, keyed by the field's JSON path in the node (`fontSize`, `padding/1`, `stroke/thickness/top`). The field keeps a concrete value every consumer can read; the renderer replaces it with the variable's value for the active theme while the field still holds that value.",
+              "type": [
+                "object",
+                "null"
+              ],
+              "additionalProperties": {
+                "$ref": "#/definitions/VariableBinding"
+              }
             },
             "minWidth": {
               "type": [
@@ -7742,6 +7932,16 @@
                 }
               ]
             },
+            "variableBindings": {
+              "description": "Typed fields of this node that follow a design variable, keyed by the field's JSON path in the node (`fontSize`, `padding/1`, `stroke/thickness/top`). The field keeps a concrete value every consumer can read; the renderer replaces it with the variable's value for the active theme while the field still holds that value.",
+              "type": [
+                "object",
+                "null"
+              ],
+              "additionalProperties": {
+                "$ref": "#/definitions/VariableBinding"
+              }
+            },
             "minWidth": {
               "type": [
                 "number",
@@ -8037,6 +8237,16 @@
                   "type": "null"
                 }
               ]
+            },
+            "variableBindings": {
+              "description": "Typed fields of this node that follow a design variable, keyed by the field's JSON path in the node (`fontSize`, `padding/1`, `stroke/thickness/top`). The field keeps a concrete value every consumer can read; the renderer replaces it with the variable's value for the active theme while the field still holds that value.",
+              "type": [
+                "object",
+                "null"
+              ],
+              "additionalProperties": {
+                "$ref": "#/definitions/VariableBinding"
+              }
             }
           }
         },
@@ -8321,6 +8531,16 @@
                   "type": "null"
                 }
               ]
+            },
+            "variableBindings": {
+              "description": "Typed fields of this node that follow a design variable, keyed by the field's JSON path in the node (`fontSize`, `padding/1`, `stroke/thickness/top`). The field keeps a concrete value every consumer can read; the renderer replaces it with the variable's value for the active theme while the field still holds that value.",
+              "type": [
+                "object",
+                "null"
+              ],
+              "additionalProperties": {
+                "$ref": "#/definitions/VariableBinding"
+              }
             }
           }
         },
@@ -8605,6 +8825,16 @@
                   "type": "null"
                 }
               ]
+            },
+            "variableBindings": {
+              "description": "Typed fields of this node that follow a design variable, keyed by the field's JSON path in the node (`fontSize`, `padding/1`, `stroke/thickness/top`). The field keeps a concrete value every consumer can read; the renderer replaces it with the variable's value for the active theme while the field still holds that value.",
+              "type": [
+                "object",
+                "null"
+              ],
+              "additionalProperties": {
+                "$ref": "#/definitions/VariableBinding"
+              }
             }
           }
         },
@@ -8889,6 +9119,16 @@
                   "type": "null"
                 }
               ]
+            },
+            "variableBindings": {
+              "description": "Typed fields of this node that follow a design variable, keyed by the field's JSON path in the node (`fontSize`, `padding/1`, `stroke/thickness/top`). The field keeps a concrete value every consumer can read; the renderer replaces it with the variable's value for the active theme while the field still holds that value.",
+              "type": [
+                "object",
+                "null"
+              ],
+              "additionalProperties": {
+                "$ref": "#/definitions/VariableBinding"
+              }
             }
           }
         }
@@ -9967,6 +10207,23 @@
           ]
         }
       ]
+    },
+    "VariableBinding": {
+      "description": "One field's link to a design variable.",
+      "type": "object",
+      "required": [
+        "value",
+        "variable"
+      ],
+      "properties": {
+        "variable": {
+          "description": "The variable's name, without the `$` prefix.",
+          "type": "string"
+        },
+        "value": {
+          "description": "The value the field held when it was bound. A field that no longer holds it was edited and no longer follows the variable."
+        }
+      }
     },
     "SizingBehavior": {
       "description": "Sizing value: a number, a fixed keyword, or an arbitrary string (typically `$variable` ref).",
