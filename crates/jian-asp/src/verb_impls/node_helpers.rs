@@ -72,29 +72,7 @@ fn node_semantic_role(node: &PenNode) -> Option<String> {
 }
 
 pub(crate) fn role_for(node: &PenNode) -> &'static str {
-    match node {
-        PenNode::Frame(_) => "frame",
-        PenNode::Group(_) => "group",
-        PenNode::Rectangle(_) => "rectangle",
-        PenNode::Ellipse(_) => "ellipse",
-        PenNode::Line(_) => "line",
-        PenNode::Polygon(_) => "polygon",
-        PenNode::Path(_) => "path",
-        PenNode::Text(_) => "text",
-        PenNode::TextInput(_) => "text_input",
-        PenNode::Image(_) => "image",
-        PenNode::IconFont(_) => "icon_font",
-        PenNode::TextArea(_) => "text_area",
-        PenNode::Select(_) => "select",
-        PenNode::Switch(_) => "switch",
-        PenNode::Checkbox(_) => "checkbox",
-        PenNode::Slider(_) => "slider",
-        PenNode::RadioGroup(_) => "radio_group",
-        PenNode::NumberInput(_) => "number_input",
-        PenNode::Progress(_) => "progress",
-        PenNode::Tabs(_) => "tabs",
-        PenNode::Ref(_) => "ref",
-    }
+    node.type_tag()
 }
 
 pub(crate) fn visible_text(node: &PenNode) -> Option<String> {
@@ -115,6 +93,7 @@ pub(crate) fn visible_text(node: &PenNode) -> Option<String> {
             .filter(|s| !s.is_empty())
             .or(t.placeholder.as_ref())
             .cloned(),
+        PenNode::Note(n) | PenNode::Context(n) | PenNode::Prompt(n) => Some(n.plain_content()),
         _ => None,
     }
 }

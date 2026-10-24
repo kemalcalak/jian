@@ -329,6 +329,14 @@ fn node_expression_surface(
         PenNode::NumberInput(n) => surface!(n),
         PenNode::Progress(n) => surface!(n),
         PenNode::Tabs(n) => surface!(n, with_children),
+        PenNode::Note(n) | PenNode::Context(n) | PenNode::Prompt(n) => (
+            n.base.opacity.as_ref(),
+            n.base.enabled.as_ref(),
+            None,
+            None,
+            None,
+            None,
+        ),
     }
 }
 

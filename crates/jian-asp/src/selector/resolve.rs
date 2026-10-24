@@ -252,29 +252,7 @@ fn node_semantic_role(node: &PenNode) -> Option<String> {
 /// Map a `PenNode` variant to its wire-shape role string. Mirrors
 /// the schema's `"type"` discriminator.
 fn node_role(node: &PenNode) -> &'static str {
-    match node {
-        PenNode::Frame(_) => "frame",
-        PenNode::Group(_) => "group",
-        PenNode::Rectangle(_) => "rectangle",
-        PenNode::Ellipse(_) => "ellipse",
-        PenNode::Line(_) => "line",
-        PenNode::Polygon(_) => "polygon",
-        PenNode::Path(_) => "path",
-        PenNode::Text(_) => "text",
-        PenNode::TextInput(_) => "text_input",
-        PenNode::Image(_) => "image",
-        PenNode::IconFont(_) => "icon_font",
-        PenNode::TextArea(_) => "text_area",
-        PenNode::Select(_) => "select",
-        PenNode::Switch(_) => "switch",
-        PenNode::Checkbox(_) => "checkbox",
-        PenNode::Slider(_) => "slider",
-        PenNode::RadioGroup(_) => "radio_group",
-        PenNode::NumberInput(_) => "number_input",
-        PenNode::Progress(_) => "progress",
-        PenNode::Tabs(_) => "tabs",
-        PenNode::Ref(_) => "ref",
-    }
+    node.type_tag()
 }
 
 /// Concatenate the visible-text content of a Text node. Returns
@@ -305,6 +283,7 @@ fn node_visible_text(node: &PenNode) -> Option<String> {
                 .cloned()
                 .or_else(|| Some(String::new()))
         }
+        PenNode::Note(n) | PenNode::Context(n) | PenNode::Prompt(n) => Some(n.plain_content()),
         _ => None,
     }
 }
