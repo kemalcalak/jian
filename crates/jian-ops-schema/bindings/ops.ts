@@ -331,7 +331,13 @@ stickyChildren: Array<string> | null, cornerRadius: CornerRadius | null, fill: A
  */
 export type HConstraint = "left" | "right" | "center" | "left_right" | "scale";
 
-export type IconFontNode = { iconFontName: string, iconFontFamily: string | null, width: SizingBehavior | null, height: SizingBehavior | null, fill: Array<PenFill> | null, stroke: PenStroke | null, state: { [key in string]?: StateEntry } | null, bindings: { [key in string]?: Expression } | null, events: EventHandlers | null, lifecycle: NodeLifecycleHooks | null, semantics: SemanticsMeta | null, gestures: GestureOverrides | null, route: NavigationRoute | null, id: string, name: string | null, role: string | null, explain: string | null, x: number | null, y: number | null, rotation: number | null, constraints: Constraints | null, opacity: NumberOrExpression | null, enabled: BoolOrExpression | null, visible: boolean | null, locked: boolean | null,
+export type IconFontNode = { iconFontName: string, iconFontFamily: string | null,
+/**
+ * Icon weight on the CSS scale (`100..=700`, 400 = regular), same type
+ * as a text node's `fontWeight` so `700`, `"700"` and `"bold"` all parse.
+ * Absent = regular. Families without weights ignore it.
+ */
+weight: FontWeight | null, width: SizingBehavior | null, height: SizingBehavior | null, fill: Array<PenFill> | null, stroke: PenStroke | null, state: { [key in string]?: StateEntry } | null, bindings: { [key in string]?: Expression } | null, events: EventHandlers | null, lifecycle: NodeLifecycleHooks | null, semantics: SemanticsMeta | null, gestures: GestureOverrides | null, route: NavigationRoute | null, id: string, name: string | null, role: string | null, explain: string | null, x: number | null, y: number | null, rotation: number | null, constraints: Constraints | null, opacity: NumberOrExpression | null, enabled: BoolOrExpression | null, visible: boolean | null, locked: boolean | null,
 /**
  * Keep this node at its authored viewport position while its nearest
  * scrollable ancestor moves ordinary content.

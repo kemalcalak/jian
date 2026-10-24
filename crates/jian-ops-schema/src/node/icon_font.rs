@@ -13,6 +13,11 @@ pub struct IconFontNode {
     pub icon_font_name: String,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub icon_font_family: Option<String>,
+    /// Icon weight on the CSS scale (`100..=700`, 400 = regular), same type
+    /// as a text node's `fontWeight` so `700`, `"700"` and `"bold"` all parse.
+    /// Absent = regular. Families without weights ignore it.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub weight: Option<super::FontWeight>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub width: Option<SizingBehavior>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -37,4 +42,27 @@ pub struct IconFontNode {
     pub gestures: Option<crate::gestures::GestureOverrides>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub route: Option<crate::navigation::NavigationRoute>,
+}
+
+#[cfg(test)]
+mod tests {
+    use super::IconFontNode;
+    use crate::node::FontWeight;
+
+    #[test]
+    fn weight_round_trips_and_stays_absent_by_default() {
+        let bold = r#"{"id":"i","iconFontName":"house","iconFontFamily":"phosphor","weight":700}"#;
+        let node: IconFontNode = serde_json::from_str(bold).expect("parse weighted icon");
+        assert_eq!(node.weight, Some(FontWeight::Number(700)));
+        assert_eq!(serde_json::to_string(&node).unwrap(), bold);
+
+        let keyword = r#"{"id":"i","iconFontName":"house","weight":"bold"}"#;
+        let node: IconFontNode = serde_json::from_str(keyword).expect("parse keyword weight");
+        assert_eq!(node.weight, Some(FontWeight::Keyword("bold".into())));
+
+        let plain = r#"{"id":"i","iconFontName":"house"}"#;
+        let node: IconFontNode = serde_json::from_str(plain).expect("parse icon");
+        assert_eq!(node.weight, None);
+        assert_eq!(serde_json::to_string(&node).unwrap(), plain);
+    }
 }
