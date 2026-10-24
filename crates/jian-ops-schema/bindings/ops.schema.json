@@ -9077,6 +9077,72 @@
           }
         },
         {
+          "description": "Angular (conic / sweep) gradient. Stops run clockwise around the centre (`cx`, `cy` as 0.0..=1.0 fractions of the node bounds, default 0.5). `rotation` is in degrees with CSS `conic-gradient` semantics: 0° puts the first stop at 12 o'clock, positive turns clockwise (Figma `GRADIENT_ANGULAR`).",
+          "type": "object",
+          "required": [
+            "stops",
+            "type"
+          ],
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": [
+                "angular_gradient"
+              ]
+            },
+            "cx": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "format": "float"
+            },
+            "cy": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "format": "float"
+            },
+            "rotation": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "format": "float"
+            },
+            "stops": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/GradientStop"
+              }
+            },
+            "explain": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "opacity": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "format": "float"
+            },
+            "blendMode": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/BlendMode"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          }
+        },
+        {
           "description": "Uniform-grid mesh gradient (v1). A `rows`×`cols` lattice of `MeshVertexStop`s is Gouraud-interpolated across the node's round-rect. Mirrors the sibling gradient bodies for the shared `explain`/`opacity`/`blend_mode` tail.",
           "type": "object",
           "required": [
