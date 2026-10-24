@@ -4000,6 +4000,17 @@
                 "null"
               ]
             },
+            "weight": {
+              "description": "Icon weight on the CSS scale (`100..=700`, 400 = regular), same type as a text node's `fontWeight` so `700`, `\"700\"` and `\"bold\"` all parse. Absent = regular. Families without weights ignore it.",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/FontWeight"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
             "width": {
               "anyOf": [
                 {

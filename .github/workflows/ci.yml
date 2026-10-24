@@ -1,8 +1,10 @@
 name: CI
 
 on:
+  # Branches are tested through their pull request; pushing to a branch
+  # with an open PR used to start a second identical run.
   push:
-    branches: ['**']
+    branches: [main]
   pull_request:
     branches: [main]
 
