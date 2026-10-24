@@ -2172,6 +2172,14 @@
               ],
               "format": "double"
             },
+            "innerRadius": {
+              "description": "Star inner radius as a fraction of the outer radius (`0.0..=1.0`). Absent = a regular polygon; present = a star with `polygon_count` points whose valleys sit at this fraction (Figma `STAR` / `starInnerScale`). Mirrors `EllipseNode::inner_radius`.",
+              "type": [
+                "number",
+                "null"
+              ],
+              "format": "double"
+            },
             "fill": {
               "type": [
                 "array",

@@ -633,7 +633,14 @@ export type PenPathPointType = "corner" | "mirrored" | "independent";
 
 export type PenStroke = { thickness: StrokeThickness, align: StrokeAlign | null, join: StrokeJoin | null, cap: StrokeCap | null, dashPattern: Array<number> | null, dashOffset: number | null, fill: Array<PenFill> | null, };
 
-export type PolygonNode = { polygonCount: number, width: SizingBehavior | null, height: SizingBehavior | null, cornerRadius: number | null, fill: Array<PenFill> | null, stroke: PenStroke | null, effects: Array<PenEffect> | null, state: { [key in string]?: StateEntry } | null, bindings: { [key in string]?: Expression } | null, events: EventHandlers | null, lifecycle: NodeLifecycleHooks | null, semantics: SemanticsMeta | null, gestures: GestureOverrides | null, route: NavigationRoute | null, id: string, name: string | null, role: string | null, explain: string | null, x: number | null, y: number | null, rotation: number | null, constraints: Constraints | null, opacity: NumberOrExpression | null, enabled: BoolOrExpression | null, visible: boolean | null, locked: boolean | null,
+export type PolygonNode = { polygonCount: number, width: SizingBehavior | null, height: SizingBehavior | null, cornerRadius: number | null,
+/**
+ * Star inner radius as a fraction of the outer radius (`0.0..=1.0`).
+ * Absent = a regular polygon; present = a star with `polygon_count`
+ * points whose valleys sit at this fraction (Figma `STAR` /
+ * `starInnerScale`). Mirrors `EllipseNode::inner_radius`.
+ */
+innerRadius: number | null, fill: Array<PenFill> | null, stroke: PenStroke | null, effects: Array<PenEffect> | null, state: { [key in string]?: StateEntry } | null, bindings: { [key in string]?: Expression } | null, events: EventHandlers | null, lifecycle: NodeLifecycleHooks | null, semantics: SemanticsMeta | null, gestures: GestureOverrides | null, route: NavigationRoute | null, id: string, name: string | null, role: string | null, explain: string | null, x: number | null, y: number | null, rotation: number | null, constraints: Constraints | null, opacity: NumberOrExpression | null, enabled: BoolOrExpression | null, visible: boolean | null, locked: boolean | null,
 /**
  * Keep this node at its authored viewport position while its nearest
  * scrollable ancestor moves ordinary content.
