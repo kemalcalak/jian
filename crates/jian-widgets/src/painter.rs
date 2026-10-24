@@ -60,6 +60,12 @@ pub enum ImageBlendMode {
     ColorBurn,
     HardLight,
     Exclusion,
+    /// `Cb + Cs - 1`, clamped at 0. Skia has no built-in mode for it;
+    /// rich backends use a runtime blender.
+    LinearBurn,
+    /// `Cb + Cs`, clamped at 1. Rich backends use a runtime blender with
+    /// the same separable compositing as the other modes.
+    LinearDodge,
 }
 
 /// Per-image adjustment values in the UI slider range `[-100, 100]`.

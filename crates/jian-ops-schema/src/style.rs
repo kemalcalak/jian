@@ -23,6 +23,11 @@ pub enum BlendMode {
     ColorBurn,
     HardLight,
     Exclusion,
+    // `Cb + Cs - 1` clamped at 0, and `Cb + Cs` clamped at 1 (Photoshop /
+    // Figma "Linear burn" / "Linear dodge"). Plain comments: a doc comment
+    // would turn the flat JSON-schema enum into a `oneOf`.
+    LinearBurn,
+    LinearDodge,
 }
 
 // --- Fills ---

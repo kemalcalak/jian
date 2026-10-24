@@ -411,8 +411,11 @@ fn set_matching_node_stroke(nodes: &mut [SceneNode], ids: &[String], color: Colo
         if ids.iter().any(|id| id == &node.id) {
             // Only an existing resolved stroke can be repainted in place;
             // a fresh stroke would need a width the scene patch lacks, so
-            // that case is left for the caller's rebuild fallback.
-            if let Some(stroke) = node.stroke.as_mut() {
+            // that case is left for the caller's rebuild fallback. So is a
+            // stroke with a rich paint stack, which a colour alone cannot
+            // describe.
+            let solid_only = node.stroke_fill_layers.is_empty();
+            if let Some(stroke) = node.stroke.as_mut().filter(|_| solid_only) {
                 stroke.color = bake_node_alpha(color, node.opacity);
                 changed = true;
             }
@@ -620,6 +623,12 @@ pub struct SceneNode {
     /// Resolved stroke (colour + width). `$ref` stroke colours are
     /// resolved at build time. `None` = no stroke.
     pub stroke: Option<SceneStroke>,
+    /// The stroke's paint stack when it is more than one solid colour
+    /// (gradient, shader, image, or several layers), front-to-back like
+    /// [`Self::fill_layers`]. Painters that support it draw the stroke
+    /// geometry as a mask over these paints, laid out over the stroke's
+    /// outer box; others keep `stroke.color`. Empty = `stroke.color` only.
+    pub stroke_fill_layers: Vec<SceneFillLayer>,
     /// Text content — `Some` for Text nodes (and the lucide glyph
     /// name for `icon_font`). `None` for non-text kinds. Styled text
     /// is flattened into this string; per-segment styling rides in
@@ -734,6 +743,10 @@ pub struct SceneNode {
     /// (track + knob, box + check, chevron, bar, …) instead of the
     /// bare degraded rect / text. `None` for ordinary shapes.
     pub widget: Option<SceneWidget>,
+    /// In-progress marker (a frame's `placeholder: true`): an agent is
+    /// still building this node. Editor canvases show a working state on
+    /// it; exports ignore it.
+    pub placeholder: bool,
     /// Child render nodes, in paint order.
     pub children: Vec<SceneNode>,
 }
@@ -927,6 +940,7 @@ impl SceneNode {
             gradient: None,
             shader: None,
             stroke: None,
+            stroke_fill_layers: Vec::new(),
             text: None,
             text_runs: Vec::new(),
             font_family: String::new(),
@@ -964,6 +978,7 @@ impl SceneNode {
             hidden: false,
             locked: false,
             widget: None,
+            placeholder: false,
             children: Vec::new(),
         }
     }

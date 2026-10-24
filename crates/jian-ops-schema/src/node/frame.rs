@@ -44,6 +44,11 @@ pub struct FrameNode {
     /// during responsive screen projection.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub breakpoint: Option<crate::breakpoint::BreakpointRange>,
+    /// In-progress marker: an agent is still building this frame. Editors
+    /// show a working state on it; the agent clears it (or sets `false`)
+    /// when the frame is done. pen.dev's `placeholder`. Additive 1.x.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub placeholder: Option<bool>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, schemars::JsonSchema)]
