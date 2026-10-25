@@ -160,6 +160,10 @@ fn visit_own_sources<'a>(
         }
         PenNode::Ref(node) => node.children.as_deref(),
         PenNode::Note(_) | PenNode::Context(_) | PenNode::Prompt(_) => None,
+        PenNode::Browser(node) => {
+            visit_stroke(node.stroke.as_ref(), visit);
+            None
+        }
     }
 }
 

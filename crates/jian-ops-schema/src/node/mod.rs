@@ -1,4 +1,5 @@
 pub mod base;
+pub mod browser;
 pub mod checkbox;
 pub mod container;
 pub mod ellipse;
@@ -25,6 +26,7 @@ pub mod text_input;
 pub mod video;
 
 pub use base::{BoolOrExpression, MaskType, NumberOrExpression, PenNodeBase};
+pub use browser::BrowserNode;
 pub use checkbox::CheckboxNode;
 pub use container::{
     AlignItems, ContainerProps, CornerRadius, JustifyContent, LayoutMode, Padding,
@@ -94,6 +96,8 @@ pub enum PenNode {
     Prompt(NoteNode),
     /// A frame whose children a script generates (pen.dev `script`).
     Script(ScriptNode),
+    /// A live web page on the canvas (pen.dev `browser`).
+    Browser(BrowserNode),
 }
 
 impl PenNode {
@@ -154,6 +158,9 @@ impl PenNode {
                 node.frame.base.transition.as_ref(),
                 node.frame.base.animations.as_ref(),
             ),
+            PenNode::Browser(node) => {
+                (node.base.transition.as_ref(), node.base.animations.as_ref())
+            }
         }
     }
 
@@ -209,6 +216,7 @@ impl PenNode {
             PenNode::Ref(n) => (n.gestures.as_ref(), n.semantics.as_ref()),
             PenNode::Note(_) | PenNode::Context(_) | PenNode::Prompt(_) => (None, None),
             PenNode::Script(n) => (n.frame.gestures.as_ref(), n.frame.semantics.as_ref()),
+            PenNode::Browser(_) => (None, None),
         }
     }
 
@@ -242,6 +250,7 @@ impl PenNode {
             PenNode::Ref(n) => n.lifecycle.as_ref(),
             PenNode::Note(_) | PenNode::Context(_) | PenNode::Prompt(_) => None,
             PenNode::Script(n) => n.frame.lifecycle.as_ref(),
+            PenNode::Browser(_) => None,
         }
     }
 
@@ -275,6 +284,7 @@ impl PenNode {
             PenNode::Context(_) => "context",
             PenNode::Prompt(_) => "prompt",
             PenNode::Script(_) => "script",
+            PenNode::Browser(_) => "browser",
         }
     }
 
@@ -321,9 +331,15 @@ impl PenNode {
 
     /// True for nodes that live on the editing canvas only: exports and
     /// code generation skip them (and their subtree) by default. Today
-    /// these are the annotation kinds; other editor-only kinds join here.
+    /// these are the annotation kinds and the live `browser` node.
     pub fn is_canvas_only(&self) -> bool {
-        self.annotation().is_some()
+        Self::is_canvas_only_tag(self.type_tag())
+    }
+
+    /// Whether a `"type"` tag names a canvas-only kind, for consumers that
+    /// hold a tag (scene nodes, raw JSON) rather than a typed node.
+    pub fn is_canvas_only_tag(tag: &str) -> bool {
+        AnnotationKind::from_tag(tag).is_some() || tag == "browser"
     }
 }
 
@@ -469,6 +485,25 @@ mod tests {
             serde_json::from_str(r#"{"type":"text","id":"t","content":"hi"}"#).unwrap();
         assert!(text.annotation().is_none());
         assert!(!text.is_canvas_only());
+    }
+
+    #[test]
+    fn browser_roundtrips_by_type_tag() {
+        let json = r#"{"type":"browser","id":"b","width":390,"height":844,"url":"https://example.com","deviceId":"phone","zoom":1.5,"scrollX":0,"scrollY":120,"cornerRadius":24,"stroke":{"thickness":1},"effects":[{"type":"blur","radius":8}]}"#;
+        let n: PenNode = serde_json::from_str(json).unwrap();
+        let PenNode::Browser(b) = &n else { panic!() };
+        assert_eq!(b.url.as_deref(), Some("https://example.com"));
+        assert_eq!(b.device_id.as_deref(), Some("phone"));
+        assert_eq!(b.zoom, Some(1.5));
+        assert_eq!(b.scroll_y, Some(120.0));
+        assert!(b.corner_radius.is_some() && b.stroke.is_some() && b.effects.is_some());
+        assert_eq!(n.type_tag(), "browser");
+        assert!(n.is_canvas_only());
+        assert!(n.annotation().is_none());
+        let back = serde_json::to_value(&n).unwrap();
+        assert_eq!(back["type"], "browser");
+        assert_eq!(back["deviceId"], "phone");
+        assert_eq!(back["scrollY"], 120.0);
     }
 
     #[test]

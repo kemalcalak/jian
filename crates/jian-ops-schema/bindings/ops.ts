@@ -80,6 +80,62 @@ export type BoolOrExpression = boolean | string;
  */
 export type BreakpointRange = { minWidth: number | null, maxWidth: number | null, };
 
+/**
+ * A live web page on the canvas (pen.dev `browser`): the page at `url`,
+ * laid out for the `deviceId` preset (or the node's own size), scrolled
+ * to `scrollX` / `scrollY` and scaled by `zoom`. The editor paints a
+ * snapshot of the page; the node is editor-side, so exports and code
+ * generation leave it out.
+ */
+export type BrowserNode = { width: SizingBehavior | null, height: SizingBehavior | null,
+/**
+ * The page address (http, https or file).
+ */
+url: string | null,
+/**
+ * The device preset the page is laid out for; unknown ids are kept.
+ */
+deviceId: string | null,
+/**
+ * Page zoom, 1 = 100 %.
+ */
+zoom: number | null,
+/**
+ * Horizontal page scroll in CSS px.
+ */
+scrollX: number | null,
+/**
+ * Vertical page scroll in CSS px.
+ */
+scrollY: number | null, cornerRadius: CornerRadius | null, stroke: PenStroke | null, effects: Array<PenEffect> | null, id: string, name: string | null, role: string | null, explain: string | null, x: number | null, y: number | null, rotation: number | null, constraints: Constraints | null, opacity: NumberOrExpression | null, enabled: BoolOrExpression | null, visible: boolean | null, locked: boolean | null,
+/**
+ * Keep this node at its authored viewport position while its nearest
+ * scrollable ancestor moves ordinary content.
+ */
+pin: boolean | null, flipX: boolean | null, flipY: boolean | null,
+/**
+ * Sibling-mask semantics. Absence means this node is painted normally.
+ */
+maskType?: MaskType | null,
+/**
+ * Composite this node's complete rendered subtree with the backdrop.
+ * Absence is the source-over default; pass-through groups also stay absent.
+ */
+blendMode?: BlendMode | null, theme: { [key in string]?: string } | null, transition: Transition | null, animations: Array<NodeAnimation> | null,
+/**
+ * The transition a presentation plays when it arrives on this node
+ * as a slide. Read on top-level frames only.
+ */
+slideTransition: SlideTransition | null,
+/**
+ * Typed fields of this node that follow a design variable, keyed by
+ * the field's JSON path in the node (`fontSize`, `padding/1`,
+ * `stroke/thickness/top`). The field keeps a concrete value every
+ * consumer can read; the renderer replaces it with the variable's value
+ * for the active theme while the field still holds that value.
+ */
+variableBindings: { [key in string]?: VariableBinding } | null, minWidth: number | null, maxWidth: number | null, minHeight: number | null, maxHeight: number | null, };
+
 export type Capability = "storage" | "network" | "camera" | "microphone" | "location" | "notifications" | "clipboard" | "biometric" | "file_system" | "haptic";
 
 /**
@@ -799,7 +855,7 @@ export type PenFill = { "type": "solid" } & SolidFillBody | { "type": "linear_gr
  * Union of all concrete node types.
  * Tag is the JSON `"type"` field.
  */
-export type PenNode = { "type": "frame" } & FrameNode | { "type": "group" } & GroupNode | { "type": "rectangle" } & RectangleNode | { "type": "ellipse" } & EllipseNode | { "type": "line" } & LineNode | { "type": "polygon" } & PolygonNode | { "type": "path" } & PathNode | { "type": "text" } & TextNode | { "type": "text_input" } & TextInputNode | { "type": "image" } & ImageNode | { "type": "icon_font" } & IconFontNode | { "type": "text_area" } & TextAreaNode | { "type": "select" } & SelectNode | { "type": "switch" } & SwitchNode | { "type": "checkbox" } & CheckboxNode | { "type": "slider" } & SliderNode | { "type": "radio_group" } & RadioGroupNode | { "type": "number_input" } & NumberInputNode | { "type": "progress" } & ProgressNode | { "type": "tabs" } & TabsNode | { "type": "ref" } & RefNode | { "type": "note" } & NoteNode | { "type": "context" } & NoteNode | { "type": "prompt" } & NoteNode | { "type": "script" } & ScriptNode;
+export type PenNode = { "type": "frame" } & FrameNode | { "type": "group" } & GroupNode | { "type": "rectangle" } & RectangleNode | { "type": "ellipse" } & EllipseNode | { "type": "line" } & LineNode | { "type": "polygon" } & PolygonNode | { "type": "path" } & PathNode | { "type": "text" } & TextNode | { "type": "text_input" } & TextInputNode | { "type": "image" } & ImageNode | { "type": "icon_font" } & IconFontNode | { "type": "text_area" } & TextAreaNode | { "type": "select" } & SelectNode | { "type": "switch" } & SwitchNode | { "type": "checkbox" } & CheckboxNode | { "type": "slider" } & SliderNode | { "type": "radio_group" } & RadioGroupNode | { "type": "number_input" } & NumberInputNode | { "type": "progress" } & ProgressNode | { "type": "tabs" } & TabsNode | { "type": "ref" } & RefNode | { "type": "note" } & NoteNode | { "type": "context" } & NoteNode | { "type": "prompt" } & NoteNode | { "type": "script" } & ScriptNode | { "type": "browser" } & BrowserNode;
 
 export type PenPage = { id: string, name: string, children: Array<PenNode>,
 /**

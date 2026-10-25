@@ -170,6 +170,7 @@ fn numeric_size(node: &PenNode) -> (Option<f32>, Option<f32>) {
         PenNode::Note(node) | PenNode::Context(node) | PenNode::Prompt(node) => {
             (number(node.width.as_ref()), number(node.height.as_ref()))
         }
+        PenNode::Browser(node) => (number(node.width.as_ref()), number(node.height.as_ref())),
         PenNode::Line(_) | PenNode::Ref(_) => (None, None),
     }
 }
@@ -198,6 +199,7 @@ fn node_base(node: &PenNode) -> Option<&PenNodeBase> {
         PenNode::Tabs(node) => &node.base,
         PenNode::Ref(node) => &node.base,
         PenNode::Note(node) | PenNode::Context(node) | PenNode::Prompt(node) => &node.base,
+        PenNode::Browser(node) => &node.base,
     })
 }
 
@@ -224,6 +226,7 @@ fn node_limits(node: &PenNode) -> Option<&SizeLimits> {
         PenNode::NumberInput(node) => Some(&node.limits),
         PenNode::Progress(node) => Some(&node.limits),
         PenNode::Tabs(node) => Some(&node.limits),
+        PenNode::Browser(node) => Some(&node.limits),
         PenNode::Line(_)
         | PenNode::Ref(_)
         | PenNode::Note(_)

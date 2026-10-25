@@ -123,6 +123,7 @@ pub fn node_schema_id(n: &PenNode) -> &str {
         PenNode::Tabs(x) => &x.base.id,
         PenNode::Ref(x) => &x.base.id,
         PenNode::Note(x) | PenNode::Context(x) | PenNode::Prompt(x) => &x.base.id,
+        PenNode::Browser(x) => &x.base.id,
     }
 }
 
