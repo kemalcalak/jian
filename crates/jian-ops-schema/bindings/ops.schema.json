@@ -9133,6 +9133,502 @@
           }
         },
         {
+          "description": "A frame whose children a script generates (pen.dev `script`).",
+          "type": "object",
+          "required": [
+            "id",
+            "type"
+          ],
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": [
+                "script"
+              ]
+            },
+            "script": {
+              "description": "The program's source. It declares its inputs with `@input` annotations and returns an array of nodes.",
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "scriptUri": {
+              "description": "Where the source came from (pen.dev's `scriptUri`). Kept for provenance only; `script` is what runs.",
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "inputs": {
+              "description": "Input values by name. A string starting with `$` binds the input to a design variable.",
+              "type": [
+                "object",
+                "null"
+              ],
+              "additionalProperties": {
+                "$ref": "#/definitions/ScriptInputValue"
+              }
+            },
+            "scriptHash": {
+              "description": "Fingerprint of the source, resolved inputs and size the saved children were generated from.",
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "children": {
+              "type": [
+                "array",
+                "null"
+              ],
+              "items": {
+                "$ref": "#/definitions/PenNode"
+              }
+            },
+            "imageSearchQuery": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "reusable": {
+              "type": [
+                "boolean",
+                "null"
+              ]
+            },
+            "slot": {
+              "type": [
+                "array",
+                "null"
+              ],
+              "items": {
+                "type": "string"
+              }
+            },
+            "state": {
+              "type": [
+                "object",
+                "null"
+              ],
+              "additionalProperties": {
+                "$ref": "#/definitions/StateEntry"
+              }
+            },
+            "bindings": {
+              "type": [
+                "object",
+                "null"
+              ],
+              "additionalProperties": {
+                "type": "string"
+              }
+            },
+            "events": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/EventHandlers"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "lifecycle": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/NodeLifecycleHooks"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "semantics": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/SemanticsMeta"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "gestures": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/GestureOverrides"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "route": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/NavigationRoute"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "screen": {
+              "description": "Screen marker: this top-level frame is one screen of the app, mounted at the given route path (\"/\" = entry). Consumed only by the screen-projection pass; ignored elsewhere. Additive 1.x.",
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "breakpoint": {
+              "description": "Breakpoint range for screen variants. Invalid ranges are stripped during responsive screen projection.",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/BreakpointRange"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "placeholder": {
+              "description": "In-progress marker: an agent is still building this frame. Editors show a working state on it; the agent clears it (or sets `false`) when the frame is done. pen.dev's `placeholder`. Additive 1.x.",
+              "type": [
+                "boolean",
+                "null"
+              ]
+            },
+            "id": {
+              "type": "string"
+            },
+            "name": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "role": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "explain": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "x": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "format": "double"
+            },
+            "y": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "format": "double"
+            },
+            "rotation": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "format": "double"
+            },
+            "constraints": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/Constraints"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "opacity": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/NumberOrExpression"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "enabled": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/BoolOrExpression"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "visible": {
+              "type": [
+                "boolean",
+                "null"
+              ]
+            },
+            "locked": {
+              "type": [
+                "boolean",
+                "null"
+              ]
+            },
+            "pin": {
+              "description": "Keep this node at its authored viewport position while its nearest scrollable ancestor moves ordinary content.",
+              "type": [
+                "boolean",
+                "null"
+              ]
+            },
+            "flipX": {
+              "type": [
+                "boolean",
+                "null"
+              ]
+            },
+            "flipY": {
+              "type": [
+                "boolean",
+                "null"
+              ]
+            },
+            "maskType": {
+              "description": "Sibling-mask semantics. Absence means this node is painted normally.",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/MaskType"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "blendMode": {
+              "description": "Composite this node's complete rendered subtree with the backdrop. Absence is the source-over default; pass-through groups also stay absent.",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/BlendMode"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "theme": {
+              "type": [
+                "object",
+                "null"
+              ],
+              "additionalProperties": {
+                "type": "string"
+              }
+            },
+            "transition": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/Transition"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "animations": {
+              "type": [
+                "array",
+                "null"
+              ],
+              "items": {
+                "$ref": "#/definitions/NodeAnimation"
+              }
+            },
+            "slideTransition": {
+              "description": "The transition a presentation plays when it arrives on this node as a slide. Read on top-level frames only.",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/SlideTransition"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "variableBindings": {
+              "description": "Typed fields of this node that follow a design variable, keyed by the field's JSON path in the node (`fontSize`, `padding/1`, `stroke/thickness/top`). The field keeps a concrete value every consumer can read; the renderer replaces it with the variable's value for the active theme while the field still holds that value.",
+              "type": [
+                "object",
+                "null"
+              ],
+              "additionalProperties": {
+                "$ref": "#/definitions/VariableBinding"
+              }
+            },
+            "width": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/SizingBehavior"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "height": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/SizingBehavior"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "layout": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/LayoutMode"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "gap": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/NumberOrExpression"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "padding": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/Padding"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "justifyContent": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/JustifyContent"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "alignItems": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/AlignItems"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "clipContent": {
+              "type": [
+                "boolean",
+                "null"
+              ]
+            },
+            "stickyChildren": {
+              "description": "Direct child ids that remain pinned while this container scrolls.",
+              "type": [
+                "array",
+                "null"
+              ],
+              "items": {
+                "type": "string"
+              }
+            },
+            "cornerRadius": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/CornerRadius"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "fill": {
+              "type": [
+                "array",
+                "null"
+              ],
+              "items": {
+                "$ref": "#/definitions/PenFill"
+              }
+            },
+            "stroke": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/PenStroke"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "effects": {
+              "type": [
+                "array",
+                "null"
+              ],
+              "items": {
+                "$ref": "#/definitions/PenEffect"
+              }
+            },
+            "minWidth": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "format": "double"
+            },
+            "maxWidth": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "format": "double"
+            },
+            "minHeight": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "format": "double"
+            },
+            "maxHeight": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "format": "double"
+            }
+          }
+        },
+        {
           "description": "A live web page on the canvas (pen.dev `browser`).",
           "type": "object",
           "required": [
@@ -11893,6 +12389,21 @@
           "type": "string"
         }
       }
+    },
+    "ScriptInputValue": {
+      "description": "One script input value. Colors, node refs and enum choices are strings.",
+      "anyOf": [
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "number",
+          "format": "double"
+        },
+        {
+          "type": "string"
+        }
+      ]
     },
     "PageLifecycleHooks": {
       "type": "object",

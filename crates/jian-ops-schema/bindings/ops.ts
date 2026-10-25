@@ -855,7 +855,7 @@ export type PenFill = { "type": "solid" } & SolidFillBody | { "type": "linear_gr
  * Union of all concrete node types.
  * Tag is the JSON `"type"` field.
  */
-export type PenNode = { "type": "frame" } & FrameNode | { "type": "group" } & GroupNode | { "type": "rectangle" } & RectangleNode | { "type": "ellipse" } & EllipseNode | { "type": "line" } & LineNode | { "type": "polygon" } & PolygonNode | { "type": "path" } & PathNode | { "type": "text" } & TextNode | { "type": "text_input" } & TextInputNode | { "type": "image" } & ImageNode | { "type": "icon_font" } & IconFontNode | { "type": "text_area" } & TextAreaNode | { "type": "select" } & SelectNode | { "type": "switch" } & SwitchNode | { "type": "checkbox" } & CheckboxNode | { "type": "slider" } & SliderNode | { "type": "radio_group" } & RadioGroupNode | { "type": "number_input" } & NumberInputNode | { "type": "progress" } & ProgressNode | { "type": "tabs" } & TabsNode | { "type": "ref" } & RefNode | { "type": "note" } & NoteNode | { "type": "context" } & NoteNode | { "type": "prompt" } & NoteNode | { "type": "browser" } & BrowserNode;
+export type PenNode = { "type": "frame" } & FrameNode | { "type": "group" } & GroupNode | { "type": "rectangle" } & RectangleNode | { "type": "ellipse" } & EllipseNode | { "type": "line" } & LineNode | { "type": "polygon" } & PolygonNode | { "type": "path" } & PathNode | { "type": "text" } & TextNode | { "type": "text_input" } & TextInputNode | { "type": "image" } & ImageNode | { "type": "icon_font" } & IconFontNode | { "type": "text_area" } & TextAreaNode | { "type": "select" } & SelectNode | { "type": "switch" } & SwitchNode | { "type": "checkbox" } & CheckboxNode | { "type": "slider" } & SliderNode | { "type": "radio_group" } & RadioGroupNode | { "type": "number_input" } & NumberInputNode | { "type": "progress" } & ProgressNode | { "type": "tabs" } & TabsNode | { "type": "ref" } & RefNode | { "type": "note" } & NoteNode | { "type": "context" } & NoteNode | { "type": "prompt" } & NoteNode | { "type": "script" } & ScriptNode | { "type": "browser" } & BrowserNode;
 
 export type PenPage = { id: string, name: string, children: Array<PenNode>,
 /**
@@ -1059,6 +1059,91 @@ export type RouteSpec = { pageId: string, preload: boolean | null, guards: Array
 params: { [key in string]?: StateType } | null, };
 
 export type RoutesConfig = { entry: string, routes: { [key in string]?: RouteSpec }, transitions: { [key in string]?: Transition } | null, };
+
+/**
+ * One script input value. Colors, node refs and enum choices are strings.
+ */
+export type ScriptInputValue = boolean | number | string;
+
+/**
+ * A live script node (pen.dev `script`). It is a frame whose children a
+ * JavaScript program generates from typed inputs and the node's size.
+ *
+ * The frame body is embedded as is, so a script lays out, paints, clips
+ * and exports like a frame holding its generated children. Those
+ * children are saved with the document: readers without a script engine
+ * show the last output, and `script_hash` tells an engine whether that
+ * output is still current.
+ */
+export type ScriptNode = {
+/**
+ * The program's source. It declares its inputs with `@input`
+ * annotations and returns an array of nodes.
+ */
+script: string | null,
+/**
+ * Where the source came from (pen.dev's `scriptUri`). Kept for
+ * provenance only; `script` is what runs.
+ */
+scriptUri: string | null,
+/**
+ * Input values by name. A string starting with `$` binds the input
+ * to a design variable.
+ */
+inputs: { [key in string]?: ScriptInputValue } | null,
+/**
+ * Fingerprint of the source, resolved inputs and size the saved
+ * children were generated from.
+ */
+scriptHash: string | null, children: Array<PenNode> | null, imageSearchQuery: string | null, reusable: boolean | null, slot: Array<string> | null, state: { [key in string]?: StateEntry } | null, bindings: { [key in string]?: Expression } | null, events: EventHandlers | null, lifecycle: NodeLifecycleHooks | null, semantics: SemanticsMeta | null, gestures: GestureOverrides | null, route: NavigationRoute | null,
+/**
+ * Screen marker: this top-level frame is one screen of the app,
+ * mounted at the given route path ("/" = entry). Consumed only by
+ * the screen-projection pass; ignored elsewhere. Additive 1.x.
+ */
+screen: string | null,
+/**
+ * Breakpoint range for screen variants. Invalid ranges are stripped
+ * during responsive screen projection.
+ */
+breakpoint: BreakpointRange | null,
+/**
+ * In-progress marker: an agent is still building this frame. Editors
+ * show a working state on it; the agent clears it (or sets `false`)
+ * when the frame is done. pen.dev's `placeholder`. Additive 1.x.
+ */
+placeholder: boolean | null, id: string, name: string | null, role: string | null, explain: string | null, x: number | null, y: number | null, rotation: number | null, constraints: Constraints | null, opacity: NumberOrExpression | null, enabled: BoolOrExpression | null, visible: boolean | null, locked: boolean | null,
+/**
+ * Keep this node at its authored viewport position while its nearest
+ * scrollable ancestor moves ordinary content.
+ */
+pin: boolean | null, flipX: boolean | null, flipY: boolean | null,
+/**
+ * Sibling-mask semantics. Absence means this node is painted normally.
+ */
+maskType?: MaskType | null,
+/**
+ * Composite this node's complete rendered subtree with the backdrop.
+ * Absence is the source-over default; pass-through groups also stay absent.
+ */
+blendMode?: BlendMode | null, theme: { [key in string]?: string } | null, transition: Transition | null, animations: Array<NodeAnimation> | null,
+/**
+ * The transition a presentation plays when it arrives on this node
+ * as a slide. Read on top-level frames only.
+ */
+slideTransition: SlideTransition | null,
+/**
+ * Typed fields of this node that follow a design variable, keyed by
+ * the field's JSON path in the node (`fontSize`, `padding/1`,
+ * `stroke/thickness/top`). The field keeps a concrete value every
+ * consumer can read; the renderer replaces it with the variable's value
+ * for the active theme while the field still holds that value.
+ */
+variableBindings: { [key in string]?: VariableBinding } | null, width: SizingBehavior | null, height: SizingBehavior | null, layout: LayoutMode | null, gap: NumberOrExpression | null, padding: Padding | null, justifyContent: JustifyContent | null, alignItems: AlignItems | null, clipContent: boolean | null,
+/**
+ * Direct child ids that remain pinned while this container scrolls.
+ */
+stickyChildren: Array<string> | null, cornerRadius: CornerRadius | null, fill: Array<PenFill> | null, stroke: PenStroke | null, effects: Array<PenEffect> | null, minWidth: number | null, maxWidth: number | null, minHeight: number | null, maxHeight: number | null, };
 
 export type ScrollBehavior = "auto" | "contain" | "none";
 
@@ -1524,7 +1609,10 @@ variableBindings: { [key in string]?: VariableBinding } | null, minWidth: number
 
 export type ThemedValue = { value: VariableScalar, theme: { [key in string]?: string } | null, };
 
-export type Transition = "push" | "fade" | "modal" | "none";
+/**
+ * A node-level transition applied to runtime paint changes.
+ */
+export type Transition = { durationMs: bigint, easing: Easing, properties: Array<string> | null, } & ({ [key in string]?: JsonValue });
 
 /**
  * Vertical anchoring for an absolutely positioned node.

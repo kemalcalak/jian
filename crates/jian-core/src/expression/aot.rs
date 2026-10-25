@@ -16,7 +16,7 @@ use jian_ops_schema::document::PenDocument;
 use jian_ops_schema::events::{Action, ActionList, Bindings, EventHandlers};
 use jian_ops_schema::lifecycle::{AppLifecycleHooks, NodeLifecycleHooks, PageLifecycleHooks};
 use jian_ops_schema::node::base::{BoolOrExpression, NumberOrExpression};
-use jian_ops_schema::node::PenNode;
+use jian_ops_schema::node::{PenNode, ScriptNode};
 use jian_ops_schema::pack::{ExpressionsSnapshot, PackedChunk, PackedOpCode};
 use serde_json::Value;
 use std::collections::BTreeMap;
@@ -308,7 +308,9 @@ fn node_expression_surface(
         };
     }
     match node {
-        PenNode::Frame(n) => surface!(n, with_children),
+        PenNode::Frame(n) | PenNode::Script(ScriptNode { frame: n, .. }) => {
+            surface!(n, with_children)
+        }
         PenNode::Group(n) => surface!(n, with_children),
         PenNode::Rectangle(n) => surface!(n, with_children),
         PenNode::Ref(n) => surface!(n, with_children),

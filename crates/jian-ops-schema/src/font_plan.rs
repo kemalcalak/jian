@@ -42,7 +42,7 @@
 
 use crate::document::PenDocument;
 use crate::node::text::TextContent;
-use crate::node::PenNode;
+use crate::node::{PenNode, ScriptNode};
 use std::collections::{BTreeMap, BTreeSet};
 
 /// One family's usage in a document scan.
@@ -253,7 +253,7 @@ fn scan_node(node: &PenNode, inherited_family: Option<&str>, plan: &mut FontPlan
                 }
             }
         }
-        PenNode::Frame(f) => {
+        PenNode::Frame(f) | PenNode::Script(ScriptNode { frame: f, .. }) => {
             if let Some(children) = &f.children {
                 for c in children {
                     scan_node(c, inherited_family, plan);

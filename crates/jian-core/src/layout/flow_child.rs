@@ -11,7 +11,7 @@
 //! (badges, notification dots) or responsive `constraints`.
 
 use jian_ops_schema::node::container::LayoutMode;
-use jian_ops_schema::node::PenNode;
+use jian_ops_schema::node::{PenNode, ScriptNode};
 use taffy::prelude::*;
 
 /// Put a child of an auto-layout `parent` back into flow unless it opted
@@ -32,7 +32,9 @@ pub(crate) fn apply_flow_child(style: &mut Style, child: &PenNode, parent: &PenN
 
 fn is_auto_layout(n: &PenNode) -> bool {
     let layout = match n {
-        PenNode::Frame(f) => f.container.layout.as_ref(),
+        PenNode::Frame(f) | PenNode::Script(ScriptNode { frame: f, .. }) => {
+            f.container.layout.as_ref()
+        }
         PenNode::Group(g) => g.container.layout.as_ref(),
         PenNode::Rectangle(r) => r.container.layout.as_ref(),
         _ => None,
