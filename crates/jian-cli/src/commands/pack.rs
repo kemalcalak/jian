@@ -399,7 +399,9 @@ fn walk_node_ids_typed(
         return Some(id.to_owned());
     }
     let children: Option<&Vec<PenNode>> = match node {
-        PenNode::Frame(x) => x.children.as_ref(),
+        PenNode::Frame(x) | PenNode::Script(jian_ops_schema::node::ScriptNode { frame: x, .. }) => {
+            x.children.as_ref()
+        }
         PenNode::Group(x) => x.children.as_ref(),
         PenNode::Rectangle(x) => x.children.as_ref(),
         PenNode::Ref(x) => x.children.as_ref(),

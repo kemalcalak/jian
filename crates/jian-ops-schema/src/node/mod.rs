@@ -14,6 +14,7 @@ pub mod polygon;
 pub mod progress;
 pub mod radio_group;
 pub mod ref_node;
+pub mod script;
 pub mod select;
 pub mod slider;
 pub mod switch;
@@ -42,6 +43,7 @@ pub use polygon::PolygonNode;
 pub use progress::ProgressNode;
 pub use radio_group::RadioGroupNode;
 pub use ref_node::{DescendantOverrides, RefNode};
+pub use script::{ScriptInputValue, ScriptNode};
 pub use select::{SelectNode, SelectOption};
 pub use slider::SliderNode;
 pub use switch::SwitchNode;
@@ -90,6 +92,8 @@ pub enum PenNode {
     Context(NoteNode),
     /// An instruction for a model (pen.dev `prompt`).
     Prompt(NoteNode),
+    /// A frame whose children a script generates (pen.dev `script`).
+    Script(ScriptNode),
 }
 
 impl PenNode {
@@ -146,6 +150,10 @@ impl PenNode {
             PenNode::Note(node) | PenNode::Context(node) | PenNode::Prompt(node) => {
                 (node.base.transition.as_ref(), node.base.animations.as_ref())
             }
+            PenNode::Script(node) => (
+                node.frame.base.transition.as_ref(),
+                node.frame.base.animations.as_ref(),
+            ),
         }
     }
 
@@ -157,6 +165,7 @@ impl PenNode {
             PenNode::Rectangle(node) => node.children.as_deref(),
             PenNode::Tabs(node) => node.children.as_deref(),
             PenNode::Ref(node) => node.children.as_deref(),
+            PenNode::Script(node) => node.frame.children.as_deref(),
             _ => None,
         }
     }
@@ -199,6 +208,7 @@ impl PenNode {
             PenNode::Tabs(n) => (n.gestures.as_ref(), n.semantics.as_ref()),
             PenNode::Ref(n) => (n.gestures.as_ref(), n.semantics.as_ref()),
             PenNode::Note(_) | PenNode::Context(_) | PenNode::Prompt(_) => (None, None),
+            PenNode::Script(n) => (n.frame.gestures.as_ref(), n.frame.semantics.as_ref()),
         }
     }
 
@@ -231,6 +241,7 @@ impl PenNode {
             PenNode::Tabs(n) => n.lifecycle.as_ref(),
             PenNode::Ref(n) => n.lifecycle.as_ref(),
             PenNode::Note(_) | PenNode::Context(_) | PenNode::Prompt(_) => None,
+            PenNode::Script(n) => n.frame.lifecycle.as_ref(),
         }
     }
 
@@ -263,6 +274,7 @@ impl PenNode {
             PenNode::Note(_) => "note",
             PenNode::Context(_) => "context",
             PenNode::Prompt(_) => "prompt",
+            PenNode::Script(_) => "script",
         }
     }
 
@@ -283,6 +295,26 @@ impl PenNode {
             PenNode::Note(n) => Some((AnnotationKind::Note, n)),
             PenNode::Context(n) => Some((AnnotationKind::Context, n)),
             PenNode::Prompt(n) => Some((AnnotationKind::Prompt, n)),
+            _ => None,
+        }
+    }
+
+    /// The frame body of a frame or a script node. A script is a frame
+    /// whose children its program generates, so frame logic (layout,
+    /// paint, export) applies to both through this.
+    pub fn frame_body(&self) -> Option<&FrameNode> {
+        match self {
+            PenNode::Frame(n) => Some(n),
+            PenNode::Script(n) => Some(&n.frame),
+            _ => None,
+        }
+    }
+
+    /// Mutable twin of [`PenNode::frame_body`].
+    pub fn frame_body_mut(&mut self) -> Option<&mut FrameNode> {
+        match self {
+            PenNode::Frame(n) => Some(n),
+            PenNode::Script(n) => Some(&mut n.frame),
             _ => None,
         }
     }

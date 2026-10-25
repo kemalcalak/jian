@@ -101,7 +101,9 @@ pub fn is_stack_container(layout: Option<&LayoutMode>) -> bool {
 pub fn node_is_stack_container(n: &jian_ops_schema::node::PenNode) -> bool {
     use jian_ops_schema::node::PenNode;
     let layout = match n {
-        PenNode::Frame(f) => f.container.layout.as_ref(),
+        PenNode::Frame(f) | PenNode::Script(jian_ops_schema::node::ScriptNode { frame: f, .. }) => {
+            f.container.layout.as_ref()
+        }
         PenNode::Group(g) => g.container.layout.as_ref(),
         PenNode::Rectangle(r) => r.container.layout.as_ref(),
         PenNode::Tabs(_) => return true,
@@ -296,7 +298,9 @@ pub(crate) fn apply_limits(style: &mut Style, limits: &jian_ops_schema::sizing::
 pub fn node_to_style(n: &jian_ops_schema::node::PenNode) -> Style {
     use jian_ops_schema::node::PenNode;
     let mut style = match n {
-        PenNode::Frame(f) => container_to_style(&f.container),
+        PenNode::Frame(f) | PenNode::Script(jian_ops_schema::node::ScriptNode { frame: f, .. }) => {
+            container_to_style(&f.container)
+        }
         PenNode::Group(g) => container_to_style(&g.container),
         PenNode::Rectangle(r) => container_to_style(&r.container),
         PenNode::Tabs(t) => tabs_to_style(t),
@@ -394,7 +398,9 @@ pub(crate) fn node_base(
 ) -> Option<&jian_ops_schema::node::base::PenNodeBase> {
     use jian_ops_schema::node::PenNode;
     Some(match n {
-        PenNode::Frame(f) => &f.base,
+        PenNode::Frame(f) | PenNode::Script(jian_ops_schema::node::ScriptNode { frame: f, .. }) => {
+            &f.base
+        }
         PenNode::Group(g) => &g.base,
         PenNode::Rectangle(r) => &r.base,
         PenNode::Text(t) => &t.base,
@@ -424,7 +430,10 @@ fn node_limits(
 ) -> Option<&jian_ops_schema::sizing::SizeLimits> {
     use jian_ops_schema::node::PenNode;
     match node {
-        PenNode::Frame(node) => Some(&node.container.limits),
+        PenNode::Frame(node)
+        | PenNode::Script(jian_ops_schema::node::ScriptNode { frame: node, .. }) => {
+            Some(&node.container.limits)
+        }
         PenNode::Group(node) => Some(&node.container.limits),
         PenNode::Rectangle(node) => Some(&node.container.limits),
         PenNode::Text(node) => Some(&node.limits),
@@ -502,7 +511,9 @@ fn node_size_refs(
 ) -> (Option<&SizingBehavior>, Option<&SizingBehavior>) {
     use jian_ops_schema::node::PenNode;
     match n {
-        PenNode::Frame(f) => (f.container.width.as_ref(), f.container.height.as_ref()),
+        PenNode::Frame(f) | PenNode::Script(jian_ops_schema::node::ScriptNode { frame: f, .. }) => {
+            (f.container.width.as_ref(), f.container.height.as_ref())
+        }
         PenNode::Group(g) => (g.container.width.as_ref(), g.container.height.as_ref()),
         PenNode::Rectangle(r) => (r.container.width.as_ref(), r.container.height.as_ref()),
         _ => {
@@ -519,7 +530,9 @@ fn node_size_refs(
 pub fn node_is_horizontal(n: &jian_ops_schema::node::PenNode) -> bool {
     use jian_ops_schema::node::PenNode;
     let layout = match n {
-        PenNode::Frame(f) => f.container.layout.as_ref(),
+        PenNode::Frame(f) | PenNode::Script(jian_ops_schema::node::ScriptNode { frame: f, .. }) => {
+            f.container.layout.as_ref()
+        }
         PenNode::Group(g) => g.container.layout.as_ref(),
         PenNode::Rectangle(r) => r.container.layout.as_ref(),
         _ => None,

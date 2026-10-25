@@ -1,6 +1,6 @@
 use crate::document::{NodeKey, NodeTree};
 use jian_ops_schema::constraints::{HConstraint, VConstraint};
-use jian_ops_schema::node::{PenNode, PenNodeBase};
+use jian_ops_schema::node::{PenNode, PenNodeBase, ScriptNode};
 use jian_ops_schema::sizing::{SizeLimits, SizingBehavior};
 use slotmap::SecondaryMap;
 
@@ -139,7 +139,7 @@ fn number(value: Option<&SizingBehavior>) -> Option<f32> {
 
 fn numeric_size(node: &PenNode) -> (Option<f32>, Option<f32>) {
     match node {
-        PenNode::Frame(node) => (
+        PenNode::Frame(node) | PenNode::Script(ScriptNode { frame: node, .. }) => (
             number(node.container.width.as_ref()),
             number(node.container.height.as_ref()),
         ),
@@ -176,7 +176,7 @@ fn numeric_size(node: &PenNode) -> (Option<f32>, Option<f32>) {
 
 fn node_base(node: &PenNode) -> Option<&PenNodeBase> {
     Some(match node {
-        PenNode::Frame(node) => &node.base,
+        PenNode::Frame(node) | PenNode::Script(ScriptNode { frame: node, .. }) => &node.base,
         PenNode::Group(node) => &node.base,
         PenNode::Rectangle(node) => &node.base,
         PenNode::Text(node) => &node.base,
@@ -203,7 +203,9 @@ fn node_base(node: &PenNode) -> Option<&PenNodeBase> {
 
 fn node_limits(node: &PenNode) -> Option<&SizeLimits> {
     match node {
-        PenNode::Frame(node) => Some(&node.container.limits),
+        PenNode::Frame(node) | PenNode::Script(ScriptNode { frame: node, .. }) => {
+            Some(&node.container.limits)
+        }
         PenNode::Group(node) => Some(&node.container.limits),
         PenNode::Rectangle(node) => Some(&node.container.limits),
         PenNode::Text(node) => Some(&node.limits),

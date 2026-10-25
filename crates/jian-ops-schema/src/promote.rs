@@ -15,7 +15,8 @@ use crate::document::PenDocument;
 use crate::node::text::TextContent;
 use crate::node::{
     CheckboxNode, FrameNode, NumberInputNode, NumberOrExpression, PenNode, ProgressNode,
-    RadioGroupNode, SelectNode, SelectOption, SliderNode, SwitchNode, TextAreaNode, TextInputNode,
+    RadioGroupNode, ScriptNode, SelectNode, SelectOption, SliderNode, SwitchNode, TextAreaNode,
+    TextInputNode,
 };
 use crate::semantics::SemanticRole;
 use crate::style::PenFill;
@@ -439,7 +440,7 @@ pub fn promote_frame(frame: &FrameNode, kind: WidgetKind) -> PenNode {
 /// marked frame). Widget nodes are leaves and never recursed into.
 fn children_mut(node: &mut PenNode) -> Option<&mut Vec<PenNode>> {
     match node {
-        PenNode::Frame(f) => f.children.as_mut(),
+        PenNode::Frame(f) | PenNode::Script(ScriptNode { frame: f, .. }) => f.children.as_mut(),
         PenNode::Group(g) => g.children.as_mut(),
         PenNode::Rectangle(r) => r.children.as_mut(),
         PenNode::Tabs(t) => t.children.as_mut(),

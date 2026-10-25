@@ -75,7 +75,7 @@ fn visit_own_sources<'a>(
     }
 
     match node {
-        PenNode::Frame(node) => {
+        PenNode::Frame(node) | PenNode::Script(crate::node::ScriptNode { frame: node, .. }) => {
             visit_fills(node.container.fill.as_deref(), visit);
             visit_stroke(node.container.stroke.as_ref(), visit);
             node.children.as_deref()

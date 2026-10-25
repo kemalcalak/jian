@@ -8,7 +8,7 @@
 //!   node_id (string)  → SlotKey
 //!   SlotKey           → { parent, children, kind, schema_ref }
 
-use jian_ops_schema::node::PenNode;
+use jian_ops_schema::node::{PenNode, ScriptNode};
 use slotmap::{new_key_type, SecondaryMap, SlotMap};
 use std::collections::BTreeMap;
 
@@ -101,7 +101,7 @@ impl Default for NodeTree {
 /// Read the node's stable id from any variant.
 pub fn node_schema_id(n: &PenNode) -> &str {
     match n {
-        PenNode::Frame(x) => &x.base.id,
+        PenNode::Frame(x) | PenNode::Script(ScriptNode { frame: x, .. }) => &x.base.id,
         PenNode::Group(x) => &x.base.id,
         PenNode::Rectangle(x) => &x.base.id,
         PenNode::Ellipse(x) => &x.base.id,
@@ -129,7 +129,9 @@ pub fn node_schema_id(n: &PenNode) -> &str {
 /// Extract the children collection from a container-style node, cloning.
 fn take_children(n: &PenNode) -> Vec<PenNode> {
     match n {
-        PenNode::Frame(x) => x.children.clone().unwrap_or_default(),
+        PenNode::Frame(x) | PenNode::Script(ScriptNode { frame: x, .. }) => {
+            x.children.clone().unwrap_or_default()
+        }
         PenNode::Group(x) => x.children.clone().unwrap_or_default(),
         PenNode::Rectangle(x) => x.children.clone().unwrap_or_default(),
         PenNode::Tabs(x) => x.children.clone().unwrap_or_default(),
