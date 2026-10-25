@@ -337,6 +337,14 @@ fn node_expression_surface(
             None,
             None,
         ),
+        PenNode::Browser(n) => (
+            n.base.opacity.as_ref(),
+            n.base.enabled.as_ref(),
+            None,
+            None,
+            None,
+            None,
+        ),
     }
 }
 
