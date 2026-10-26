@@ -284,12 +284,21 @@ impl LayoutEngine {
                     if resolve::main_axis_is_fixed_number(&data.schema, parent_horizontal) {
                         style.flex_shrink = 0.0;
                     }
-                    // A fill-height child in a row stretches to the row's height
-                    // (so a space_between sidebar's footer reaches the bottom)
-                    // instead of collapsing on an indefinite-height parent.
-                    resolve::apply_fill_container_axes(&mut style, &data.schema, parent_horizontal);
                     // Auto-layout owns both axes: stale x/y must not pull a child out of flow.
                     flow_child::apply_flow_child(&mut style, &data.schema, parent);
+                    // A fill-height child in a row stretches to the row's height
+                    // (so a space_between sidebar's footer reaches the bottom)
+                    // instead of collapsing on an indefinite-height parent. Both
+                    // remedies are flow mechanisms: a child that stays absolute
+                    // (an overlay) keeps `percent(1.0)`, which taffy resolves
+                    // against the parent's box once its size is known.
+                    if style.position != taffy::style::Position::Absolute {
+                        resolve::apply_fill_container_axes(
+                            &mut style,
+                            &data.schema,
+                            parent_horizontal,
+                        );
+                    }
                 }
             }
             self.base_styles.insert(key, style.clone());
