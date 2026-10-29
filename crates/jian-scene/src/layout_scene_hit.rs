@@ -10,7 +10,8 @@
 //! Hit semantics carry over from `document/walkers.rs`:
 //! top-most-first z-order (`children[0]` is frontmost), per-node rotation inverse-transform, the
 //! tighter Ellipse / Polygon / Line geometry, the locked-node
-//! body-opts-out-children-stay rule, and the hidden-subtree skip.
+//! body-opts-out-children-stay rule, and the hidden-subtree skip. Children
+//! a `clipContent` ancestor hides are not hit where it hides them.
 //!
 //! One rule is newer: a Frame / Group that paints no body of its own is
 //! not selectable across its empty area (see `paints_body`). Painted
@@ -128,7 +129,7 @@ fn hit_test_walk(node: &SceneNode, point: Point2D, zoom: f32) -> Option<String> 
     let local = point_in_node_space(node, point, bounds);
     // `visible_children` — not `children` — so hit-test and paint share one
     // rule for which of a tabs node's overlapping panels is live.
-    for child in node.visible_children() {
+    for child in hittable_children(node, local) {
         if let Some(hit) = hit_test_walk(child, local, zoom) {
             return Some(hit);
         }
@@ -163,8 +164,8 @@ fn hit_test_path_walk<'a>(
     let bounds = node.aggregate_bounds();
     let local = point_in_node_space(node, point, bounds);
     path.push(node.id.as_str());
-    // Same painted-subtree rule as `hit_test_walk`.
-    for child in node.visible_children() {
+    // Same painted-subtree and clipping rules as `hit_test_walk`.
+    for child in hittable_children(node, local) {
         if hit_test_path_walk(child, local, zoom, path, include_empty_body) {
             return true;
         }
@@ -174,6 +175,37 @@ fn hit_test_path_walk<'a>(
     }
     path.pop();
     false
+}
+
+/// The children a pointer at `local` can reach: none where `node` clips
+/// them away.
+fn hittable_children(node: &SceneNode, local: Point2D) -> &[SceneNode] {
+    if clips_away(node, local) {
+        &[]
+    } else {
+        node.visible_children()
+    }
+}
+
+/// Whether `node` clips its content (`clipContent`) and `local` (already in
+/// the node's own space) falls outside its box: the painter shows none of
+/// the children there, so none of them can be hit or hovered either.
+fn clips_away(node: &SceneNode, local: Point2D) -> bool {
+    let b = node.bounds;
+    // A clipping container with no size of its own (bounds sized by its
+    // children) paints unclipped, so it hits unclipped too.
+    if !node.clip_content || b.size.x == 0.0 || b.size.y == 0.0 {
+        return false;
+    }
+    let (x0, x1) = (
+        b.origin.x.min(b.origin.x + b.size.x),
+        b.origin.x.max(b.origin.x + b.size.x),
+    );
+    let (y0, y1) = (
+        b.origin.y.min(b.origin.y + b.size.y),
+        b.origin.y.max(b.origin.y + b.size.y),
+    );
+    local.x < x0 || local.x > x1 || local.y < y0 || local.y > y1
 }
 
 fn point_in_node_space(node: &SceneNode, point: Point2D, bounds: Rect) -> Point2D {
@@ -908,5 +940,40 @@ mod tests {
         // Negative-size marquee still intersects.
         let hits = scene.nodes_intersecting_doc_rect(Rect::xywh(40.0, 40.0, -30.0, -30.0));
         assert_eq!(hits, vec!["a".to_string()]);
+    }
+
+    #[test]
+    fn a_sizeless_clipping_group_keeps_its_children_hittable() {
+        let mut group = leaf("group", NodeKind::Group, Rect::ZERO);
+        group.clip_content = true;
+        group.children = vec![filled("child", Rect::xywh(10.0, 10.0, 50.0, 50.0))];
+        let scene = one_page(vec![group]);
+        assert_eq!(
+            scene.node_path_at_doc_point(Point2D::new(20.0, 20.0), 1.0),
+            path(&["group", "child"])
+        );
+    }
+
+    #[test]
+    fn children_a_clipping_frame_hides_are_not_hit_there() {
+        // A frame placed outside its clipping board paints nothing, so a
+        // pointer over that empty canvas must not hit or hover it.
+        let mut board = filled("board", Rect::xywh(0.0, 0.0, 880.0, 1000.0));
+        board.clip_content = true;
+        board.children = vec![
+            filled("outside", Rect::xywh(900.0, 100.0, 300.0, 300.0)),
+            filled("inside", Rect::xywh(100.0, 100.0, 300.0, 300.0)),
+        ];
+        let scene = one_page(vec![board]);
+        assert!(scene
+            .node_at_doc_point(Point2D::new(1000.0, 200.0), 1.0)
+            .is_none());
+        assert!(scene
+            .node_path_at_doc_point(Point2D::new(1000.0, 200.0), 1.0)
+            .is_none());
+        assert_eq!(
+            scene.node_path_at_doc_point(Point2D::new(200.0, 200.0), 1.0),
+            path(&["board", "inside"])
+        );
     }
 }
