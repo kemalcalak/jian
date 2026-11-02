@@ -18,11 +18,12 @@
 //!
 //! [`FontResolver`]: crate::font_resolve::FontResolver
 
+use std::cell::OnceCell;
 use std::collections::HashMap;
 use std::rc::Rc;
 
 use skia_safe::shaper::run_handler::{Buffer, RunHandler, RunInfo};
-use skia_safe::{Font, GlyphId, Point, Shaper, TextBlob, TextBlobBuilder};
+use skia_safe::{Font, GlyphId, Path, PathBuilder, Point, Shaper, TextBlob, TextBlobBuilder};
 
 /// Distinct tokens kept, over every face and size, before the word table is
 /// dropped. A size animation shapes the same words at many sizes, so the
@@ -63,6 +64,52 @@ pub struct ShapedSegment {
     pub synthetic_bold: bool,
     /// Advance of the segment, synthetic-bold allowance included.
     pub width: f32,
+    /// What the blob was built from, kept for [`Self::outline_path`].
+    pub(crate) font: Font,
+    pub(crate) glyphs: Vec<GlyphId>,
+    pub(crate) positions: Vec<Point>,
+    outline: OnceCell<Option<Path>>,
+}
+
+impl ShapedSegment {
+    pub(crate) fn new(
+        font: &Font,
+        glyphs: &[GlyphId],
+        positions: &[Point],
+        synthetic_bold: bool,
+        width: f32,
+    ) -> Self {
+        Self {
+            blob: segment_blob(font, glyphs, positions),
+            synthetic_bold,
+            width,
+            font: font.clone(),
+            glyphs: glyphs.to_vec(),
+            positions: positions.to_vec(),
+            outline: OnceCell::new(),
+        }
+    }
+
+    /// The glyph outlines at the blob's positions, for stroking. Each
+    /// glyph's contours are merged first: variable fonts draw a glyph from
+    /// overlapping contours, which a fill hides but a stroke would show as
+    /// lines inside the letter. Built once per cached segment.
+    pub fn outline_path(&self) -> Option<&Path> {
+        self.outline
+            .get_or_init(|| {
+                let mut builder = PathBuilder::new();
+                for (glyph, at) in self.glyphs.iter().zip(&self.positions) {
+                    let Some(contours) = self.font.get_path(*glyph) else {
+                        continue;
+                    };
+                    let merged = contours.simplify().unwrap_or(contours);
+                    builder.add_path_with_offset(&merged, *at, None);
+                }
+                let path = builder.detach();
+                (!path.is_empty()).then_some(path)
+            })
+            .as_ref()
+    }
 }
 
 /// A whole text run shaped for paint: one blob per typeface segment, with
@@ -374,5 +421,28 @@ mod tests {
         let a = resolver.shape_run("cached line", 14.0, None, 400, false);
         let b = resolver.shape_run("cached line", 14.0, None, 400, false);
         assert!(std::rc::Rc::ptr_eq(&a, &b));
+    }
+
+    #[test]
+    fn outline_paths_cover_the_glyphs_and_are_built_once() {
+        let resolver = crate::FontResolver::new(skia_safe::FontMgr::default());
+        let run = resolver.shape_run("Hello", 40.0, None, 700, false);
+        let segment = run
+            .segments
+            .iter()
+            .find(|s| s.blob.is_some())
+            .expect("a drawable segment");
+        let path = segment.outline_path().expect("glyph outlines");
+        let blob = segment.blob.as_ref().unwrap().bounds();
+        let outline = path.bounds();
+        // The blob's bounds are conservative; the outline sits inside them
+        // and spans most of the run.
+        assert!(outline.left >= blob.left - 0.5 && outline.right <= blob.right + 0.5);
+        assert!(
+            outline.width() > run.width * 0.8,
+            "{outline:?} vs {}",
+            run.width
+        );
+        assert!(std::ptr::eq(path, segment.outline_path().unwrap()));
     }
 }

@@ -1578,7 +1578,11 @@ slideTransition: SlideTransition | null,
  */
 variableBindings: { [key in string]?: VariableBinding } | null, minWidth: number | null, maxWidth: number | null, minHeight: number | null, maxHeight: number | null, };
 
-export type TextNode = { width: SizingBehavior | null, height: SizingBehavior | null, content: TextContent, fontFamily: string | null, fontSize: number | null, fontWeight: FontWeight | null, fontStyle: FontStyleKind | null, letterSpacing: number | null, lineHeight: number | null, textAlign: TextAlign | null, textAlignVertical: TextAlignVertical | null, textGrowth: TextGrowth | null, underline: boolean | null, strikethrough: boolean | null, fill: Array<PenFill> | null, effects: Array<PenEffect> | null, state: { [key in string]?: StateEntry } | null, bindings: { [key in string]?: Expression } | null, events: EventHandlers | null, lifecycle: NodeLifecycleHooks | null, semantics: SemanticsMeta | null, gestures: GestureOverrides | null, route: NavigationRoute | null, id: string, name: string | null, role: string | null, explain: string | null, x: number | null, y: number | null, rotation: number | null, constraints: Constraints | null, opacity: NumberOrExpression | null, enabled: BoolOrExpression | null, visible: boolean | null, locked: boolean | null,
+export type TextNode = { width: SizingBehavior | null, height: SizingBehavior | null, content: TextContent, fontFamily: string | null, fontSize: number | null, fontWeight: FontWeight | null, fontStyle: FontStyleKind | null, letterSpacing: number | null, lineHeight: number | null, textAlign: TextAlign | null, textAlignVertical: TextAlignVertical | null, textGrowth: TextGrowth | null, underline: boolean | null, strikethrough: boolean | null, fill: Array<PenFill> | null,
+/**
+ * Outline drawn along the glyph contours (outlined text).
+ */
+stroke: PenStroke | null, effects: Array<PenEffect> | null, state: { [key in string]?: StateEntry } | null, bindings: { [key in string]?: Expression } | null, events: EventHandlers | null, lifecycle: NodeLifecycleHooks | null, semantics: SemanticsMeta | null, gestures: GestureOverrides | null, route: NavigationRoute | null, id: string, name: string | null, role: string | null, explain: string | null, x: number | null, y: number | null, rotation: number | null, constraints: Constraints | null, opacity: NumberOrExpression | null, enabled: BoolOrExpression | null, visible: boolean | null, locked: boolean | null,
 /**
  * Keep this node at its authored viewport position while its nearest
  * scrollable ancestor moves ordinary content.

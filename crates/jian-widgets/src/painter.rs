@@ -163,6 +163,15 @@ pub trait Painter {
     fn fill_rect(&mut self, rect: Rect, color: Color);
     fn stroke_rect(&mut self, rect: Rect, color: Color, width: f32);
     fn draw_text(&mut self, layout: &TextLayout, origin: Point2D);
+
+    /// Stroke the glyph outlines `draw_text` would fill for the same
+    /// `layout` and `origin`, centred on the contours, in one colour. Cap /
+    /// join / dash come from `set_stroke_style`. Backends that cannot
+    /// outline glyphs draw nothing.
+    fn stroke_text(&mut self, layout: &TextLayout, origin: Point2D, color: Color, width: f32) {
+        let _ = (layout, origin, color, width);
+    }
+
     fn clip_rect(&mut self, rect: Rect);
 
     fn clip_round_rect(&mut self, rect: Rect, radius: f32) {
