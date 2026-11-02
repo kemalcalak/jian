@@ -113,11 +113,13 @@ impl FontResolver {
                     &mut glyphs,
                     &mut positions,
                 );
-                segments.push(ShapedSegment {
-                    blob: crate::shaped_words::segment_blob(&font, &glyphs, &positions),
-                    synthetic_bold: segment.synthetic_bold,
+                segments.push(ShapedSegment::new(
+                    &font,
+                    &glyphs,
+                    &positions,
+                    segment.synthetic_bold,
                     width,
-                });
+                ));
                 x += width;
             }
             let run = Rc::new(ShapedRun { segments, width: x });
