@@ -3106,6 +3106,17 @@
                 "$ref": "#/definitions/PenFill"
               }
             },
+            "stroke": {
+              "description": "Outline drawn along the glyph contours (outlined text).",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/PenStroke"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
             "effects": {
               "type": [
                 "array",

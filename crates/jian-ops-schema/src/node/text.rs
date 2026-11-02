@@ -1,6 +1,6 @@
 use super::base::PenNodeBase;
 use crate::sizing::SizingBehavior;
-use crate::style::{PenEffect, PenFill, StyledTextSegment};
+use crate::style::{PenEffect, PenFill, PenStroke, StyledTextSegment};
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, schemars::JsonSchema)]
@@ -99,6 +99,9 @@ pub struct TextNode {
     pub strikethrough: Option<bool>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub fill: Option<Vec<PenFill>>,
+    /// Outline drawn along the glyph contours (outlined text).
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub stroke: Option<PenStroke>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub effects: Option<Vec<PenEffect>>,
     #[serde(default, skip_serializing_if = "Option::is_none")]

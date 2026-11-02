@@ -55,3 +55,19 @@ fn image() {
     // a plain JSON string, so existing files still load + re-save.
     assert_roundtrip("image.op");
 }
+#[test]
+fn text_stroke() {
+    // Outlined text: the stroke used to be dropped as an unknown field.
+    let raw = r##"{"version":"0.8.0","children":[{"type":"text","id":"t","content":"Outlined",
+        "fill":[{"type":"solid","color":"#111111"}],
+        "stroke":{"thickness":1,"align":"outside","fill":[{"type":"solid","color":"#FF00FF"}]}}]}"##;
+    let doc: PenDocument = serde_json::from_str(raw).unwrap();
+    let jian_ops_schema::node::PenNode::Text(text) = &doc.children[0] else {
+        panic!("expected a text node");
+    };
+    assert!(text.stroke.is_some());
+    let serialized = serde_json::to_string(&doc).unwrap();
+    assert!(serialized.contains("\"stroke\""));
+    let doc2: PenDocument = serde_json::from_str(&serialized).unwrap();
+    assert_eq!(doc, doc2);
+}

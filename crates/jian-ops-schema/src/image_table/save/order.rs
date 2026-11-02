@@ -107,7 +107,7 @@ fn visit_own_sources<'a>(
             None
         }
         PenNode::Text(node) => {
-            visit_fills(node.fill.as_deref(), visit);
+            style!(node);
             None
         }
         PenNode::TextInput(node) => {
