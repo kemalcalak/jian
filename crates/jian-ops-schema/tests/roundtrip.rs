@@ -71,3 +71,21 @@ fn text_stroke() {
     let doc2: PenDocument = serde_json::from_str(&serialized).unwrap();
     assert_eq!(doc, doc2);
 }
+#[test]
+fn text_overflow() {
+    // A truncated label: one line cut with "…" at its box.
+    let raw = r##"{"version":"0.8.0","children":[{"type":"text","id":"t","content":"A long label",
+        "width":"fill_container","textGrowth":"fixed-width-height","textOverflow":"ellipsis"}]}"##;
+    let doc: PenDocument = serde_json::from_str(raw).unwrap();
+    let jian_ops_schema::node::PenNode::Text(text) = &doc.children[0] else {
+        panic!("expected a text node");
+    };
+    assert_eq!(
+        text.text_overflow,
+        Some(jian_ops_schema::node::text::TextOverflow::Ellipsis)
+    );
+    let serialized = serde_json::to_string(&doc).unwrap();
+    assert!(serialized.contains(r#""textOverflow":"ellipsis""#));
+    let doc2: PenDocument = serde_json::from_str(&serialized).unwrap();
+    assert_eq!(doc, doc2);
+}

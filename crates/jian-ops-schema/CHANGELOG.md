@@ -7,6 +7,8 @@ additions targeted at the workspace's `0.0.1` development release.
 
 ### Added
 
+- `TextNode.textOverflow` (`clip` | `ellipsis`): a line that does not wrap
+  ends in "…" where it runs past its box (CSS `text-overflow`).
 - `TextNode.stroke` (`PenStroke`): outlined text, previously dropped as
   an unknown field.
 - Full Rust representation of v0.x `.op` file format

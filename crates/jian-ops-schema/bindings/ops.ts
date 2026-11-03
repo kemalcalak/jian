@@ -1578,7 +1578,11 @@ slideTransition: SlideTransition | null,
  */
 variableBindings: { [key in string]?: VariableBinding } | null, minWidth: number | null, maxWidth: number | null, minHeight: number | null, maxHeight: number | null, };
 
-export type TextNode = { width: SizingBehavior | null, height: SizingBehavior | null, content: TextContent, fontFamily: string | null, fontSize: number | null, fontWeight: FontWeight | null, fontStyle: FontStyleKind | null, letterSpacing: number | null, lineHeight: number | null, textAlign: TextAlign | null, textAlignVertical: TextAlignVertical | null, textGrowth: TextGrowth | null, underline: boolean | null, strikethrough: boolean | null, fill: Array<PenFill> | null,
+export type TextNode = { width: SizingBehavior | null, height: SizingBehavior | null, content: TextContent, fontFamily: string | null, fontSize: number | null, fontWeight: FontWeight | null, fontStyle: FontStyleKind | null, letterSpacing: number | null, lineHeight: number | null, textAlign: TextAlign | null, textAlignVertical: TextAlignVertical | null, textGrowth: TextGrowth | null,
+/**
+ * Cut a line that runs past the box, `ellipsis` ending it with "…".
+ */
+textOverflow: TextOverflow | null, underline: boolean | null, strikethrough: boolean | null, fill: Array<PenFill> | null,
 /**
  * Outline drawn along the glyph contours (outlined text).
  */
@@ -1610,6 +1614,12 @@ slideTransition: SlideTransition | null,
  * for the active theme while the field still holds that value.
  */
 variableBindings: { [key in string]?: VariableBinding } | null, minWidth: number | null, maxWidth: number | null, minHeight: number | null, maxHeight: number | null, };
+
+/**
+ * What a line of text that does not wrap shows where it runs past its
+ * box (CSS `text-overflow`).
+ */
+export type TextOverflow = "clip" | "ellipsis";
 
 export type ThemedValue = { value: VariableScalar, theme: { [key in string]?: string } | null, };
 
