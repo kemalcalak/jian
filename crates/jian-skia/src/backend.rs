@@ -317,7 +317,7 @@ fn draw_text_singleline(canvas: &skia_safe::Canvas, run: &jian_core::render::Tex
     );
     let mgr = skia_safe::FontMgr::new();
     let typeface = if !run.font_family.is_empty() {
-        mgr.match_family_style(&run.font_family, style)
+        crate::font_match::match_family_style_css(&mgr, &run.font_family, style)
             .or_else(|| mgr.legacy_make_typeface(None, style))
     } else {
         mgr.legacy_make_typeface(None, style)

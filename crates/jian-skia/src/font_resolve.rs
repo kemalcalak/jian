@@ -371,11 +371,10 @@ impl FontResolver {
             // weight-700 run resolves to the family's real Semibold face
             // instead of Regular plus a synthetic-bold stroke.
             let family = typeface.family_name();
-            let styled = self
-                .system_mgr
-                .match_family_style(&family, style)
-                .filter(|candidate| covers(candidate, c))
-                .unwrap_or(typeface);
+            let styled =
+                crate::font_match::match_family_style_css(&self.system_mgr, &family, style)
+                    .filter(|candidate| covers(candidate, c))
+                    .unwrap_or(typeface);
             return Some(resolved(styled, weight, italic));
         }
         // Last resort: scan every imported family for glyph coverage. On
@@ -417,7 +416,7 @@ fn family_typeface_covering(
     c: char,
 ) -> Option<Typeface> {
     let family = canonical_font_family(mgr, family_names, family)?;
-    mgr.match_family_style(&family, style)
+    crate::font_match::match_family_style_css(mgr, &family, style)
         .filter(|typeface| covers(typeface, c))
 }
 
@@ -724,6 +723,31 @@ mod tests {
             )
             .is_some());
         });
+    }
+
+    // Arial on macOS ships Regular and Bold only; CoreText's descriptor match
+    // handed 500 the Bold face (kemalcalak/design-editor#300).
+    #[cfg(target_os = "macos")]
+    #[test]
+    fn macos_arial_weights_resolve_like_css() {
+        let resolver = FontResolver::new(FontMgr::default());
+        let face = |weight| {
+            resolver
+                .typeface_for_char(Some("Arial"), 'C', weight, false)
+                .expect("macOS ships Arial")
+        };
+        for (weight, expected) in [(300, 400), (500, 400), (600, 700), (900, 700)] {
+            let resolved = face(weight);
+            assert_eq!(
+                *resolved.typeface.font_style().weight(),
+                expected,
+                "{weight}"
+            );
+            assert!(!resolved.synthetic_bold, "{weight}");
+        }
+        let regular = resolver.measure_text("Components", 14.0, Some("Arial"), 400, false);
+        let medium = resolver.measure_text("Components", 14.0, Some("Arial"), 500, false);
+        assert!((medium - regular).abs() < 1.0, "{medium} vs {regular}");
     }
 
     #[cfg(target_os = "macos")]
