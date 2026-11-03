@@ -52,7 +52,7 @@ pub use switch::SwitchNode;
 pub use tabs::TabsNode;
 pub use text::{
     FontStyleKind as TextFontStyle, FontWeight, TextAlign, TextAlignVertical, TextContent,
-    TextGrowth, TextNode,
+    TextGrowth, TextNode, TextOverflow,
 };
 pub use text_area::TextAreaNode;
 pub use text_input::TextInputNode;
