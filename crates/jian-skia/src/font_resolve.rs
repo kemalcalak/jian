@@ -11,6 +11,7 @@ use std::{
     collections::HashMap,
 };
 
+use crate::font_match::FamilyFaces;
 use crate::shaped_words::ShapedWords;
 
 #[path = "font_resolve_shaped.rs"]
@@ -65,7 +66,15 @@ struct FontResolverCache {
     /// every character of a run resolves to the same instance and stays in
     /// one segment.
     weight_instances: HashMap<(u32, u16), Option<(Typeface, f32)>>,
+    /// Each family's CSS-matched face per style, so a family's style set is
+    /// enumerated once rather than once per character.
+    family_faces: FamilyFaces,
 }
+
+/// Which manager a [`FamilyFaces`] entry came from.
+const IMPORTED: u8 = 0;
+const SYSTEM: u8 = 1;
+const BUNDLED: u8 = 2;
 
 #[derive(Clone, Hash, PartialEq, Eq)]
 struct FontKey {
@@ -176,6 +185,7 @@ impl FontResolver {
             let mut cache = self.cache.borrow_mut();
             cache.chars.clear();
             cache.weight_instances.clear();
+            cache.family_faces.clear();
         }
         self.shaped.borrow_mut().clear();
         self.built_generation.set(current);
@@ -330,13 +340,19 @@ impl FontResolver {
             // Preserve CSS family order. Within one authored candidate, an
             // imported face wins over the same-named system or bundled face.
             if let Some(imported) = &*imported_mgr {
-                if let Some(typeface) =
-                    family_typeface_covering(imported, &imported_names, family, style, c)
-                {
+                if let Some(typeface) = self.family_typeface_covering(
+                    IMPORTED,
+                    imported,
+                    &imported_names,
+                    family,
+                    style,
+                    c,
+                ) {
                     return Some(resolved(typeface, weight, italic));
                 }
             }
-            if let Some(typeface) = family_typeface_covering(
+            if let Some(typeface) = self.family_typeface_covering(
+                SYSTEM,
                 &self.system_mgr,
                 &self.system_family_names,
                 family,
@@ -346,9 +362,14 @@ impl FontResolver {
                 return Some(resolved(typeface, weight, italic));
             }
             if let Some(bundled) = &*bundled_mgr {
-                if let Some(typeface) =
-                    family_typeface_covering(bundled, &bundled_names, family, style, c)
-                {
+                if let Some(typeface) = self.family_typeface_covering(
+                    BUNDLED,
+                    bundled,
+                    &bundled_names,
+                    family,
+                    style,
+                    c,
+                ) {
                     return Some(resolved(typeface, weight, italic));
                 }
             }
@@ -372,8 +393,10 @@ impl FontResolver {
             // instead of Regular plus a synthetic-bold stroke.
             let family = typeface.family_name();
             let styled = self
-                .system_mgr
-                .match_family_style(&family, style)
+                .cache
+                .borrow_mut()
+                .family_faces
+                .get(SYSTEM, &self.system_mgr, &family, style)
                 .filter(|candidate| covers(candidate, c))
                 .unwrap_or(typeface);
             return Some(resolved(styled, weight, italic));
@@ -386,14 +409,36 @@ impl FontResolver {
         // authored family names it.
         if let Some(imported) = &*imported_mgr {
             for family in imported_names.values() {
-                if let Some(typeface) =
-                    family_typeface_covering(imported, &imported_names, family, style, c)
-                {
+                if let Some(typeface) = self.family_typeface_covering(
+                    IMPORTED,
+                    imported,
+                    &imported_names,
+                    family,
+                    style,
+                    c,
+                ) {
                     return Some(resolved(typeface, weight, italic));
                 }
             }
         }
         None
+    }
+
+    fn family_typeface_covering(
+        &self,
+        source: u8,
+        mgr: &FontMgr,
+        family_names: &HashMap<String, String>,
+        family: &str,
+        style: FontStyle,
+        c: char,
+    ) -> Option<Typeface> {
+        let family = canonical_font_family(mgr, family_names, family)?;
+        self.cache
+            .borrow_mut()
+            .family_faces
+            .get(source, mgr, &family, style)
+            .filter(|typeface| covers(typeface, c))
     }
 }
 
@@ -407,18 +452,6 @@ pub fn font_style_for(weight: u16, italic: bool) -> FontStyle {
             Slant::Upright
         },
     )
-}
-
-fn family_typeface_covering(
-    mgr: &FontMgr,
-    family_names: &HashMap<String, String>,
-    family: &str,
-    style: FontStyle,
-    c: char,
-) -> Option<Typeface> {
-    let family = canonical_font_family(mgr, family_names, family)?;
-    mgr.match_family_style(&family, style)
-        .filter(|typeface| covers(typeface, c))
 }
 
 /// Index the canonical spelling exposed by a `FontMgr` under an ASCII-folded
@@ -715,14 +748,14 @@ mod tests {
                 ),
                 vec![FAMILY]
             );
-            assert!(family_typeface_covering(
+            let family = canonical_font_family(&manager, &names, "case fold test")
+                .expect("folded family resolves");
+            assert!(crate::font_match::match_family_style_css(
                 &manager,
-                &names,
-                "case fold test",
-                FontStyle::default(),
-                'A',
+                &family,
+                FontStyle::default()
             )
-            .is_some());
+            .is_some_and(|typeface| covers(&typeface, 'A')));
         });
     }
 
