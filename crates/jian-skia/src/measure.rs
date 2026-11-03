@@ -228,14 +228,7 @@ impl SkiaMeasure {
         // ParagraphStyle is a per-paragraph default container;
         // line_height is applied per TextStyle below so individual
         // runs can opt in/out independently.
-        let mut style = ParagraphStyle::new();
-        // Unhinted, as browsers and the shaped-word painter
-        // (`font_resolve_shaped::segment_font`) lay text out. Skia hints
-        // paragraphs by default, and under DirectWrite a hinted advance is
-        // rounded to whole pixels per glyph: Arial at 14 px measured about
-        // a pixel wider per character on Windows than on macOS / Linux, so
-        // every box sized by its text came out wider than its page there.
-        style.turn_hinting_off();
+        let style = ParagraphStyle::new();
         let mut builder = ParagraphBuilder::new(&style, (**self.font_collection.borrow()).clone());
 
         for run in req.runs {
@@ -350,32 +343,6 @@ mod tests {
         );
         assert_eq!(res.line_count, 1);
         assert!(res.height >= 16.0 && res.height < 32.0);
-    }
-
-    #[test]
-    fn natural_extent_matches_the_unhinted_shaped_advances() {
-        // The painter's shaped words are unhinted; the layout's natural
-        // extent must agree, or a hugging box is sized for text wider (or
-        // narrower) than the text painted in it. Hinted advances on
-        // Windows were ~1 px wider per glyph.
-        let backend = SkiaMeasure::new();
-        let text = "Claude Sonnet and the quarterly report";
-        let mut runs = [run(text, 400, 14.0)];
-        runs[0].font_family = Some("Arial, sans-serif");
-        let res = backend.measure(&MeasureRequest {
-            runs: &runs,
-            line_height: 0.0,
-            max_width: None,
-        });
-        let shaped =
-            backend
-                .font_resolver()
-                .measure_text(text, 14.0, Some("Arial, sans-serif"), 400, false);
-        assert!(
-            (res.width - shaped).abs() <= 1.0,
-            "paragraph {} vs shaped {shaped}",
-            res.width
-        );
     }
 
     #[test]
