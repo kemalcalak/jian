@@ -61,6 +61,17 @@ pub enum TextGrowth {
     FixedWidthHeight,
 }
 
+/// What a line of text that does not wrap shows where it runs past its
+/// box (CSS `text-overflow`).
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, schemars::JsonSchema)]
+#[cfg_attr(feature = "export-ts", derive(ts_rs::TS))]
+#[cfg_attr(feature = "export-ts", ts(export, export_to = "ops.ts"))]
+#[serde(rename_all = "snake_case")]
+pub enum TextOverflow {
+    Clip,
+    Ellipsis,
+}
+
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, schemars::JsonSchema)]
 #[cfg_attr(feature = "export-ts", derive(ts_rs::TS))]
 #[cfg_attr(feature = "export-ts", ts(export, export_to = "ops.ts"))]
@@ -93,6 +104,9 @@ pub struct TextNode {
     pub text_align_vertical: Option<TextAlignVertical>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub text_growth: Option<TextGrowth>,
+    /// Cut a line that runs past the box, `ellipsis` ending it with "…".
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub text_overflow: Option<TextOverflow>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub underline: Option<bool>,
     #[serde(default, skip_serializing_if = "Option::is_none")]

@@ -663,6 +663,9 @@ pub struct SceneNode {
     pub text_vertical_align: SceneTextVerticalAlign,
     /// Whether the painter wraps the text to `bounds.size.x`.
     pub text_wrap: bool,
+    /// A line of text that does not wrap and runs past `bounds.size.x`
+    /// ends in "…" there (`textOverflow: ellipsis`).
+    pub text_ellipsis: bool,
     /// Polyline / path geometry in absolute doc-space coords —
     /// populated for `Path` (and any kind the painter walks as
     /// points). Empty otherwise.
@@ -956,6 +959,7 @@ impl SceneNode {
             text_align: SceneTextAlign::Left,
             text_vertical_align: SceneTextVerticalAlign::Top,
             text_wrap: false,
+            text_ellipsis: false,
             points: Vec::new(),
             path_anchors: Vec::new(),
             path_closed: false,

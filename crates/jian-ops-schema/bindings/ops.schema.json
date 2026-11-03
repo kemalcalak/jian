@@ -3085,6 +3085,17 @@
                 }
               ]
             },
+            "textOverflow": {
+              "description": "Cut a line that runs past the box, `ellipsis` ending it with \"…\".",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/TextOverflow"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
             "underline": {
               "type": [
                 "boolean",
@@ -12256,6 +12267,14 @@
         "auto",
         "fixed-width",
         "fixed-width-height"
+      ]
+    },
+    "TextOverflow": {
+      "description": "What a line of text that does not wrap shows where it runs past its box (CSS `text-overflow`).",
+      "type": "string",
+      "enum": [
+        "clip",
+        "ellipsis"
       ]
     },
     "WidgetStates": {
