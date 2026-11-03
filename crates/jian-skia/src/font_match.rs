@@ -9,11 +9,14 @@
 //! - below 400: lighter ones first, then heavier ones;
 //! - above 500: heavier ones first, then lighter ones.
 
+#[cfg(feature = "textlayout")]
+use std::collections::HashMap;
+
 use skia_safe::{font_style::Slant, FontMgr, FontStyle, Typeface};
 
 /// Index of the face in `available` that CSS font matching picks for
 /// `desired`, or `None` when `available` is empty.
-pub fn css_match_style(desired: FontStyle, available: &[FontStyle]) -> Option<usize> {
+pub fn css_match_index(desired: FontStyle, available: &[FontStyle]) -> Option<usize> {
     available
         .iter()
         .enumerate()
@@ -39,9 +42,44 @@ pub fn match_family_style_css(mgr: &FontMgr, family: &str, style: FontStyle) -> 
     let styles = (0..count)
         .map(|index| set.style(index).0)
         .collect::<Vec<_>>();
-    css_match_style(style, &styles)
+    css_match_index(style, &styles)
         .and_then(|index| set.new_typeface(index))
         .or_else(|| mgr.match_family_style(family, style))
+}
+
+/// [`match_family_style_css`] results by (font source, family, style).
+/// Enumerating a family's styles costs a CoreText / DirectWrite query; a
+/// resolver asks the same family and style once per uncached character.
+/// `source` tells managers apart (imported, system, bundled).
+#[cfg(feature = "textlayout")]
+#[derive(Default)]
+pub(crate) struct FamilyFaces(HashMap<(u8, String, i32, i32, i32), Option<Typeface>>);
+
+#[cfg(feature = "textlayout")]
+impl FamilyFaces {
+    pub(crate) fn get(
+        &mut self,
+        source: u8,
+        mgr: &FontMgr,
+        family: &str,
+        style: FontStyle,
+    ) -> Option<Typeface> {
+        let key = (
+            source,
+            family.to_ascii_lowercase(),
+            *style.weight(),
+            *style.width(),
+            style.slant() as i32,
+        );
+        self.0
+            .entry(key)
+            .or_insert_with(|| match_family_style_css(mgr, family, style))
+            .clone()
+    }
+
+    pub(crate) fn clear(&mut self) {
+        self.0.clear();
+    }
 }
 
 /// Normal width (CSS `font-stretch: 100%`) and narrower prefer narrower
@@ -72,27 +110,16 @@ fn weight_rank(desired: i32, weight: i32) -> (u8, i32) {
     if weight == desired {
         return (0, 0);
     }
-    let distance = (weight - desired).abs();
-    let tier = if (400..=500).contains(&desired) {
-        if weight > desired && weight <= 500 {
-            1
-        } else if weight < desired {
-            2
-        } else {
-            3
-        }
-    } else if desired < 400 {
-        if weight < desired {
-            1
-        } else {
-            2
-        }
-    } else if weight > desired {
-        1
-    } else {
-        2
+    let tier = match desired {
+        400..=500 if weight > desired && weight <= 500 => 1,
+        400..=500 if weight < desired => 2,
+        400..=500 => 3,
+        ..400 if weight < desired => 1,
+        ..400 => 2,
+        _ if weight > desired => 1,
+        _ => 2,
     };
-    (tier, distance)
+    (tier, (weight - desired).abs())
 }
 
 #[cfg(test)]
@@ -109,7 +136,7 @@ mod tests {
             .iter()
             .map(|weight| style(*weight, Slant::Upright))
             .collect::<Vec<_>>();
-        let index = css_match_style(style(desired, Slant::Upright), &faces).expect("a face");
+        let index = css_match_index(style(desired, Slant::Upright), &faces).expect("a face");
         available[index]
     }
 
@@ -163,11 +190,11 @@ mod tests {
             style(700, Slant::Upright),
             style(700, Slant::Italic),
         ];
-        assert_eq!(css_match_style(style(500, Slant::Italic), &faces), Some(1));
-        assert_eq!(css_match_style(style(600, Slant::Italic), &faces), Some(3));
+        assert_eq!(css_match_index(style(500, Slant::Italic), &faces), Some(1));
+        assert_eq!(css_match_index(style(600, Slant::Italic), &faces), Some(3));
         // An italic request with no italic face keeps the upright one.
         assert_eq!(
-            css_match_style(style(700, Slant::Italic), &faces[..1]),
+            css_match_index(style(700, Slant::Italic), &faces[..1]),
             Some(0)
         );
     }
@@ -178,17 +205,42 @@ mod tests {
         let expanded = FontStyle::new(Weight::NORMAL, Width::EXPANDED, Slant::Upright);
         let normal_bold = FontStyle::new(Weight::BOLD, Width::NORMAL, Slant::Upright);
         assert_eq!(
-            css_match_style(style(400, Slant::Upright), &[expanded, condensed]),
+            css_match_index(style(400, Slant::Upright), &[expanded, condensed]),
             Some(1)
         );
         assert_eq!(
-            css_match_style(style(400, Slant::Upright), &[condensed, normal_bold]),
+            css_match_index(style(400, Slant::Upright), &[condensed, normal_bold]),
             Some(1)
         );
     }
 
     #[test]
     fn empty_family_matches_nothing() {
-        assert_eq!(css_match_style(style(400, Slant::Upright), &[]), None);
+        assert_eq!(css_match_index(style(400, Slant::Upright), &[]), None);
+    }
+
+    // Arial on macOS ships Regular and Bold only; CoreText's descriptor match
+    // handed 500 the Bold face (kemalcalak/design-editor#300).
+    #[cfg(all(feature = "textlayout", target_os = "macos"))]
+    #[test]
+    fn macos_arial_weights_resolve_like_css() {
+        let resolver = crate::FontResolver::new(FontMgr::default());
+        let face = |weight| {
+            resolver
+                .typeface_for_char(Some("Arial"), 'C', weight, false)
+                .expect("macOS ships Arial")
+        };
+        for (weight, expected) in [(300, 400), (500, 400), (600, 700), (900, 700)] {
+            let resolved = face(weight);
+            assert_eq!(
+                *resolved.typeface.font_style().weight(),
+                expected,
+                "{weight}"
+            );
+            assert!(!resolved.synthetic_bold, "{weight}");
+        }
+        let regular = resolver.measure_text("Components", 14.0, Some("Arial"), 400, false);
+        let medium = resolver.measure_text("Components", 14.0, Some("Arial"), 500, false);
+        assert!((medium - regular).abs() < 1.0, "{medium} vs {regular}");
     }
 }

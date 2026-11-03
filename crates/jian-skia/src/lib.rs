@@ -72,7 +72,7 @@ pub use bundled_fonts::{
     FontSource, ImportedFontMeta,
 };
 pub use font_lock::with_font_lock;
-pub use font_match::{css_match_style, match_family_style_css};
+pub use font_match::{css_match_index, match_family_style_css};
 #[cfg(feature = "textlayout")]
 pub use font_resolve::{
     font_family_candidates, FontResolver, FontSegment, ResolvedTypeface,
