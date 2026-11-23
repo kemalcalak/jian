@@ -164,6 +164,42 @@ impl PenNode {
         }
     }
 
+    /// Mutable node-level `animations`, for the loader's motion repair
+    /// and the editor's write-time alias expansion.
+    pub fn animations_mut(&mut self) -> &mut Option<Vec<crate::motion::NodeAnimation>> {
+        &mut self.shared_base_mut().animations
+    }
+
+    /// The shared base of every variant (a script's is its frame's).
+    pub(crate) fn shared_base_mut(&mut self) -> &mut base::PenNodeBase {
+        match self {
+            PenNode::Frame(node) => &mut node.base,
+            PenNode::Group(node) => &mut node.base,
+            PenNode::Rectangle(node) => &mut node.base,
+            PenNode::Ellipse(node) => &mut node.base,
+            PenNode::Line(node) => &mut node.base,
+            PenNode::Polygon(node) => &mut node.base,
+            PenNode::Path(node) => &mut node.base,
+            PenNode::Text(node) => &mut node.base,
+            PenNode::TextInput(node) => &mut node.base,
+            PenNode::Image(node) => &mut node.base,
+            PenNode::IconFont(node) => &mut node.base,
+            PenNode::TextArea(node) => &mut node.base,
+            PenNode::Select(node) => &mut node.base,
+            PenNode::Switch(node) => &mut node.base,
+            PenNode::Checkbox(node) => &mut node.base,
+            PenNode::Slider(node) => &mut node.base,
+            PenNode::RadioGroup(node) => &mut node.base,
+            PenNode::NumberInput(node) => &mut node.base,
+            PenNode::Progress(node) => &mut node.base,
+            PenNode::Tabs(node) => &mut node.base,
+            PenNode::Ref(node) => &mut node.base,
+            PenNode::Note(node) | PenNode::Context(node) | PenNode::Prompt(node) => &mut node.base,
+            PenNode::Script(node) => &mut node.frame.base,
+            PenNode::Browser(node) => &mut node.base,
+        }
+    }
+
     /// Children of a container node, if it has a children field.
     pub fn children_ref(&self) -> Option<&[PenNode]> {
         match self {

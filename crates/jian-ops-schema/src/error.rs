@@ -14,9 +14,6 @@ pub enum OpsSchemaError {
 
     #[error("schema validation failed: {0}")]
     Validation(String),
-
-    #[error("motion validation failed at {path}: {reason}")]
-    MotionValidation { path: String, reason: String },
 }
 
 pub type OpsResult<T> = std::result::Result<T, OpsSchemaError>;
@@ -54,6 +51,33 @@ pub enum LoadWarning {
         from_role: String,
         to: &'static str,
     },
+    /// A keyframe value named a property animations do not know; the
+    /// value was dropped so the document still opens.
+    AnimationPropertyDropped {
+        path: String,
+        /// Id of the node whose animation lost the value.
+        node: String,
+        property: String,
+    },
+    /// An animation whose keyframes are invalid (offsets missing, unsorted
+    /// or out of range) was dropped so the document still opens.
+    InvalidAnimationDropped {
+        path: String,
+        /// Id of the node that lost the animation.
+        node: String,
+        reason: String,
+    },
+}
+
+impl LoadWarning {
+    /// Whether this warning reports animation data the loader dropped,
+    /// which a save would make permanent.
+    pub fn is_motion_repair(&self) -> bool {
+        matches!(
+            self,
+            Self::AnimationPropertyDropped { .. } | Self::InvalidAnimationDropped { .. }
+        )
+    }
 }
 
 impl fmt::Display for LoadWarning {
@@ -89,6 +113,13 @@ impl fmt::Display for LoadWarning {
                 formatter,
                 "legacy role `{from_role}` at `{path}` promoted to `{to}` widget"
             ),
+            Self::AnimationPropertyDropped { node, property, .. } => write!(
+                formatter,
+                "node `{node}`: unknown animation property `{property}` was dropped"
+            ),
+            Self::InvalidAnimationDropped { node, reason, .. } => {
+                write!(formatter, "node `{node}`: an animation was dropped ({reason})")
+            }
         }
     }
 }
