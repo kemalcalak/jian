@@ -2,7 +2,6 @@
 
 use crate::events::ExtraJson;
 use crate::node::PenNode;
-use crate::PenDocument;
 use serde::de::Error;
 use serde::{Deserialize, Deserializer, Serialize};
 use serde_json::Value;
@@ -382,21 +381,56 @@ fn keyframe_from_value(value: Value) -> Result<Keyframe, String> {
     }
 }
 
-/// Validate every motion declaration before a document is exposed to a host.
-pub(crate) fn validate_document(document: &PenDocument) -> Result<(), (String, String)> {
-    validate_nodes(&document.children, "$.children")?;
-    if let Some(pages) = &document.pages {
-        for (index, page) in pages.iter().enumerate() {
-            validate_nodes(&page.children, &format!("$.pages[{index}].children"))?;
+/// The alias agents reach for: `scale` stands for `scaleX` + `scaleY`.
+pub const SCALE_ALIAS: &str = "scale";
+
+/// Expand the `scale` alias in place: `scale: v` becomes `scaleX: v` and
+/// `scaleY: v`, an explicit `scaleX` / `scaleY` on the same keyframe
+/// winning. Returns whether any keyframe changed.
+pub fn expand_keyframe_aliases(keyframes: &mut [Keyframe]) -> bool {
+    let mut changed = false;
+    for keyframe in keyframes {
+        let Some(value) = keyframe.values.remove(SCALE_ALIAS) else {
+            continue;
+        };
+        for axis in ["scaleX", "scaleY"] {
+            keyframe
+                .values
+                .entry(axis.to_owned())
+                .or_insert_with(|| value.clone());
         }
+        changed = true;
     }
-    Ok(())
+    changed
 }
 
-fn validate_nodes(nodes: &[PenNode], path: &str) -> Result<(), (String, String)> {
+/// Why `property` is not an animation property, naming what to write
+/// instead.
+pub fn unknown_property_reason(property: &str) -> String {
+    if property.eq_ignore_ascii_case(SCALE_ALIAS) {
+        return format!("unknown animation property {property}; use scaleX and scaleY");
+    }
+    format!(
+        "unknown animation property {property}; valid properties are {}",
+        ANIMATION_REGISTRY_PROPERTIES.join(", ")
+    )
+}
+
+/// Validate the `animations` of `nodes` and their descendants. `path` is
+/// the JSON path of the slice; errors are `(path, reason)`.
+pub fn validate_nodes(nodes: &[PenNode], path: &str) -> Result<(), (String, String)> {
+    validate_nodes_at(nodes, path, &mut Vec::new())
+}
+
+fn validate_nodes_at(
+    nodes: &[PenNode],
+    root: &str,
+    trail: &mut Vec<usize>,
+) -> Result<(), (String, String)> {
     for (index, node) in nodes.iter().enumerate() {
-        let node_path = format!("{path}[{index}]");
+        trail.push(index);
         if let Some(animations) = node.motion_declarations().1 {
+            let node_path = node_path(root, trail);
             for (animation_index, animation) in animations.iter().enumerate() {
                 validate_keyframes(
                     &animation.keyframes,
@@ -405,13 +439,33 @@ fn validate_nodes(nodes: &[PenNode], path: &str) -> Result<(), (String, String)>
             }
         }
         if let Some(children) = node.children_ref() {
-            validate_nodes(children, &format!("{node_path}.children"))?;
+            validate_nodes_at(children, root, trail)?;
         }
+        trail.pop();
     }
     Ok(())
 }
 
-fn validate_keyframes(keyframes: &[Keyframe], path: &str) -> Result<(), (String, String)> {
+/// The JSON path of the node reached by `trail` (child indices from a
+/// slice at `root`). Built only when a message needs it, so walking a
+/// deep tree costs no per-node string.
+pub fn node_path(root: &str, trail: &[usize]) -> String {
+    let mut path = root.to_owned();
+    for (depth, index) in trail.iter().enumerate() {
+        if depth > 0 {
+            path.push_str(".children");
+        }
+        path.push('[');
+        path.push_str(&index.to_string());
+        path.push(']');
+    }
+    path
+}
+
+/// Validate one animation's keyframes: offsets 0 … 1, sorted and finite,
+/// and every value a known animation property. Errors are
+/// `(path, reason)`.
+pub fn validate_keyframes(keyframes: &[Keyframe], path: &str) -> Result<(), (String, String)> {
     let Some(first) = keyframes.first() else {
         return Err((
             path.to_owned(),
@@ -449,7 +503,7 @@ fn validate_keyframes(keyframes: &[Keyframe], path: &str) -> Result<(), (String,
             if !ANIMATION_REGISTRY_PROPERTIES.contains(&property.as_str()) {
                 return Err((
                     format!("{path}[{index}].values.{property}"),
-                    format!("unknown animation property {property}"),
+                    unknown_property_reason(property),
                 ));
             }
         }

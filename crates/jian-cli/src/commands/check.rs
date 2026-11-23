@@ -196,6 +196,18 @@ fn warning_tuple(w: &LoadWarning) -> (&'static str, serde_json::Value) {
             "viewport_write",
             serde_json::json!({ "path": path, "message": "$viewport is read-only" }),
         ),
+        LoadWarning::AnimationPropertyDropped {
+            path,
+            node,
+            property,
+        } => (
+            "animation_property_dropped",
+            serde_json::json!({ "path": path, "node": node, "property": property }),
+        ),
+        LoadWarning::InvalidAnimationDropped { path, node, reason } => (
+            "invalid_animation_dropped",
+            serde_json::json!({ "path": path, "node": node, "reason": reason }),
+        ),
     }
 }
 

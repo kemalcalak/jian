@@ -1,4 +1,4 @@
-use jian_ops_schema::{load_str, NodeAnimation, OpsSchemaError};
+use jian_ops_schema::{load_str, LoadWarning, NodeAnimation};
 
 fn motion_document(extra: &str) -> String {
     format!(
@@ -61,7 +61,7 @@ fn old_documents_without_motion_load_unchanged() {
 }
 
 #[test]
-fn invalid_keyframes_are_typed_load_errors() {
+fn invalid_keyframes_are_dropped_with_a_warning() {
     for (name, keyframes) in [
         (
             "unsorted",
@@ -75,22 +75,78 @@ fn invalid_keyframes_are_typed_load_errors() {
             "missing_one",
             r#"[{"offset":0,"values":{"opacity":0}},{"offset":0.8,"values":{"opacity":1}}]"#,
         ),
-        (
-            "unknown_property",
-            r#"[{"offset":0,"values":{"opacity":0,"notAProperty":1}},{"offset":1,"values":{"opacity":1}}]"#,
-        ),
     ] {
         let source = motion_document(&format!(
             r##""animations":[{{"trigger":"mount","keyframes":{keyframes},"durationMs":200}}]"##
         ));
-        match load_str(&source) {
-            Err(OpsSchemaError::MotionValidation { path, .. }) => {
-                assert!(path.contains("animations"), "{name}: {path}");
-            }
-            Ok(_) => panic!("{name}: expected motion validation error"),
-            Err(other) => panic!("{name}: expected motion validation error, got {other}"),
-        }
+        let loaded = load_str(&source).unwrap_or_else(|e| panic!("{name}: {e}"));
+        assert!(
+            loaded.value.children[0].motion_declarations().1.is_none(),
+            "{name}: the broken animation is dropped"
+        );
+        assert!(
+            loaded.warnings.iter().any(|w| matches!(
+                w,
+                LoadWarning::InvalidAnimationDropped { path, node, .. }
+                    if path.starts_with("$.children[0].animations[0]") && node == "hero"
+            )),
+            "{name}: {:?}",
+            loaded.warnings
+        );
     }
+}
+
+#[test]
+fn unknown_animation_property_is_dropped_and_the_rest_kept() {
+    let source = motion_document(
+        r##""animations":[{"trigger":"mount","durationMs":200,"keyframes":[
+            {"offset":0,"values":{"opacity":0,"notAProperty":1}},
+            {"offset":1,"values":{"opacity":1}}
+        ]}]"##,
+    );
+    let loaded = load_str(&source).expect("document opens");
+    let animation = hero_animation_values(&source);
+    assert_eq!(animation["keyframes"][0]["values"]["opacity"], 0.0);
+    assert!(animation["keyframes"][0]["values"]
+        .get("notAProperty")
+        .is_none());
+    assert!(loaded.warnings.iter().any(|w| matches!(
+        w,
+        LoadWarning::AnimationPropertyDropped { property, node, .. }
+            if property == "notAProperty" && node == "hero"
+    )));
+    assert!(loaded.warnings.iter().all(LoadWarning::is_motion_repair));
+    assert!(loaded.warnings[0].to_string().contains("hero"));
+}
+
+#[test]
+fn scale_alias_expands_to_both_axes_on_load() {
+    let source = motion_document(
+        r##""animations":[{"trigger":"mount","durationMs":200,"keyframes":[
+            {"offset":0,"values":{"scale":0.5,"scaleY":0.8}},
+            {"offset":1,"values":{"scale":1}}
+        ]}]"##,
+    );
+    let loaded = load_str(&source).expect("document opens");
+    assert!(loaded.warnings.is_empty(), "{:?}", loaded.warnings);
+    let animation = hero_animation_values(&source);
+    let first = &animation["keyframes"][0]["values"];
+    assert_eq!(first["scaleX"], 0.5);
+    assert_eq!(first["scaleY"], 0.8, "an explicit axis wins over the alias");
+    assert!(first.get("scale").is_none());
+    assert_eq!(animation["keyframes"][1]["values"]["scaleX"], 1.0);
+    assert_eq!(animation["keyframes"][1]["values"]["scaleY"], 1.0);
+}
+
+#[test]
+fn unknown_property_reason_names_the_valid_spelling() {
+    let reason = jian_ops_schema::motion::unknown_property_reason("scale");
+    assert!(
+        reason.contains("scaleX") && reason.contains("scaleY"),
+        "{reason}"
+    );
+    let reason = jian_ops_schema::motion::unknown_property_reason("blur");
+    assert!(reason.contains("opacity"), "{reason}");
 }
 
 fn hero_animation_values(source: &str) -> serde_json::Value {
@@ -241,5 +297,25 @@ fn slide_transition_defaults_and_round_trips() {
     assert_eq!(
         jian_ops_schema::SlideTransition::default().kind,
         jian_ops_schema::SlideTransitionKind::None
+    );
+}
+
+#[test]
+fn warning_paths_name_nested_nodes() {
+    let source = r##"{"version":"1.1","formatVersion":"1.1","children":[
+        {"type":"frame","id":"a","children":[
+            {"type":"rectangle","id":"b"},
+            {"type":"rectangle","id":"c","animations":[{"trigger":"mount","durationMs":1,"keyframes":[
+                {"offset":0,"values":{"blur":1}},{"offset":1,"values":{"opacity":1}}]}]}
+        ]}
+    ]}"##;
+    let loaded = load_str(source).expect("document opens");
+    let LoadWarning::AnimationPropertyDropped { path, node, .. } = &loaded.warnings[0] else {
+        panic!("{:?}", loaded.warnings);
+    };
+    assert_eq!(node, "c");
+    assert_eq!(
+        path,
+        "$.children[0].children[1].animations[0].keyframes[0].values.blur"
     );
 }

@@ -4,7 +4,9 @@
 //! 1. Parse JSON into `PenDocument` (serde-level).
 //! 2. Check `formatVersion` / `version` and reject unsupported majors.
 //! 3. Collect non-fatal warnings for unknown fields (future-compat).
-//! 4. Return document + warnings.
+//! 4. Repair node animations instead of refusing the document
+//!    (`motion_repair`), reporting each drop as a warning.
+//! 5. Return document + warnings.
 
 use crate::document::PenDocument;
 use crate::error::{LoadResult, LoadWarning, OpsResult, OpsSchemaError};
@@ -122,9 +124,9 @@ fn load_value_with(
     let mut doc: PenDocument =
         crate::node::image_src::intern::with_load_scope(table, || serde_json::from_value(raw))?;
 
-    if let Err((path, reason)) = crate::motion::validate_document(&doc) {
-        return Err(OpsSchemaError::MotionValidation { path, reason });
-    }
+    // Repair, never refuse: one bad animation must not make the whole
+    // document unopenable.
+    warnings.extend(crate::motion_repair::repair_document(&mut doc));
 
     if opts.promote_legacy_widgets {
         for n in crate::promote::promote_document(&mut doc) {

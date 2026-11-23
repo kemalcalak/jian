@@ -116,10 +116,7 @@ pub fn list_actions_with_gate<G: StateGate>(
 /// page X" without the document tree, so for Phase 1 modals are
 /// always kept (they're contextual to the user's current view).
 fn is_in_scope(scope: &str, current_page: &str) -> bool {
-    if scope == current_page || scope == "global" || scope.starts_with("modal.") {
-        return true;
-    }
-    false
+    scope == current_page || scope == "global" || scope.starts_with("modal.")
 }
 
 fn build_params_schema(params: &[ParamSpec]) -> Value {

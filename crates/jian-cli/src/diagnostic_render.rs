@@ -203,6 +203,16 @@ fn describe(source: &str, w: &LoadWarning) -> (Severity, String, Option<Span>) {
             format!("write to read-only `$viewport` at `{path}` is ignored"),
             locate_substring(source, "$viewport"),
         ),
+        LoadWarning::AnimationPropertyDropped { property, .. } => (
+            Severity::Warning,
+            w.to_string(),
+            locate_quoted_key(source, property),
+        ),
+        LoadWarning::InvalidAnimationDropped { .. } => (
+            Severity::Warning,
+            w.to_string(),
+            locate_quoted_key(source, "animations"),
+        ),
     }
 }
 

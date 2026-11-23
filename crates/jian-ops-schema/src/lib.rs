@@ -17,6 +17,7 @@ pub mod image_thumbs;
 pub mod lifecycle;
 pub mod logic_module;
 pub mod motion;
+pub mod motion_repair;
 pub mod navigation;
 pub mod node;
 pub mod pack;

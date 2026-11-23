@@ -438,7 +438,7 @@ pub fn promote_frame(frame: &FrameNode, kind: WidgetKind) -> PenNode {
 
 /// Mutable children of a container-style node (those that can hold a
 /// marked frame). Widget nodes are leaves and never recursed into.
-fn children_mut(node: &mut PenNode) -> Option<&mut Vec<PenNode>> {
+pub(crate) fn children_mut(node: &mut PenNode) -> Option<&mut Vec<PenNode>> {
     match node {
         PenNode::Frame(f) | PenNode::Script(ScriptNode { frame: f, .. }) => f.children.as_mut(),
         PenNode::Group(g) => g.children.as_mut(),
