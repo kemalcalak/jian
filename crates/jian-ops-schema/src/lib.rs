@@ -3,6 +3,7 @@
 pub mod app;
 pub mod breakpoint;
 pub mod compat;
+pub mod component_props;
 pub mod constraints;
 pub mod conversion;
 pub mod design_md;

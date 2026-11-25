@@ -49,6 +49,10 @@ pub struct FrameNode {
     /// when the frame is done. pen.dev's `placeholder`. Additive 1.x.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub placeholder: Option<bool>,
+    /// Component master only: the named properties its instances set
+    /// (`RefNode::props`). Additive 1.x.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub component_properties: Option<crate::component_props::ComponentProperties>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, schemars::JsonSchema)]

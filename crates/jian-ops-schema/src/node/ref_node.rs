@@ -19,6 +19,11 @@ pub struct RefNode {
     pub target: String,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub descendants: Option<DescendantOverrides>,
+    /// Values for the master's `componentProperties`, by name. Editors turn
+    /// them into `descendants` patches; an explicit `descendants` entry for
+    /// the same field wins. Additive 1.x.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub props: Option<crate::component_props::InstanceProps>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub children: Option<Vec<super::PenNode>>,
     #[serde(default, skip_serializing_if = "Option::is_none")]

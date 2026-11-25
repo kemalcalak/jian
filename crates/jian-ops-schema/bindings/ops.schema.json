@@ -418,6 +418,16 @@
                 "null"
               ]
             },
+            "componentProperties": {
+              "description": "Component master only: the named properties its instances set (`RefNode::props`). Additive 1.x.",
+              "type": [
+                "object",
+                "null"
+              ],
+              "additionalProperties": {
+                "$ref": "#/definitions/ComponentProperty"
+              }
+            },
             "id": {
               "type": "string"
             },
@@ -8019,6 +8029,14 @@
               ],
               "additionalProperties": true
             },
+            "props": {
+              "description": "Values for the master's `componentProperties`, by name. Editors turn them into `descendants` patches; an explicit `descendants` entry for the same field wins. Additive 1.x.",
+              "type": [
+                "object",
+                "null"
+              ],
+              "additionalProperties": true
+            },
             "children": {
               "type": [
                 "array",
@@ -9321,6 +9339,16 @@
                 "boolean",
                 "null"
               ]
+            },
+            "componentProperties": {
+              "description": "Component master only: the named properties its instances set (`RefNode::props`). Additive 1.x.",
+              "type": [
+                "object",
+                "null"
+              ],
+              "additionalProperties": {
+                "$ref": "#/definitions/ComponentProperty"
+              }
             },
             "id": {
               "type": "string"
@@ -10705,6 +10733,57 @@
             "null"
           ],
           "format": "double"
+        }
+      }
+    },
+    "ComponentProperty": {
+      "description": "One property a component master declares.",
+      "type": "object",
+      "required": [
+        "type"
+      ],
+      "properties": {
+        "type": {
+          "description": "`text`, `boolean`, `instance` or `color`.",
+          "type": "string"
+        },
+        "default": {
+          "description": "The value an instance shows when it sets none: a string for text, a bool for boolean, a component id for instance, a colour (`#hex` or `$variable`) for color."
+        },
+        "bind": {
+          "description": "The node fields the property drives. One property may drive several.",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/PropertyBinding"
+          }
+        },
+        "preferred": {
+          "description": "Instance properties: the components a picker offers first.",
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "PropertyBinding": {
+      "description": "One node field a property drives.",
+      "type": "object",
+      "required": [
+        "field",
+        "node"
+      ],
+      "properties": {
+        "node": {
+          "description": "Id of a node inside the master (the master root included).",
+          "type": "string"
+        },
+        "field": {
+          "description": "`content`, `visible`, `ref`, `fill`, or `props.<name>` to pass the value on to a property of the nested instance `node`.",
+          "type": "string"
         }
       }
     },

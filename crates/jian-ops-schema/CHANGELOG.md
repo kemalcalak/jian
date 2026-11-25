@@ -7,6 +7,11 @@ additions targeted at the workspace's `0.0.1` development release.
 
 ### Added
 
+- Component properties: `FrameNode.componentProperties` (named `text` /
+  `boolean` / `instance` / `color` inputs a master declares, each bound to
+  node fields: `content`, `visible`, `ref`, `fill`, or `props.<name>` of a
+  nested instance) and `RefNode.props` (an instance's values by name).
+  Unknown types and fields load and save verbatim.
 - `TextNode.textOverflow` (`clip` | `ellipsis`): a line that does not wrap
   ends in "…" where it runs past its box (CSS `text-overflow`).
 - `TextNode.stroke` (`PenStroke`): outlined text, previously dropped as
