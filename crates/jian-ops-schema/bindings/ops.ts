@@ -172,6 +172,29 @@ slideTransition: SlideTransition | null,
 variableBindings: { [key in string]?: VariableBinding } | null, minWidth: number | null, maxWidth: number | null, minHeight: number | null, maxHeight: number | null, };
 
 /**
+ * One property a component master declares.
+ */
+export type ComponentProperty = {
+/**
+ * `text`, `boolean`, `instance` or `color`.
+ */
+type: string,
+/**
+ * The value an instance shows when it sets none: a string for text,
+ * a bool for boolean, a component id for instance, a colour (`#hex`
+ * or `$variable`) for color.
+ */
+default: JsonValue | null,
+/**
+ * The node fields the property drives. One property may drive several.
+ */
+bind: Array<PropertyBinding>,
+/**
+ * Instance properties: the components a picker offers first.
+ */
+preferred: Array<string> | null, };
+
+/**
  * Figma-style per-axis anchoring for absolutely positioned nodes.
  */
 export type Constraints = { h: HConstraint, v: VConstraint, };
@@ -324,7 +347,12 @@ breakpoint: BreakpointRange | null,
  * show a working state on it; the agent clears it (or sets `false`)
  * when the frame is done. pen.dev's `placeholder`. Additive 1.x.
  */
-placeholder: boolean | null, id: string, name: string | null, role: string | null, explain: string | null, x: number | null, y: number | null, rotation: number | null, constraints: Constraints | null, opacity: NumberOrExpression | null, enabled: BoolOrExpression | null, visible: boolean | null, locked: boolean | null,
+placeholder: boolean | null,
+/**
+ * Component master only: the named properties its instances set
+ * (`RefNode::props`). Additive 1.x.
+ */
+componentProperties: { [key in string]?: ComponentProperty } | null, id: string, name: string | null, role: string | null, explain: string | null, x: number | null, y: number | null, rotation: number | null, constraints: Constraints | null, opacity: NumberOrExpression | null, enabled: BoolOrExpression | null, visible: boolean | null, locked: boolean | null,
 /**
  * Keep this node at its authored viewport position while its nearest
  * scrollable ancestor moves ordinary content.
@@ -946,6 +974,20 @@ slideTransition: SlideTransition | null,
  */
 variableBindings: { [key in string]?: VariableBinding } | null, minWidth: number | null, maxWidth: number | null, minHeight: number | null, maxHeight: number | null, };
 
+/**
+ * One node field a property drives.
+ */
+export type PropertyBinding = {
+/**
+ * Id of a node inside the master (the master root included).
+ */
+node: string,
+/**
+ * `content`, `visible`, `ref`, `fill`, or `props.<name>` to pass the
+ * value on to a property of the nested instance `node`.
+ */
+field: string, };
+
 export type RadialGradientBody = { cx: number | null, cy: number | null, radius: number | null, stops: Array<GradientStop>, explain: string | null, opacity: number | null, blendMode: BlendMode | null, };
 
 /**
@@ -1018,7 +1060,13 @@ variableBindings: { [key in string]?: VariableBinding } | null, width: SizingBeh
  */
 stickyChildren: Array<string> | null, cornerRadius: CornerRadius | null, fill: Array<PenFill> | null, stroke: PenStroke | null, effects: Array<PenEffect> | null, minWidth: number | null, maxWidth: number | null, minHeight: number | null, maxHeight: number | null, };
 
-export type RefNode = { ref: string, descendants: { [key in string]?: JsonValue } | null, children: Array<PenNode> | null, state: { [key in string]?: StateEntry } | null, bindings: { [key in string]?: Expression } | null, events: EventHandlers | null, lifecycle: NodeLifecycleHooks | null, semantics: SemanticsMeta | null, gestures: GestureOverrides | null, route: NavigationRoute | null, id: string, name: string | null, role: string | null, explain: string | null, x: number | null, y: number | null, rotation: number | null, constraints: Constraints | null, opacity: NumberOrExpression | null, enabled: BoolOrExpression | null, visible: boolean | null, locked: boolean | null,
+export type RefNode = { ref: string, descendants: { [key in string]?: JsonValue } | null,
+/**
+ * Values for the master's `componentProperties`, by name. Editors turn
+ * them into `descendants` patches; an explicit `descendants` entry for
+ * the same field wins. Additive 1.x.
+ */
+props: { [key in string]?: JsonValue } | null, children: Array<PenNode> | null, state: { [key in string]?: StateEntry } | null, bindings: { [key in string]?: Expression } | null, events: EventHandlers | null, lifecycle: NodeLifecycleHooks | null, semantics: SemanticsMeta | null, gestures: GestureOverrides | null, route: NavigationRoute | null, id: string, name: string | null, role: string | null, explain: string | null, x: number | null, y: number | null, rotation: number | null, constraints: Constraints | null, opacity: NumberOrExpression | null, enabled: BoolOrExpression | null, visible: boolean | null, locked: boolean | null,
 /**
  * Keep this node at its authored viewport position while its nearest
  * scrollable ancestor moves ordinary content.
@@ -1112,7 +1160,12 @@ breakpoint: BreakpointRange | null,
  * show a working state on it; the agent clears it (or sets `false`)
  * when the frame is done. pen.dev's `placeholder`. Additive 1.x.
  */
-placeholder: boolean | null, id: string, name: string | null, role: string | null, explain: string | null, x: number | null, y: number | null, rotation: number | null, constraints: Constraints | null, opacity: NumberOrExpression | null, enabled: BoolOrExpression | null, visible: boolean | null, locked: boolean | null,
+placeholder: boolean | null,
+/**
+ * Component master only: the named properties its instances set
+ * (`RefNode::props`). Additive 1.x.
+ */
+componentProperties: { [key in string]?: ComponentProperty } | null, id: string, name: string | null, role: string | null, explain: string | null, x: number | null, y: number | null, rotation: number | null, constraints: Constraints | null, opacity: NumberOrExpression | null, enabled: BoolOrExpression | null, visible: boolean | null, locked: boolean | null,
 /**
  * Keep this node at its authored viewport position while its nearest
  * scrollable ancestor moves ordinary content.
