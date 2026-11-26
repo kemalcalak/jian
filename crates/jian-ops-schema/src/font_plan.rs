@@ -260,7 +260,7 @@ fn scan_node(node: &PenNode, inherited_family: Option<&str>, plan: &mut FontPlan
                 }
             }
         }
-        PenNode::Group(g) => {
+        PenNode::Group(g) | PenNode::Boolean(crate::node::BooleanNode { group: g, .. }) => {
             if let Some(children) = &g.children {
                 for c in children {
                     scan_node(c, inherited_family, plan);

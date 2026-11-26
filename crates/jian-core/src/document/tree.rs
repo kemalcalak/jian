@@ -102,7 +102,8 @@ impl Default for NodeTree {
 pub fn node_schema_id(n: &PenNode) -> &str {
     match n {
         PenNode::Frame(x) | PenNode::Script(ScriptNode { frame: x, .. }) => &x.base.id,
-        PenNode::Group(x) => &x.base.id,
+        PenNode::Group(x)
+        | PenNode::Boolean(jian_ops_schema::node::BooleanNode { group: x, .. }) => &x.base.id,
         PenNode::Rectangle(x) => &x.base.id,
         PenNode::Ellipse(x) => &x.base.id,
         PenNode::Line(x) => &x.base.id,
@@ -133,7 +134,10 @@ fn take_children(n: &PenNode) -> Vec<PenNode> {
         PenNode::Frame(x) | PenNode::Script(ScriptNode { frame: x, .. }) => {
             x.children.clone().unwrap_or_default()
         }
-        PenNode::Group(x) => x.children.clone().unwrap_or_default(),
+        PenNode::Group(x)
+        | PenNode::Boolean(jian_ops_schema::node::BooleanNode { group: x, .. }) => {
+            x.children.clone().unwrap_or_default()
+        }
         PenNode::Rectangle(x) => x.children.clone().unwrap_or_default(),
         PenNode::Tabs(x) => x.children.clone().unwrap_or_default(),
         PenNode::Ref(x) => x.children.clone().unwrap_or_default(),

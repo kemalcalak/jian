@@ -35,7 +35,10 @@ fn is_auto_layout(n: &PenNode) -> bool {
         PenNode::Frame(f) | PenNode::Script(ScriptNode { frame: f, .. }) => {
             f.container.layout.as_ref()
         }
-        PenNode::Group(g) => g.container.layout.as_ref(),
+        PenNode::Group(g)
+        | PenNode::Boolean(jian_ops_schema::node::BooleanNode { group: g, .. }) => {
+            g.container.layout.as_ref()
+        }
         PenNode::Rectangle(r) => r.container.layout.as_ref(),
         _ => None,
     };

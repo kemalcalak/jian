@@ -104,7 +104,10 @@ pub fn node_is_stack_container(n: &jian_ops_schema::node::PenNode) -> bool {
         PenNode::Frame(f) | PenNode::Script(jian_ops_schema::node::ScriptNode { frame: f, .. }) => {
             f.container.layout.as_ref()
         }
-        PenNode::Group(g) => g.container.layout.as_ref(),
+        PenNode::Group(g)
+        | PenNode::Boolean(jian_ops_schema::node::BooleanNode { group: g, .. }) => {
+            g.container.layout.as_ref()
+        }
         PenNode::Rectangle(r) => r.container.layout.as_ref(),
         PenNode::Tabs(_) => return true,
         _ => None,
@@ -301,7 +304,10 @@ pub fn node_to_style(n: &jian_ops_schema::node::PenNode) -> Style {
         PenNode::Frame(f) | PenNode::Script(jian_ops_schema::node::ScriptNode { frame: f, .. }) => {
             container_to_style(&f.container)
         }
-        PenNode::Group(g) => container_to_style(&g.container),
+        PenNode::Group(g)
+        | PenNode::Boolean(jian_ops_schema::node::BooleanNode { group: g, .. }) => {
+            container_to_style(&g.container)
+        }
         PenNode::Rectangle(r) => container_to_style(&r.container),
         PenNode::Tabs(t) => tabs_to_style(t),
         PenNode::Line(l) => Style {
@@ -401,7 +407,8 @@ pub(crate) fn node_base(
         PenNode::Frame(f) | PenNode::Script(jian_ops_schema::node::ScriptNode { frame: f, .. }) => {
             &f.base
         }
-        PenNode::Group(g) => &g.base,
+        PenNode::Group(g)
+        | PenNode::Boolean(jian_ops_schema::node::BooleanNode { group: g, .. }) => &g.base,
         PenNode::Rectangle(r) => &r.base,
         PenNode::Text(t) => &t.base,
         PenNode::TextInput(t) => &t.base,
@@ -435,7 +442,10 @@ fn node_limits(
         | PenNode::Script(jian_ops_schema::node::ScriptNode { frame: node, .. }) => {
             Some(&node.container.limits)
         }
-        PenNode::Group(node) => Some(&node.container.limits),
+        PenNode::Group(node)
+        | PenNode::Boolean(jian_ops_schema::node::BooleanNode { group: node, .. }) => {
+            Some(&node.container.limits)
+        }
         PenNode::Rectangle(node) => Some(&node.container.limits),
         PenNode::Text(node) => Some(&node.limits),
         PenNode::TextInput(node) => Some(&node.limits),
@@ -517,7 +527,10 @@ fn node_size_refs(
         PenNode::Frame(f) | PenNode::Script(jian_ops_schema::node::ScriptNode { frame: f, .. }) => {
             (f.container.width.as_ref(), f.container.height.as_ref())
         }
-        PenNode::Group(g) => (g.container.width.as_ref(), g.container.height.as_ref()),
+        PenNode::Group(g)
+        | PenNode::Boolean(jian_ops_schema::node::BooleanNode { group: g, .. }) => {
+            (g.container.width.as_ref(), g.container.height.as_ref())
+        }
         PenNode::Rectangle(r) => (r.container.width.as_ref(), r.container.height.as_ref()),
         _ => {
             let (width, height, _) = leaf_size_and_limits(n);
@@ -536,7 +549,10 @@ pub fn node_is_horizontal(n: &jian_ops_schema::node::PenNode) -> bool {
         PenNode::Frame(f) | PenNode::Script(jian_ops_schema::node::ScriptNode { frame: f, .. }) => {
             f.container.layout.as_ref()
         }
-        PenNode::Group(g) => g.container.layout.as_ref(),
+        PenNode::Group(g)
+        | PenNode::Boolean(jian_ops_schema::node::BooleanNode { group: g, .. }) => {
+            g.container.layout.as_ref()
+        }
         PenNode::Rectangle(r) => r.container.layout.as_ref(),
         _ => None,
     };

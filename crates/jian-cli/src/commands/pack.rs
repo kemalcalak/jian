@@ -402,7 +402,10 @@ fn walk_node_ids_typed(
         PenNode::Frame(x) | PenNode::Script(jian_ops_schema::node::ScriptNode { frame: x, .. }) => {
             x.children.as_ref()
         }
-        PenNode::Group(x) => x.children.as_ref(),
+        PenNode::Group(x)
+        | PenNode::Boolean(jian_ops_schema::node::BooleanNode { group: x, .. }) => {
+            x.children.as_ref()
+        }
         PenNode::Rectangle(x) => x.children.as_ref(),
         PenNode::Ref(x) => x.children.as_ref(),
         // Leaf nodes (Text / TextInput / Image / IconFont / Path /
