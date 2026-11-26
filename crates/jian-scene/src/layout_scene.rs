@@ -694,6 +694,10 @@ pub struct SceneNode {
     /// Preserved SVG path data for imported Path nodes. Coordinates
     /// are local doc-px relative to `bounds.origin`.
     pub svg_path: Option<String>,
+    /// Stroke geometry the host builds for a line or open path whose
+    /// stroke draws per-end caps or arrowheads (or varies in width).
+    /// When set, painters draw it instead of the plain stroke.
+    pub stroke_geometry: Option<Arc<SceneStrokeGeometry>>,
     /// Ellipse arc start angle in degrees. `None` = full ellipse.
     pub arc_start_angle: Option<f32>,
     /// Ellipse arc sweep angle in degrees. `None` = full ellipse.
@@ -944,6 +948,7 @@ impl SceneNode {
             flip_y: false,
             corner_radius: 0.0,
             corner_radii: None,
+            stroke_geometry: None,
             corner_smoothing: 0.0,
             clip_content: false,
             fill: None,
@@ -1013,6 +1018,20 @@ pub struct SceneStroke {
     /// (`StrokeStyle::default()`) when the source sets none, so painters
     /// keep their per-primitive defaults.
     pub style: StrokeStyle,
+}
+
+/// Precomputed stroke geometry, as SVG path data in node-local doc px
+/// (relative to `bounds.origin`). Any part may be empty.
+#[derive(Debug, Clone, PartialEq, Default)]
+pub struct SceneStrokeGeometry {
+    /// Centre line, stroked at the stroke width with butt caps and the
+    /// stroke's join / dash / miter limit.
+    pub stroke_d: String,
+    /// Shapes filled with the stroke paint (arrowheads, end dots, caps).
+    pub fill_d: String,
+    /// Open arms stroked at the stroke width with miter joins and butt
+    /// caps, never dashed (line arrows).
+    pub arms_d: String,
 }
 
 /// Stroke band placement relative to the node edge.
