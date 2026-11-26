@@ -304,6 +304,25 @@ fn point_in_node(
     // not the bounding box — a curved / thin path otherwise selects
     // empty bbox space, and a zero-height stroked path (which fails
     // the positive-area gate below) stays clickable.
+    if let (NodeKind::Path, Some(outline)) = (
+        &node.kind,
+        node.corner_path
+            .as_deref()
+            .filter(|c| c.hit_ring.len() >= 2),
+    ) {
+        // Rounded vertices (#389): the precomputed outline, node-local.
+        let local = Point2D::new(
+            local.x - node.bounds.origin.x,
+            local.y - node.bounds.origin.y,
+        );
+        let ring = outline.hit_ring.as_slice();
+        let stroke_half = node.stroke.map(|s| s.width / 2.0).unwrap_or(1.0);
+        let slack = 4.0 / zoom.max(0.0001);
+        let near = ring
+            .windows(2)
+            .any(|seg| distance_point_to_segment(local, seg[0], seg[1]) <= stroke_half + slack);
+        return near || (node.path_closed && node.fill.is_some() && point_in_polygon(local, ring));
+    }
     if matches!(node.kind, NodeKind::Path) {
         let poly = path_hit_points(node);
         let points = poly.as_slice();
@@ -381,6 +400,20 @@ fn point_in_node(
                 }
             }
             r2 >= inner * inner
+        }
+        NodeKind::Polygon
+            if node
+                .corner_path
+                .as_deref()
+                .is_some_and(|c| c.hit_ring.len() >= 3) =>
+        {
+            // Rounded corners (#389): the precomputed node-local outline.
+            let outline = node.corner_path.as_deref().map_or(&[][..], |c| &c.hit_ring);
+            let origin = node.bounds.origin;
+            point_in_polygon(
+                Point2D::new(local.x - origin.x, local.y - origin.y),
+                outline,
+            )
         }
         NodeKind::Polygon => {
             // A star carries its inner radius in `arc_inner_radius`.
@@ -975,5 +1008,42 @@ mod tests {
             scene.node_path_at_doc_point(Point2D::new(200.0, 200.0), 1.0),
             path(&["board", "inside"])
         );
+    }
+
+    #[test]
+    fn rounded_polygons_and_paths_hit_their_corner_outline() {
+        use crate::layout_scene::SceneCornerPath;
+        use std::sync::Arc;
+        // A diamond ring standing in for a rounded square's outline,
+        // node-local, so the box corners fall outside it.
+        let ring = vec![
+            Point2D::new(50.0, 0.0),
+            Point2D::new(100.0, 50.0),
+            Point2D::new(50.0, 100.0),
+            Point2D::new(0.0, 50.0),
+            Point2D::new(50.0, 0.0),
+        ];
+        let outline = Arc::new(SceneCornerPath {
+            hit_ring: ring,
+            ..SceneCornerPath::default()
+        });
+        let mut poly = leaf(
+            "poly",
+            NodeKind::Polygon,
+            Rect::xywh(200.0, 0.0, 100.0, 100.0),
+        );
+        poly.polygon_sides = 4;
+        poly.corner_path = Some(Arc::clone(&outline));
+        let mut closed = leaf("path", NodeKind::Path, Rect::xywh(0.0, 200.0, 100.0, 100.0));
+        closed.path_closed = true;
+        closed.fill = Some(jian_widgets::Color::rgb_u8(0x11, 0x22, 0x33));
+        closed.corner_path = Some(outline);
+        let scene = one_page(vec![poly, closed]);
+        let at = |x: f32, y: f32| scene.node_at_doc_point(Point2D::new(x, y), 1.0);
+        assert_eq!(at(250.0, 50.0).as_deref(), Some("poly"));
+        assert!(at(208.0, 8.0).is_none(), "box corner outside the outline");
+        assert_eq!(at(50.0, 250.0).as_deref(), Some("path"));
+        assert_eq!(at(98.0, 250.0).as_deref(), Some("path"), "on the edge");
+        assert!(at(8.0, 208.0).is_none());
     }
 }
