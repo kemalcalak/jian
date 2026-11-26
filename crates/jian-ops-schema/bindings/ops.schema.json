@@ -814,6 +814,14 @@
                 }
               ]
             },
+            "cornerSmoothing": {
+              "description": "Corner smoothing, `0..=1` (Figma's iOS-style squircle; `0` = plain circular corners, `0.6` = iOS). Absent = `0`.",
+              "type": [
+                "number",
+                "null"
+              ],
+              "format": "double"
+            },
             "fill": {
               "type": [
                 "array",
@@ -1328,6 +1336,14 @@
                 }
               ]
             },
+            "cornerSmoothing": {
+              "description": "Corner smoothing, `0..=1` (Figma's iOS-style squircle; `0` = plain circular corners, `0.6` = iOS). Absent = `0`.",
+              "type": [
+                "number",
+                "null"
+              ],
+              "format": "double"
+            },
             "fill": {
               "type": [
                 "array",
@@ -1841,6 +1857,14 @@
                   "type": "null"
                 }
               ]
+            },
+            "cornerSmoothing": {
+              "description": "Corner smoothing, `0..=1` (Figma's iOS-style squircle; `0` = plain circular corners, `0.6` = iOS). Absent = `0`.",
+              "type": [
+                "number",
+                "null"
+              ],
+              "format": "double"
             },
             "fill": {
               "type": [
@@ -2688,6 +2712,14 @@
               ],
               "format": "double"
             },
+            "cornerSmoothing": {
+              "description": "Corner smoothing, `0..=1` (Figma's iOS-style squircle; `0` = plain circular corners, `0.6` = iOS). Absent = `0`.",
+              "type": [
+                "number",
+                "null"
+              ],
+              "format": "double"
+            },
             "innerRadius": {
               "description": "Star inner radius as a fraction of the outer radius (`0.0..=1.0`). Absent = a regular polygon; present = a star with `polygon_count` points whose valleys sit at this fraction (Figma `STAR` / `starInnerScale`). Mirrors `EllipseNode::inner_radius`.",
               "type": [
@@ -3117,6 +3149,22 @@
                   "type": "null"
                 }
               ]
+            },
+            "vertexRadius": {
+              "description": "Radius rounding the path's sharp vertices (an anchor with no handles between two straight segments). Absent = sharp.\n\nNamed `vertexRadius`, not `cornerRadius`: older tools wrote a `cornerRadius` on paths whose outline already carried its rounding (a rounded rect flattened to a path), which this schema used to ignore. Reading that key as a vertex radius would round those files a second time, so it stays ignored.",
+              "type": [
+                "number",
+                "null"
+              ],
+              "format": "double"
+            },
+            "cornerSmoothing": {
+              "description": "Corner smoothing, `0..=1` (Figma's iOS-style squircle; `0` = plain circular corners, `0.6` = iOS). Absent = `0`.",
+              "type": [
+                "number",
+                "null"
+              ],
+              "format": "double"
             },
             "fill": {
               "type": [
@@ -10976,6 +11024,14 @@
                 }
               ]
             },
+            "cornerSmoothing": {
+              "description": "Corner smoothing, `0..=1` (Figma's iOS-style squircle; `0` = plain circular corners, `0.6` = iOS). Absent = `0`.",
+              "type": [
+                "number",
+                "null"
+              ],
+              "format": "double"
+            },
             "fill": {
               "type": [
                 "array",
@@ -11847,6 +11903,14 @@
                   "type": "null"
                 }
               ]
+            },
+            "cornerSmoothing": {
+              "description": "Corner smoothing, `0..=1` (Figma's iOS-style squircle; `0` = plain circular corners, `0.6` = iOS). Absent = `0`.",
+              "type": [
+                "number",
+                "null"
+              ],
+              "format": "double"
             },
             "fill": {
               "type": [
@@ -13936,6 +14000,47 @@
           "items": {
             "$ref": "#/definitions/PenFill"
           }
+        },
+        "strokeStart": {
+          "description": "What the start of an open stroke draws. Absent = `cap`.",
+          "anyOf": [
+            {
+              "$ref": "#/definitions/StrokeEndCap"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "strokeEnd": {
+          "description": "What the end of an open stroke draws. Absent = `cap`.",
+          "anyOf": [
+            {
+              "$ref": "#/definitions/StrokeEndCap"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "miterLimit": {
+          "description": "Miter joins longer than this multiple of the stroke width are bevelled (SVG `stroke-miterlimit`). Absent = 4, the SVG default.",
+          "type": [
+            "number",
+            "null"
+          ],
+          "format": "float"
+        },
+        "widthProfile": {
+          "description": "Variable width along the stroke. Absent = uniform. Boxed: strokes sit inline in every node, and deserializing a deep tree keeps many node-sized values on the stack per level.",
+          "anyOf": [
+            {
+              "$ref": "#/definitions/StrokeWidthProfile"
+            },
+            {
+              "type": "null"
+            }
+          ]
         }
       }
     },
@@ -14015,6 +14120,136 @@
         "round",
         "square"
       ]
+    },
+    "StrokeEndCap": {
+      "description": "What an open stroke draws at one of its two ends: a cap, or an arrowhead / marker whose size scales with the stroke width (Figma's per-end stroke caps). Closed shapes have no ends and ignore it.",
+      "oneOf": [
+        {
+          "type": "string",
+          "enum": [
+            "none",
+            "round",
+            "square"
+          ]
+        },
+        {
+          "description": "Two open strokes meeting at the end point (`>`).",
+          "type": "string",
+          "enum": [
+            "line_arrow"
+          ]
+        },
+        {
+          "description": "A filled triangle pointing away from the line.",
+          "type": "string",
+          "enum": [
+            "triangle_arrow"
+          ]
+        },
+        {
+          "description": "A filled triangle pointing back along the line.",
+          "type": "string",
+          "enum": [
+            "reversed_triangle"
+          ]
+        },
+        {
+          "description": "A filled circle centred on the end point.",
+          "type": "string",
+          "enum": [
+            "circle"
+          ]
+        },
+        {
+          "description": "A filled diamond centred on the end point.",
+          "type": "string",
+          "enum": [
+            "diamond"
+          ]
+        }
+      ]
+    },
+    "StrokeWidthProfile": {
+      "description": "A variable-width stroke (Figma's width profiles, Illustrator's width tool). Editors paint it as a filled outline around the centre line, so `align` does not apply.",
+      "type": "object",
+      "required": [
+        "preset"
+      ],
+      "properties": {
+        "preset": {
+          "$ref": "#/definitions/StrokeWidthPreset"
+        },
+        "points": {
+          "description": "`custom` only: the width stops, in any order.",
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "$ref": "#/definitions/StrokeWidthPoint"
+          }
+        }
+      }
+    },
+    "StrokeWidthPreset": {
+      "description": "Named stroke width profiles. Every preset but `custom` is fully described by its name; `custom` reads [`StrokeWidthProfile::points`].",
+      "oneOf": [
+        {
+          "description": "One width along the whole stroke (the same as no profile).",
+          "type": "string",
+          "enum": [
+            "uniform"
+          ]
+        },
+        {
+          "description": "Zero width at the start, full width at the end.",
+          "type": "string",
+          "enum": [
+            "taper_start"
+          ]
+        },
+        {
+          "description": "Full width at the start, zero width at the end.",
+          "type": "string",
+          "enum": [
+            "taper_end"
+          ]
+        },
+        {
+          "description": "Zero width at both ends, full width in the middle.",
+          "type": "string",
+          "enum": [
+            "taper_both"
+          ]
+        },
+        {
+          "description": "The width follows `points`.",
+          "type": "string",
+          "enum": [
+            "custom"
+          ]
+        }
+      ]
+    },
+    "StrokeWidthPoint": {
+      "description": "One width stop of a variable-width stroke.",
+      "type": "object",
+      "required": [
+        "t",
+        "width"
+      ],
+      "properties": {
+        "t": {
+          "description": "Position along the stroke as a fraction of its length, `0..=1`.",
+          "type": "number",
+          "format": "float"
+        },
+        "width": {
+          "description": "Width at `t` as a multiple of the stroke thickness (`1` = the thickness, `0` = a point). Widths between stops interpolate linearly; before the first and after the last they hold.",
+          "type": "number",
+          "format": "float"
+        }
+      }
     },
     "PenEffect": {
       "oneOf": [

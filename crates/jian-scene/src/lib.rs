@@ -9,4 +9,5 @@ mod layout_scene_fill;
 pub mod layout_scene_hit;
 pub mod path_geometry;
 mod scene_geometry;
+mod scene_stroke;
 pub use layout_scene::{SceneTextAlign, SceneTextVerticalAlign};

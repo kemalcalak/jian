@@ -162,6 +162,10 @@ pub struct ContainerProps {
     pub sticky_children: Option<Vec<String>>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub corner_radius: Option<CornerRadius>,
+    /// Corner smoothing, `0..=1` (Figma's iOS-style squircle; `0` = plain
+    /// circular corners, `0.6` = iOS). Absent = `0`.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub corner_smoothing: Option<f64>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub fill: Option<Vec<PenFill>>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -212,6 +216,16 @@ mod tests {
             Some(["header".to_owned(), "tabs".to_owned()].as_slice())
         );
         assert_eq!(serde_json::to_string(&container).unwrap(), json);
+    }
+
+    #[test]
+    fn corner_smoothing_is_additive_and_round_trips() {
+        let json = r#"{"cornerRadius":[4.0,8.0,12.0,16.0],"cornerSmoothing":0.6}"#;
+        let container: ContainerProps = serde_json::from_str(json).unwrap();
+        assert_eq!(container.corner_smoothing, Some(0.6));
+        assert_eq!(serde_json::to_string(&container).unwrap(), json);
+        let plain: ContainerProps = serde_json::from_str(r#"{"cornerRadius":4}"#).unwrap();
+        assert_eq!(plain.corner_smoothing, None);
     }
 
     #[test]

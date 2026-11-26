@@ -6,6 +6,8 @@
 //! per-primitive default, so a plain stroke paints exactly as before.
 //! Every type here is `Copy`, so it rides inside `Copy` scene strokes.
 
+pub use crate::stroke_shape::StrokeEnd;
+
 /// Stroke end-cap shape.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum StrokeCap {
@@ -84,17 +86,34 @@ impl StrokeDash {
 
 /// Cap, join and dash for subsequent stroke calls. `Default` is the
 /// plain style: every field unset.
+///
+/// `start` and `end` describe stroke geometry that backends do not draw:
+/// the host paints arrowheads itself and hands backends the remaining
+/// plain stroke. The style stays small and `Copy` (a variable-width
+/// profile is baked into geometry by the host instead of riding here).
 #[derive(Debug, Clone, Copy, PartialEq, Default)]
 pub struct StrokeStyle {
     pub cap: Option<StrokeCap>,
     pub join: Option<StrokeJoin>,
     pub dash: Option<StrokeDash>,
+    /// Miter joins longer than this multiple of the width are bevelled.
+    /// Unset = the backend default (4, as in SVG and Skia).
+    pub miter_limit: Option<f32>,
+    /// What an open stroke draws at its start. Unset = `cap`.
+    pub start: Option<StrokeEnd>,
+    /// What an open stroke draws at its end. Unset = `cap`.
+    pub end: Option<StrokeEnd>,
 }
 
 impl StrokeStyle {
     /// No field set: backends paint their defaults.
     pub fn is_plain(&self) -> bool {
-        self.cap.is_none() && self.join.is_none() && self.dash.is_none()
+        self.cap.is_none()
+            && self.join.is_none()
+            && self.dash.is_none()
+            && self.miter_limit.is_none()
+            && self.start.is_none()
+            && self.end.is_none()
     }
 
     /// This style with the dash scaled by `scale`.
@@ -137,8 +156,8 @@ mod tests {
     fn scaling_touches_only_the_dash() {
         let style = StrokeStyle {
             cap: Some(StrokeCap::Square),
-            join: None,
             dash: StrokeDash::new(&[2.0, 1.0], 0.5),
+            ..StrokeStyle::default()
         };
         let scaled = style.scaled(2.0);
         assert_eq!(scaled.cap, Some(StrokeCap::Square));
@@ -147,5 +166,24 @@ mod tests {
         assert_eq!(dash.offset(), 1.0);
         assert!(StrokeStyle::default().is_plain());
         assert!(!style.is_plain());
+        for set in [
+            StrokeStyle {
+                miter_limit: Some(10.0),
+                ..StrokeStyle::default()
+            },
+            StrokeStyle {
+                end: Some(StrokeEnd::TriangleArrow),
+                ..StrokeStyle::default()
+            },
+        ] {
+            assert!(!set.is_plain(), "{set:?}");
+        }
+    }
+
+    #[test]
+    fn style_stays_small_enough_to_copy_per_node() {
+        // Scene strokes copy this on every node; a profile or another
+        // array here would multiply every recursive scene frame (#389).
+        assert!(std::mem::size_of::<StrokeStyle>() <= 96);
     }
 }

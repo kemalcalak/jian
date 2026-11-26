@@ -33,9 +33,10 @@ pub use crate::scene_geometry::{
     polygon_points, regular_polygon_points, stable_image_source_id, star_polygon_points,
     STAR_MAX_INNER_RADIUS, STAR_MIN_INNER_RADIUS,
 };
+pub use crate::scene_stroke::{SceneLineDirection, SceneStrokeGeometry, SceneStrokeHead};
 pub use jian_ops_schema::node::MaskType;
 use jian_widgets::{Color, ImageAdjustments, ImageBlendMode, ImageDrawMode, Point2D, Rect};
-pub use jian_widgets::{StrokeCap, StrokeDash, StrokeJoin, StrokeStyle};
+pub use jian_widgets::{StrokeCap, StrokeDash, StrokeEnd, StrokeJoin, StrokeStyle};
 #[cfg(any(test, feature = "test-support"))]
 use std::cell::Cell;
 use std::sync::Arc;
@@ -589,11 +590,19 @@ pub struct SceneNode {
     pub flip_x: bool,
     /// Mirror vertically around the node's aggregate-bounds centre.
     pub flip_y: bool,
+    /// Which way a `Line` runs across its (normalised) `bounds`; see
+    /// [`SceneNode::line_endpoints`]. Default (top-left to bottom-right)
+    /// for every other kind.
+    pub line_direction: SceneLineDirection,
     /// Corner radius in doc-px — honoured by Rect / Frame paint.
     pub corner_radius: f32,
     /// Per-corner radii in top-left, top-right, bottom-right,
     /// bottom-left order. `None` uses `corner_radius` uniformly.
     pub corner_radii: Option<[f32; 4]>,
+    /// Corner smoothing, `0..=1` (Figma's squircle; `0` = circular
+    /// corners). Applies to whatever corners `corner_radius` /
+    /// `corner_radii` round.
+    pub corner_smoothing: f32,
     /// Whether this container clips its children to its bounds
     /// (rounded by `corner_radius`, clamped to half the height — TS
     /// flattener rule). The scene builder also sets this for root
@@ -688,6 +697,17 @@ pub struct SceneNode {
     /// Preserved SVG path data for imported Path nodes. Coordinates
     /// are local doc-px relative to `bounds.origin`.
     pub svg_path: Option<String>,
+    /// Stroke geometry the host builds for a line or open path whose
+    /// stroke draws per-end caps or arrowheads (or varies in width).
+    /// When set, painters draw it instead of the plain stroke.
+    pub stroke_geometry: Option<Arc<SceneStrokeGeometry>>,
+    /// Outline the host builds when the node's corners are more than the
+    /// rect / polygon primitives draw: smoothed corners on a rect-like
+    /// node, a polygon or star with a corner radius, rounded path
+    /// vertices. When set, painters fill, stroke, clip and hit-test it
+    /// instead of the plain shape. `None` keeps the plain shape (a rect
+    /// with circular corners stays a rounded rect).
+    pub corner_path: Option<Arc<SceneCornerPath>>,
     /// Ellipse arc start angle in degrees. `None` = full ellipse.
     pub arc_start_angle: Option<f32>,
     /// Ellipse arc sweep angle in degrees. `None` = full ellipse.
@@ -819,6 +839,12 @@ impl SceneWidget {
 }
 
 impl SceneNode {
+    /// A line's start and end in doc space: across `bounds`, the way
+    /// `line_direction` says it runs (before rotation and flips).
+    pub fn line_endpoints(&self) -> (Point2D, Point2D) {
+        self.line_direction.endpoints(self.bounds)
+    }
+
     /// Children that participate in paint **and** hit-test.
     ///
     /// `tabs` is the only first-class widget whose children are alternative
@@ -936,8 +962,12 @@ impl SceneNode {
             rotation: 0.0,
             flip_x: false,
             flip_y: false,
+            line_direction: SceneLineDirection::default(),
             corner_radius: 0.0,
             corner_radii: None,
+            stroke_geometry: None,
+            corner_path: None,
+            corner_smoothing: 0.0,
             clip_content: false,
             fill: None,
             fill_layers: Vec::new(),
@@ -1006,6 +1036,39 @@ pub struct SceneStroke {
     /// (`StrokeStyle::default()`) when the source sets none, so painters
     /// keep their per-primitive defaults.
     pub style: StrokeStyle,
+}
+
+/// A node's rounded / smoothed outline (#389), precomputed once per scene
+/// in node-local doc px, so painters never rebuild it per frame.
+#[derive(Debug, Clone, PartialEq)]
+pub struct SceneCornerPath {
+    /// The outline as SVG path data.
+    pub d: String,
+    /// Tight bounds of `d`: the rect painters fit `d` into, offset by the
+    /// node's origin and scaled by the zoom. A rect-like node's outline
+    /// spans its whole box.
+    pub bounds: Rect,
+    /// Centre line of an inside / outside aligned stroke (the outline of
+    /// the box inset / outset by half the stroke width). Empty: the stroke
+    /// runs along `d`.
+    pub stroke_d: String,
+    /// Tight bounds of `stroke_d`.
+    pub stroke_bounds: Rect,
+    /// `d` flattened for hit-testing: a polyline that repeats its first
+    /// point at the end when the outline is closed.
+    pub hit_ring: Vec<Point2D>,
+}
+
+impl Default for SceneCornerPath {
+    fn default() -> Self {
+        Self {
+            d: String::new(),
+            bounds: Rect::ZERO,
+            stroke_d: String::new(),
+            stroke_bounds: Rect::ZERO,
+            hit_ring: Vec::new(),
+        }
+    }
 }
 
 /// Stroke band placement relative to the node edge.
