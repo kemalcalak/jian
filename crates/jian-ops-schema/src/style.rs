@@ -411,10 +411,12 @@ pub struct PenStroke {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     #[cfg_attr(feature = "export-ts", ts(optional = nullable))]
     pub miter_limit: Option<f32>,
-    /// Variable width along the stroke. Absent = uniform.
+    /// Variable width along the stroke. Absent = uniform. Boxed: strokes
+    /// sit inline in every node, and deserializing a deep tree keeps many
+    /// node-sized values on the stack per level.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     #[cfg_attr(feature = "export-ts", ts(optional = nullable))]
-    pub width_profile: Option<StrokeWidthProfile>,
+    pub width_profile: Option<Box<StrokeWidthProfile>>,
 }
 
 #[cfg(test)]

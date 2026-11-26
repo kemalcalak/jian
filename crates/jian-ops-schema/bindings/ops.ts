@@ -1314,7 +1314,9 @@ strokeEnd?: StrokeEndCap | null,
  */
 miterLimit?: number | null,
 /**
- * Variable width along the stroke. Absent = uniform.
+ * Variable width along the stroke. Absent = uniform. Boxed: strokes
+ * sit inline in every node, and deserializing a deep tree keeps many
+ * node-sized values on the stack per level.
  */
 widthProfile?: StrokeWidthProfile | null, };
 
