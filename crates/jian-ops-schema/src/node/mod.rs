@@ -5,6 +5,7 @@ pub mod checkbox;
 pub mod container;
 pub mod ellipse;
 pub mod frame;
+pub mod grid;
 pub mod icon_font;
 pub mod image;
 pub mod image_src;
@@ -36,6 +37,7 @@ pub use container::{
 
 pub use ellipse::EllipseNode;
 pub use frame::{FrameNode, GroupNode, RectangleNode};
+pub use grid::{GridPlacement, GridTemplate, GridTrack, SelfAlign, TrackSize};
 pub use icon_font::IconFontNode;
 pub use image::{ImageFitMode, ImageNode};
 pub use image_src::ImageSrc;
