@@ -24,6 +24,11 @@ pub struct RefNode {
     /// the same field wins. Additive 1.x.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub props: Option<crate::component_props::InstanceProps>,
+    /// The variant this instance shows, by axis, when its component is a
+    /// variant of a component set (or `ref` names the set). Axes left out
+    /// take the set's default. Additive 1.x.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub variant: Option<crate::component_set::VariantValues>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub children: Option<Vec<super::PenNode>>,
     #[serde(default, skip_serializing_if = "Option::is_none")]

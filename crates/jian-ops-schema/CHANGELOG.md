@@ -7,6 +7,10 @@ additions targeted at the workspace's `0.0.1` development release.
 
 ### Added
 
+- Component sets: `FrameNode.componentSet` (axes in order with their
+  values, plus per-axis defaults) groups a component's variant masters,
+  each a `reusable` frame with `variantValues` (an axis left out matches
+  any value); `RefNode.variant` names the variant an instance shows.
 - Component properties: `FrameNode.componentProperties` (named `text` /
   `boolean` / `instance` / `color` inputs a master declares, each bound to
   node fields: `content`, `visible`, `ref`, `fill`, or `props.<name>` of a
