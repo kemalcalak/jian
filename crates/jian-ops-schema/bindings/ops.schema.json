@@ -602,6 +602,50 @@
                 "$ref": "#/definitions/VariableBinding"
               }
             },
+            "gridColumn": {
+              "description": "Child of a `grid` container: its column line / span (`2`, `\"span 2\"`, `\"1 / span 3\"`). Unset = next free cell.",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/GridPlacement"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "gridRow": {
+              "description": "Child of a `grid` container: its row line / span.",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/GridPlacement"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "justifySelf": {
+              "description": "Child of a `grid` container: horizontal alignment in its cell (default: the container's `justifyContent`).",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/SelfAlign"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "alignSelf": {
+              "description": "Child of a `grid` container: vertical alignment in its cell (default: the container's `alignItems`).",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/SelfAlign"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
             "width": {
               "anyOf": [
                 {
@@ -666,6 +710,57 @@
               "anyOf": [
                 {
                   "$ref": "#/definitions/AlignItems"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "wrap": {
+              "description": "`horizontal` / `vertical` only: children that do not fit move onto a new line (CSS `flex-wrap: wrap`).",
+              "type": [
+                "boolean",
+                "null"
+              ]
+            },
+            "rowGap": {
+              "description": "Space between rows: wrapped lines and grid rows. Falls back to `gap` (CSS `row-gap`).",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/NumberOrExpression"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "columnGap": {
+              "description": "Space between columns. Falls back to `gap` (CSS `column-gap`).",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/NumberOrExpression"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "columns": {
+              "description": "`grid` only: the column tracks (count, track array or CSS list).",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/GridTemplate"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "rows": {
+              "description": "`grid` only: the row tracks. Rows past these are `auto`.",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/GridTemplate"
                 },
                 {
                   "type": "null"
@@ -1021,6 +1116,50 @@
                 "$ref": "#/definitions/VariableBinding"
               }
             },
+            "gridColumn": {
+              "description": "Child of a `grid` container: its column line / span (`2`, `\"span 2\"`, `\"1 / span 3\"`). Unset = next free cell.",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/GridPlacement"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "gridRow": {
+              "description": "Child of a `grid` container: its row line / span.",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/GridPlacement"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "justifySelf": {
+              "description": "Child of a `grid` container: horizontal alignment in its cell (default: the container's `justifyContent`).",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/SelfAlign"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "alignSelf": {
+              "description": "Child of a `grid` container: vertical alignment in its cell (default: the container's `alignItems`).",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/SelfAlign"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
             "width": {
               "anyOf": [
                 {
@@ -1085,6 +1224,57 @@
               "anyOf": [
                 {
                   "$ref": "#/definitions/AlignItems"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "wrap": {
+              "description": "`horizontal` / `vertical` only: children that do not fit move onto a new line (CSS `flex-wrap: wrap`).",
+              "type": [
+                "boolean",
+                "null"
+              ]
+            },
+            "rowGap": {
+              "description": "Space between rows: wrapped lines and grid rows. Falls back to `gap` (CSS `row-gap`).",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/NumberOrExpression"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "columnGap": {
+              "description": "Space between columns. Falls back to `gap` (CSS `column-gap`).",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/NumberOrExpression"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "columns": {
+              "description": "`grid` only: the column tracks (count, track array or CSS list).",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/GridTemplate"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "rows": {
+              "description": "`grid` only: the row tracks. Rows past these are `auto`.",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/GridTemplate"
                 },
                 {
                   "type": "null"
@@ -1440,6 +1630,50 @@
                 "$ref": "#/definitions/VariableBinding"
               }
             },
+            "gridColumn": {
+              "description": "Child of a `grid` container: its column line / span (`2`, `\"span 2\"`, `\"1 / span 3\"`). Unset = next free cell.",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/GridPlacement"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "gridRow": {
+              "description": "Child of a `grid` container: its row line / span.",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/GridPlacement"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "justifySelf": {
+              "description": "Child of a `grid` container: horizontal alignment in its cell (default: the container's `justifyContent`).",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/SelfAlign"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "alignSelf": {
+              "description": "Child of a `grid` container: vertical alignment in its cell (default: the container's `alignItems`).",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/SelfAlign"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
             "width": {
               "anyOf": [
                 {
@@ -1504,6 +1738,57 @@
               "anyOf": [
                 {
                   "$ref": "#/definitions/AlignItems"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "wrap": {
+              "description": "`horizontal` / `vertical` only: children that do not fit move onto a new line (CSS `flex-wrap: wrap`).",
+              "type": [
+                "boolean",
+                "null"
+              ]
+            },
+            "rowGap": {
+              "description": "Space between rows: wrapped lines and grid rows. Falls back to `gap` (CSS `row-gap`).",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/NumberOrExpression"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "columnGap": {
+              "description": "Space between columns. Falls back to `gap` (CSS `column-gap`).",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/NumberOrExpression"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "columns": {
+              "description": "`grid` only: the column tracks (count, track array or CSS list).",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/GridTemplate"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "rows": {
+              "description": "`grid` only: the row tracks. Rows past these are `auto`.",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/GridTemplate"
                 },
                 {
                   "type": "null"
@@ -1926,6 +2211,50 @@
                 "$ref": "#/definitions/VariableBinding"
               }
             },
+            "gridColumn": {
+              "description": "Child of a `grid` container: its column line / span (`2`, `\"span 2\"`, `\"1 / span 3\"`). Unset = next free cell.",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/GridPlacement"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "gridRow": {
+              "description": "Child of a `grid` container: its row line / span.",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/GridPlacement"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "justifySelf": {
+              "description": "Child of a `grid` container: horizontal alignment in its cell (default: the container's `justifyContent`).",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/SelfAlign"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "alignSelf": {
+              "description": "Child of a `grid` container: vertical alignment in its cell (default: the container's `alignItems`).",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/SelfAlign"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
             "minWidth": {
               "type": [
                 "number",
@@ -2244,6 +2573,50 @@
               "additionalProperties": {
                 "$ref": "#/definitions/VariableBinding"
               }
+            },
+            "gridColumn": {
+              "description": "Child of a `grid` container: its column line / span (`2`, `\"span 2\"`, `\"1 / span 3\"`). Unset = next free cell.",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/GridPlacement"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "gridRow": {
+              "description": "Child of a `grid` container: its row line / span.",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/GridPlacement"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "justifySelf": {
+              "description": "Child of a `grid` container: horizontal alignment in its cell (default: the container's `justifyContent`).",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/SelfAlign"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "alignSelf": {
+              "description": "Child of a `grid` container: vertical alignment in its cell (default: the container's `alignItems`).",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/SelfAlign"
+                },
+                {
+                  "type": "null"
+                }
+              ]
             }
           }
         },
@@ -2571,6 +2944,50 @@
               "additionalProperties": {
                 "$ref": "#/definitions/VariableBinding"
               }
+            },
+            "gridColumn": {
+              "description": "Child of a `grid` container: its column line / span (`2`, `\"span 2\"`, `\"1 / span 3\"`). Unset = next free cell.",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/GridPlacement"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "gridRow": {
+              "description": "Child of a `grid` container: its row line / span.",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/GridPlacement"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "justifySelf": {
+              "description": "Child of a `grid` container: horizontal alignment in its cell (default: the container's `justifyContent`).",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/SelfAlign"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "alignSelf": {
+              "description": "Child of a `grid` container: vertical alignment in its cell (default: the container's `alignItems`).",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/SelfAlign"
+                },
+                {
+                  "type": "null"
+                }
+              ]
             },
             "minWidth": {
               "type": [
@@ -2949,6 +3366,50 @@
               "additionalProperties": {
                 "$ref": "#/definitions/VariableBinding"
               }
+            },
+            "gridColumn": {
+              "description": "Child of a `grid` container: its column line / span (`2`, `\"span 2\"`, `\"1 / span 3\"`). Unset = next free cell.",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/GridPlacement"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "gridRow": {
+              "description": "Child of a `grid` container: its row line / span.",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/GridPlacement"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "justifySelf": {
+              "description": "Child of a `grid` container: horizontal alignment in its cell (default: the container's `justifyContent`).",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/SelfAlign"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "alignSelf": {
+              "description": "Child of a `grid` container: vertical alignment in its cell (default: the container's `alignItems`).",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/SelfAlign"
+                },
+                {
+                  "type": "null"
+                }
+              ]
             },
             "minWidth": {
               "type": [
@@ -3389,6 +3850,50 @@
                 "$ref": "#/definitions/VariableBinding"
               }
             },
+            "gridColumn": {
+              "description": "Child of a `grid` container: its column line / span (`2`, `\"span 2\"`, `\"1 / span 3\"`). Unset = next free cell.",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/GridPlacement"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "gridRow": {
+              "description": "Child of a `grid` container: its row line / span.",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/GridPlacement"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "justifySelf": {
+              "description": "Child of a `grid` container: horizontal alignment in its cell (default: the container's `justifyContent`).",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/SelfAlign"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "alignSelf": {
+              "description": "Child of a `grid` container: vertical alignment in its cell (default: the container's `alignItems`).",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/SelfAlign"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
             "minWidth": {
               "type": [
                 "number",
@@ -3784,6 +4289,50 @@
               "additionalProperties": {
                 "$ref": "#/definitions/VariableBinding"
               }
+            },
+            "gridColumn": {
+              "description": "Child of a `grid` container: its column line / span (`2`, `\"span 2\"`, `\"1 / span 3\"`). Unset = next free cell.",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/GridPlacement"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "gridRow": {
+              "description": "Child of a `grid` container: its row line / span.",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/GridPlacement"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "justifySelf": {
+              "description": "Child of a `grid` container: horizontal alignment in its cell (default: the container's `justifyContent`).",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/SelfAlign"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "alignSelf": {
+              "description": "Child of a `grid` container: vertical alignment in its cell (default: the container's `alignItems`).",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/SelfAlign"
+                },
+                {
+                  "type": "null"
+                }
+              ]
             },
             "minWidth": {
               "type": [
@@ -4195,6 +4744,50 @@
                 "$ref": "#/definitions/VariableBinding"
               }
             },
+            "gridColumn": {
+              "description": "Child of a `grid` container: its column line / span (`2`, `\"span 2\"`, `\"1 / span 3\"`). Unset = next free cell.",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/GridPlacement"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "gridRow": {
+              "description": "Child of a `grid` container: its row line / span.",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/GridPlacement"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "justifySelf": {
+              "description": "Child of a `grid` container: horizontal alignment in its cell (default: the container's `justifyContent`).",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/SelfAlign"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "alignSelf": {
+              "description": "Child of a `grid` container: vertical alignment in its cell (default: the container's `alignItems`).",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/SelfAlign"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
             "minWidth": {
               "type": [
                 "number",
@@ -4540,6 +5133,50 @@
               "additionalProperties": {
                 "$ref": "#/definitions/VariableBinding"
               }
+            },
+            "gridColumn": {
+              "description": "Child of a `grid` container: its column line / span (`2`, `\"span 2\"`, `\"1 / span 3\"`). Unset = next free cell.",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/GridPlacement"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "gridRow": {
+              "description": "Child of a `grid` container: its row line / span.",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/GridPlacement"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "justifySelf": {
+              "description": "Child of a `grid` container: horizontal alignment in its cell (default: the container's `justifyContent`).",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/SelfAlign"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "alignSelf": {
+              "description": "Child of a `grid` container: vertical alignment in its cell (default: the container's `alignItems`).",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/SelfAlign"
+                },
+                {
+                  "type": "null"
+                }
+              ]
             },
             "minWidth": {
               "type": [
@@ -4938,6 +5575,50 @@
                 "$ref": "#/definitions/VariableBinding"
               }
             },
+            "gridColumn": {
+              "description": "Child of a `grid` container: its column line / span (`2`, `\"span 2\"`, `\"1 / span 3\"`). Unset = next free cell.",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/GridPlacement"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "gridRow": {
+              "description": "Child of a `grid` container: its row line / span.",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/GridPlacement"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "justifySelf": {
+              "description": "Child of a `grid` container: horizontal alignment in its cell (default: the container's `justifyContent`).",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/SelfAlign"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "alignSelf": {
+              "description": "Child of a `grid` container: vertical alignment in its cell (default: the container's `alignItems`).",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/SelfAlign"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
             "minWidth": {
               "type": [
                 "number",
@@ -5315,6 +5996,50 @@
                 "$ref": "#/definitions/VariableBinding"
               }
             },
+            "gridColumn": {
+              "description": "Child of a `grid` container: its column line / span (`2`, `\"span 2\"`, `\"1 / span 3\"`). Unset = next free cell.",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/GridPlacement"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "gridRow": {
+              "description": "Child of a `grid` container: its row line / span.",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/GridPlacement"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "justifySelf": {
+              "description": "Child of a `grid` container: horizontal alignment in its cell (default: the container's `justifyContent`).",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/SelfAlign"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "alignSelf": {
+              "description": "Child of a `grid` container: vertical alignment in its cell (default: the container's `alignItems`).",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/SelfAlign"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
             "minWidth": {
               "type": [
                 "number",
@@ -5678,6 +6403,50 @@
               "additionalProperties": {
                 "$ref": "#/definitions/VariableBinding"
               }
+            },
+            "gridColumn": {
+              "description": "Child of a `grid` container: its column line / span (`2`, `\"span 2\"`, `\"1 / span 3\"`). Unset = next free cell.",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/GridPlacement"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "gridRow": {
+              "description": "Child of a `grid` container: its row line / span.",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/GridPlacement"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "justifySelf": {
+              "description": "Child of a `grid` container: horizontal alignment in its cell (default: the container's `justifyContent`).",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/SelfAlign"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "alignSelf": {
+              "description": "Child of a `grid` container: vertical alignment in its cell (default: the container's `alignItems`).",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/SelfAlign"
+                },
+                {
+                  "type": "null"
+                }
+              ]
             },
             "minWidth": {
               "type": [
@@ -6048,6 +6817,50 @@
               "additionalProperties": {
                 "$ref": "#/definitions/VariableBinding"
               }
+            },
+            "gridColumn": {
+              "description": "Child of a `grid` container: its column line / span (`2`, `\"span 2\"`, `\"1 / span 3\"`). Unset = next free cell.",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/GridPlacement"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "gridRow": {
+              "description": "Child of a `grid` container: its row line / span.",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/GridPlacement"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "justifySelf": {
+              "description": "Child of a `grid` container: horizontal alignment in its cell (default: the container's `justifyContent`).",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/SelfAlign"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "alignSelf": {
+              "description": "Child of a `grid` container: vertical alignment in its cell (default: the container's `alignItems`).",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/SelfAlign"
+                },
+                {
+                  "type": "null"
+                }
+              ]
             },
             "minWidth": {
               "type": [
@@ -6434,6 +7247,50 @@
                 "$ref": "#/definitions/VariableBinding"
               }
             },
+            "gridColumn": {
+              "description": "Child of a `grid` container: its column line / span (`2`, `\"span 2\"`, `\"1 / span 3\"`). Unset = next free cell.",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/GridPlacement"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "gridRow": {
+              "description": "Child of a `grid` container: its row line / span.",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/GridPlacement"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "justifySelf": {
+              "description": "Child of a `grid` container: horizontal alignment in its cell (default: the container's `justifyContent`).",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/SelfAlign"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "alignSelf": {
+              "description": "Child of a `grid` container: vertical alignment in its cell (default: the container's `alignItems`).",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/SelfAlign"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
             "minWidth": {
               "type": [
                 "number",
@@ -6803,6 +7660,50 @@
               "additionalProperties": {
                 "$ref": "#/definitions/VariableBinding"
               }
+            },
+            "gridColumn": {
+              "description": "Child of a `grid` container: its column line / span (`2`, `\"span 2\"`, `\"1 / span 3\"`). Unset = next free cell.",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/GridPlacement"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "gridRow": {
+              "description": "Child of a `grid` container: its row line / span.",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/GridPlacement"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "justifySelf": {
+              "description": "Child of a `grid` container: horizontal alignment in its cell (default: the container's `justifyContent`).",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/SelfAlign"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "alignSelf": {
+              "description": "Child of a `grid` container: vertical alignment in its cell (default: the container's `alignItems`).",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/SelfAlign"
+                },
+                {
+                  "type": "null"
+                }
+              ]
             },
             "minWidth": {
               "type": [
@@ -7216,6 +8117,50 @@
                 "$ref": "#/definitions/VariableBinding"
               }
             },
+            "gridColumn": {
+              "description": "Child of a `grid` container: its column line / span (`2`, `\"span 2\"`, `\"1 / span 3\"`). Unset = next free cell.",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/GridPlacement"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "gridRow": {
+              "description": "Child of a `grid` container: its row line / span.",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/GridPlacement"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "justifySelf": {
+              "description": "Child of a `grid` container: horizontal alignment in its cell (default: the container's `justifyContent`).",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/SelfAlign"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "alignSelf": {
+              "description": "Child of a `grid` container: vertical alignment in its cell (default: the container's `alignItems`).",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/SelfAlign"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
             "minWidth": {
               "type": [
                 "number",
@@ -7592,6 +8537,50 @@
               "additionalProperties": {
                 "$ref": "#/definitions/VariableBinding"
               }
+            },
+            "gridColumn": {
+              "description": "Child of a `grid` container: its column line / span (`2`, `\"span 2\"`, `\"1 / span 3\"`). Unset = next free cell.",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/GridPlacement"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "gridRow": {
+              "description": "Child of a `grid` container: its row line / span.",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/GridPlacement"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "justifySelf": {
+              "description": "Child of a `grid` container: horizontal alignment in its cell (default: the container's `justifyContent`).",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/SelfAlign"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "alignSelf": {
+              "description": "Child of a `grid` container: vertical alignment in its cell (default: the container's `alignItems`).",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/SelfAlign"
+                },
+                {
+                  "type": "null"
+                }
+              ]
             },
             "minWidth": {
               "type": [
@@ -7974,6 +8963,50 @@
                 "$ref": "#/definitions/VariableBinding"
               }
             },
+            "gridColumn": {
+              "description": "Child of a `grid` container: its column line / span (`2`, `\"span 2\"`, `\"1 / span 3\"`). Unset = next free cell.",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/GridPlacement"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "gridRow": {
+              "description": "Child of a `grid` container: its row line / span.",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/GridPlacement"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "justifySelf": {
+              "description": "Child of a `grid` container: horizontal alignment in its cell (default: the container's `justifyContent`).",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/SelfAlign"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "alignSelf": {
+              "description": "Child of a `grid` container: vertical alignment in its cell (default: the container's `alignItems`).",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/SelfAlign"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
             "minWidth": {
               "type": [
                 "number",
@@ -8287,6 +9320,50 @@
               "additionalProperties": {
                 "$ref": "#/definitions/VariableBinding"
               }
+            },
+            "gridColumn": {
+              "description": "Child of a `grid` container: its column line / span (`2`, `\"span 2\"`, `\"1 / span 3\"`). Unset = next free cell.",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/GridPlacement"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "gridRow": {
+              "description": "Child of a `grid` container: its row line / span.",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/GridPlacement"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "justifySelf": {
+              "description": "Child of a `grid` container: horizontal alignment in its cell (default: the container's `justifyContent`).",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/SelfAlign"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "alignSelf": {
+              "description": "Child of a `grid` container: vertical alignment in its cell (default: the container's `alignItems`).",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/SelfAlign"
+                },
+                {
+                  "type": "null"
+                }
+              ]
             }
           }
         },
@@ -8581,6 +9658,50 @@
               "additionalProperties": {
                 "$ref": "#/definitions/VariableBinding"
               }
+            },
+            "gridColumn": {
+              "description": "Child of a `grid` container: its column line / span (`2`, `\"span 2\"`, `\"1 / span 3\"`). Unset = next free cell.",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/GridPlacement"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "gridRow": {
+              "description": "Child of a `grid` container: its row line / span.",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/GridPlacement"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "justifySelf": {
+              "description": "Child of a `grid` container: horizontal alignment in its cell (default: the container's `justifyContent`).",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/SelfAlign"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "alignSelf": {
+              "description": "Child of a `grid` container: vertical alignment in its cell (default: the container's `alignItems`).",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/SelfAlign"
+                },
+                {
+                  "type": "null"
+                }
+              ]
             }
           }
         },
@@ -8875,6 +9996,50 @@
               "additionalProperties": {
                 "$ref": "#/definitions/VariableBinding"
               }
+            },
+            "gridColumn": {
+              "description": "Child of a `grid` container: its column line / span (`2`, `\"span 2\"`, `\"1 / span 3\"`). Unset = next free cell.",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/GridPlacement"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "gridRow": {
+              "description": "Child of a `grid` container: its row line / span.",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/GridPlacement"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "justifySelf": {
+              "description": "Child of a `grid` container: horizontal alignment in its cell (default: the container's `justifyContent`).",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/SelfAlign"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "alignSelf": {
+              "description": "Child of a `grid` container: vertical alignment in its cell (default: the container's `alignItems`).",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/SelfAlign"
+                },
+                {
+                  "type": "null"
+                }
+              ]
             }
           }
         },
@@ -9169,6 +10334,50 @@
               "additionalProperties": {
                 "$ref": "#/definitions/VariableBinding"
               }
+            },
+            "gridColumn": {
+              "description": "Child of a `grid` container: its column line / span (`2`, `\"span 2\"`, `\"1 / span 3\"`). Unset = next free cell.",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/GridPlacement"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "gridRow": {
+              "description": "Child of a `grid` container: its row line / span.",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/GridPlacement"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "justifySelf": {
+              "description": "Child of a `grid` container: horizontal alignment in its cell (default: the container's `justifyContent`).",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/SelfAlign"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "alignSelf": {
+              "description": "Child of a `grid` container: vertical alignment in its cell (default: the container's `alignItems`).",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/SelfAlign"
+                },
+                {
+                  "type": "null"
+                }
+              ]
             }
           }
         },
@@ -9524,6 +10733,50 @@
                 "$ref": "#/definitions/VariableBinding"
               }
             },
+            "gridColumn": {
+              "description": "Child of a `grid` container: its column line / span (`2`, `\"span 2\"`, `\"1 / span 3\"`). Unset = next free cell.",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/GridPlacement"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "gridRow": {
+              "description": "Child of a `grid` container: its row line / span.",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/GridPlacement"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "justifySelf": {
+              "description": "Child of a `grid` container: horizontal alignment in its cell (default: the container's `justifyContent`).",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/SelfAlign"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "alignSelf": {
+              "description": "Child of a `grid` container: vertical alignment in its cell (default: the container's `alignItems`).",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/SelfAlign"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
             "width": {
               "anyOf": [
                 {
@@ -9588,6 +10841,57 @@
               "anyOf": [
                 {
                   "$ref": "#/definitions/AlignItems"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "wrap": {
+              "description": "`horizontal` / `vertical` only: children that do not fit move onto a new line (CSS `flex-wrap: wrap`).",
+              "type": [
+                "boolean",
+                "null"
+              ]
+            },
+            "rowGap": {
+              "description": "Space between rows: wrapped lines and grid rows. Falls back to `gap` (CSS `row-gap`).",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/NumberOrExpression"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "columnGap": {
+              "description": "Space between columns. Falls back to `gap` (CSS `column-gap`).",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/NumberOrExpression"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "columns": {
+              "description": "`grid` only: the column tracks (count, track array or CSS list).",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/GridTemplate"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "rows": {
+              "description": "`grid` only: the row tracks. Rows past these are `auto`.",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/GridTemplate"
                 },
                 {
                   "type": "null"
@@ -9953,6 +11257,50 @@
                 "$ref": "#/definitions/VariableBinding"
               }
             },
+            "gridColumn": {
+              "description": "Child of a `grid` container: its column line / span (`2`, `\"span 2\"`, `\"1 / span 3\"`). Unset = next free cell.",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/GridPlacement"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "gridRow": {
+              "description": "Child of a `grid` container: its row line / span.",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/GridPlacement"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "justifySelf": {
+              "description": "Child of a `grid` container: horizontal alignment in its cell (default: the container's `justifyContent`).",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/SelfAlign"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "alignSelf": {
+              "description": "Child of a `grid` container: vertical alignment in its cell (default: the container's `alignItems`).",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/SelfAlign"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
             "minWidth": {
               "type": [
                 "number",
@@ -10257,6 +11605,50 @@
                 "$ref": "#/definitions/VariableBinding"
               }
             },
+            "gridColumn": {
+              "description": "Child of a `grid` container: its column line / span (`2`, `\"span 2\"`, `\"1 / span 3\"`). Unset = next free cell.",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/GridPlacement"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "gridRow": {
+              "description": "Child of a `grid` container: its row line / span.",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/GridPlacement"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "justifySelf": {
+              "description": "Child of a `grid` container: horizontal alignment in its cell (default: the container's `justifyContent`).",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/SelfAlign"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "alignSelf": {
+              "description": "Child of a `grid` container: vertical alignment in its cell (default: the container's `alignItems`).",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/SelfAlign"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
             "width": {
               "anyOf": [
                 {
@@ -10321,6 +11713,57 @@
               "anyOf": [
                 {
                   "$ref": "#/definitions/AlignItems"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "wrap": {
+              "description": "`horizontal` / `vertical` only: children that do not fit move onto a new line (CSS `flex-wrap: wrap`).",
+              "type": [
+                "boolean",
+                "null"
+              ]
+            },
+            "rowGap": {
+              "description": "Space between rows: wrapped lines and grid rows. Falls back to `gap` (CSS `row-gap`).",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/NumberOrExpression"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "columnGap": {
+              "description": "Space between columns. Falls back to `gap` (CSS `column-gap`).",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/NumberOrExpression"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "columns": {
+              "description": "`grid` only: the column tracks (count, track array or CSS list).",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/GridTemplate"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "rows": {
+              "description": "`grid` only: the row tracks. Rows past these are `auto`.",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/GridTemplate"
                 },
                 {
                   "type": "null"
@@ -11555,6 +12998,38 @@
         }
       }
     },
+    "GridPlacement": {
+      "description": "JSON Schema shape of the hand-serialized grid types.",
+      "anyOf": [
+        {
+          "type": "number",
+          "format": "double"
+        },
+        {
+          "type": "string"
+        }
+      ]
+    },
+    "SelfAlign": {
+      "description": "A grid child's alignment inside its cell (`justifySelf` / `alignSelf`).",
+      "oneOf": [
+        {
+          "type": "string",
+          "enum": [
+            "start",
+            "center",
+            "end"
+          ]
+        },
+        {
+          "description": "Fill the cell on that axis.",
+          "type": "string",
+          "enum": [
+            "stretch"
+          ]
+        }
+      ]
+    },
     "SizingBehavior": {
       "description": "Sizing value: a number, a fixed keyword, or an arbitrary string (typically `$variable` ref).",
       "anyOf": [
@@ -11578,11 +13053,22 @@
       ]
     },
     "LayoutMode": {
-      "type": "string",
-      "enum": [
-        "none",
-        "vertical",
-        "horizontal"
+      "oneOf": [
+        {
+          "type": "string",
+          "enum": [
+            "none",
+            "vertical",
+            "horizontal"
+          ]
+        },
+        {
+          "description": "CSS-grid layout over `columns` × `rows` tracks.",
+          "type": "string",
+          "enum": [
+            "grid"
+          ]
+        }
       ]
     },
     "Padding": {
@@ -11640,6 +13126,36 @@
           "enum": [
             "stretch"
           ]
+        }
+      ]
+    },
+    "GridTemplate": {
+      "anyOf": [
+        {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0.0
+        },
+        {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/NumberOrString"
+          }
+        },
+        {
+          "type": "string"
+        }
+      ]
+    },
+    "NumberOrString": {
+      "description": "JSON Schema shape of the hand-serialized grid types.",
+      "anyOf": [
+        {
+          "type": "number",
+          "format": "double"
+        },
+        {
+          "type": "string"
         }
       ]
     },

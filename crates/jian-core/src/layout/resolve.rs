@@ -245,10 +245,15 @@ pub fn container_to_style(c: &ContainerProps) -> Style {
         },
         ..Default::default()
     };
-    if is_stack_container(c.layout.as_ref()) {
-        return stack_container_to_style(c, style);
+    match c.layout {
+        Some(LayoutMode::None) => stack_container_to_style(c, style),
+        Some(LayoutMode::Grid) => super::grid_style::grid_container_style(c, style),
+        _ => {
+            let mut style = style;
+            super::grid_style::apply_flex_extras(c, &mut style);
+            style
+        }
     }
-    style
 }
 
 fn tabs_to_style(tabs: &jian_ops_schema::node::TabsNode) -> Style {
@@ -519,7 +524,7 @@ fn leaf_size_and_limits(
 
 /// `(width, height)` sizing for ANY node — containers pull from their
 /// `ContainerProps`, every other variant from its own leaf width/height.
-fn node_size_refs(
+pub(crate) fn node_size_refs(
     n: &jian_ops_schema::node::PenNode,
 ) -> (Option<&SizingBehavior>, Option<&SizingBehavior>) {
     use jian_ops_schema::node::PenNode;

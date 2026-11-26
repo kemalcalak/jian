@@ -115,7 +115,48 @@ slideTransition: SlideTransition | null,
  * consumer can read; the renderer replaces it with the variable's value
  * for the active theme while the field still holds that value.
  */
-variableBindings: { [key in string]?: VariableBinding } | null, width: SizingBehavior | null, height: SizingBehavior | null, layout: LayoutMode | null, gap: NumberOrExpression | null, padding: Padding | null, justifyContent: JustifyContent | null, alignItems: AlignItems | null, clipContent: boolean | null,
+variableBindings: { [key in string]?: VariableBinding } | null,
+/**
+ * Child of a `grid` container: its column line / span
+ * (`2`, `"span 2"`, `"1 / span 3"`). Unset = next free cell.
+ */
+gridColumn: number | string | null,
+/**
+ * Child of a `grid` container: its row line / span.
+ */
+gridRow: number | string | null,
+/**
+ * Child of a `grid` container: horizontal alignment in its cell
+ * (default: the container's `justifyContent`).
+ */
+justifySelf: SelfAlign | null,
+/**
+ * Child of a `grid` container: vertical alignment in its cell
+ * (default: the container's `alignItems`).
+ */
+alignSelf: SelfAlign | null, width: SizingBehavior | null, height: SizingBehavior | null, layout: LayoutMode | null, gap: NumberOrExpression | null, padding: Padding | null, justifyContent: JustifyContent | null, alignItems: AlignItems | null,
+/**
+ * `horizontal` / `vertical` only: children that do not fit move onto
+ * a new line (CSS `flex-wrap: wrap`).
+ */
+wrap: boolean | null,
+/**
+ * Space between rows: wrapped lines and grid rows. Falls back to
+ * `gap` (CSS `row-gap`).
+ */
+rowGap: NumberOrExpression | null,
+/**
+ * Space between columns. Falls back to `gap` (CSS `column-gap`).
+ */
+columnGap: NumberOrExpression | null,
+/**
+ * `grid` only: the column tracks (count, track array or CSS list).
+ */
+columns: number | Array<number | string> | string | null,
+/**
+ * `grid` only: the row tracks. Rows past these are `auto`.
+ */
+rows: number | Array<number | string> | string | null, clipContent: boolean | null,
 /**
  * Direct child ids that remain pinned while this container scrolls.
  */
@@ -186,7 +227,26 @@ slideTransition: SlideTransition | null,
  * consumer can read; the renderer replaces it with the variable's value
  * for the active theme while the field still holds that value.
  */
-variableBindings: { [key in string]?: VariableBinding } | null, minWidth: number | null, maxWidth: number | null, minHeight: number | null, maxHeight: number | null, };
+variableBindings: { [key in string]?: VariableBinding } | null,
+/**
+ * Child of a `grid` container: its column line / span
+ * (`2`, `"span 2"`, `"1 / span 3"`). Unset = next free cell.
+ */
+gridColumn: number | string | null,
+/**
+ * Child of a `grid` container: its row line / span.
+ */
+gridRow: number | string | null,
+/**
+ * Child of a `grid` container: horizontal alignment in its cell
+ * (default: the container's `justifyContent`).
+ */
+justifySelf: SelfAlign | null,
+/**
+ * Child of a `grid` container: vertical alignment in its cell
+ * (default: the container's `alignItems`).
+ */
+alignSelf: SelfAlign | null, minWidth: number | null, maxWidth: number | null, minHeight: number | null, maxHeight: number | null, };
 
 export type Capability = "storage" | "network" | "camera" | "microphone" | "location" | "notifications" | "clipboard" | "biometric" | "file_system" | "haptic";
 
@@ -221,7 +281,26 @@ slideTransition: SlideTransition | null,
  * consumer can read; the renderer replaces it with the variable's value
  * for the active theme while the field still holds that value.
  */
-variableBindings: { [key in string]?: VariableBinding } | null, minWidth: number | null, maxWidth: number | null, minHeight: number | null, maxHeight: number | null, };
+variableBindings: { [key in string]?: VariableBinding } | null,
+/**
+ * Child of a `grid` container: its column line / span
+ * (`2`, `"span 2"`, `"1 / span 3"`). Unset = next free cell.
+ */
+gridColumn: number | string | null,
+/**
+ * Child of a `grid` container: its row line / span.
+ */
+gridRow: number | string | null,
+/**
+ * Child of a `grid` container: horizontal alignment in its cell
+ * (default: the container's `justifyContent`).
+ */
+justifySelf: SelfAlign | null,
+/**
+ * Child of a `grid` container: vertical alignment in its cell
+ * (default: the container's `alignItems`).
+ */
+alignSelf: SelfAlign | null, minWidth: number | null, maxWidth: number | null, minHeight: number | null, maxHeight: number | null, };
 
 /**
  * One property a component master declares.
@@ -347,7 +426,26 @@ slideTransition: SlideTransition | null,
  * consumer can read; the renderer replaces it with the variable's value
  * for the active theme while the field still holds that value.
  */
-variableBindings: { [key in string]?: VariableBinding } | null, minWidth: number | null, maxWidth: number | null, minHeight: number | null, maxHeight: number | null, };
+variableBindings: { [key in string]?: VariableBinding } | null,
+/**
+ * Child of a `grid` container: its column line / span
+ * (`2`, `"span 2"`, `"1 / span 3"`). Unset = next free cell.
+ */
+gridColumn: number | string | null,
+/**
+ * Child of a `grid` container: its row line / span.
+ */
+gridRow: number | string | null,
+/**
+ * Child of a `grid` container: horizontal alignment in its cell
+ * (default: the container's `justifyContent`).
+ */
+justifySelf: SelfAlign | null,
+/**
+ * Child of a `grid` container: vertical alignment in its cell
+ * (default: the container's `alignItems`).
+ */
+alignSelf: SelfAlign | null, minWidth: number | null, maxWidth: number | null, minHeight: number | null, maxHeight: number | null, };
 
 /**
  * All supported event hook keys. Note: input events (`onChange`, `onSubmit`, `onFocus`,
@@ -431,7 +529,48 @@ slideTransition: SlideTransition | null,
  * consumer can read; the renderer replaces it with the variable's value
  * for the active theme while the field still holds that value.
  */
-variableBindings: { [key in string]?: VariableBinding } | null, width: SizingBehavior | null, height: SizingBehavior | null, layout: LayoutMode | null, gap: NumberOrExpression | null, padding: Padding | null, justifyContent: JustifyContent | null, alignItems: AlignItems | null, clipContent: boolean | null,
+variableBindings: { [key in string]?: VariableBinding } | null,
+/**
+ * Child of a `grid` container: its column line / span
+ * (`2`, `"span 2"`, `"1 / span 3"`). Unset = next free cell.
+ */
+gridColumn: number | string | null,
+/**
+ * Child of a `grid` container: its row line / span.
+ */
+gridRow: number | string | null,
+/**
+ * Child of a `grid` container: horizontal alignment in its cell
+ * (default: the container's `justifyContent`).
+ */
+justifySelf: SelfAlign | null,
+/**
+ * Child of a `grid` container: vertical alignment in its cell
+ * (default: the container's `alignItems`).
+ */
+alignSelf: SelfAlign | null, width: SizingBehavior | null, height: SizingBehavior | null, layout: LayoutMode | null, gap: NumberOrExpression | null, padding: Padding | null, justifyContent: JustifyContent | null, alignItems: AlignItems | null,
+/**
+ * `horizontal` / `vertical` only: children that do not fit move onto
+ * a new line (CSS `flex-wrap: wrap`).
+ */
+wrap: boolean | null,
+/**
+ * Space between rows: wrapped lines and grid rows. Falls back to
+ * `gap` (CSS `row-gap`).
+ */
+rowGap: NumberOrExpression | null,
+/**
+ * Space between columns. Falls back to `gap` (CSS `column-gap`).
+ */
+columnGap: NumberOrExpression | null,
+/**
+ * `grid` only: the column tracks (count, track array or CSS list).
+ */
+columns: number | Array<number | string> | string | null,
+/**
+ * `grid` only: the row tracks. Rows past these are `auto`.
+ */
+rows: number | Array<number | string> | string | null, clipContent: boolean | null,
 /**
  * Direct child ids that remain pinned while this container scrolls.
  */
@@ -523,7 +662,48 @@ slideTransition: SlideTransition | null,
  * consumer can read; the renderer replaces it with the variable's value
  * for the active theme while the field still holds that value.
  */
-variableBindings: { [key in string]?: VariableBinding } | null, width: SizingBehavior | null, height: SizingBehavior | null, layout: LayoutMode | null, gap: NumberOrExpression | null, padding: Padding | null, justifyContent: JustifyContent | null, alignItems: AlignItems | null, clipContent: boolean | null,
+variableBindings: { [key in string]?: VariableBinding } | null,
+/**
+ * Child of a `grid` container: its column line / span
+ * (`2`, `"span 2"`, `"1 / span 3"`). Unset = next free cell.
+ */
+gridColumn: number | string | null,
+/**
+ * Child of a `grid` container: its row line / span.
+ */
+gridRow: number | string | null,
+/**
+ * Child of a `grid` container: horizontal alignment in its cell
+ * (default: the container's `justifyContent`).
+ */
+justifySelf: SelfAlign | null,
+/**
+ * Child of a `grid` container: vertical alignment in its cell
+ * (default: the container's `alignItems`).
+ */
+alignSelf: SelfAlign | null, width: SizingBehavior | null, height: SizingBehavior | null, layout: LayoutMode | null, gap: NumberOrExpression | null, padding: Padding | null, justifyContent: JustifyContent | null, alignItems: AlignItems | null,
+/**
+ * `horizontal` / `vertical` only: children that do not fit move onto
+ * a new line (CSS `flex-wrap: wrap`).
+ */
+wrap: boolean | null,
+/**
+ * Space between rows: wrapped lines and grid rows. Falls back to
+ * `gap` (CSS `row-gap`).
+ */
+rowGap: NumberOrExpression | null,
+/**
+ * Space between columns. Falls back to `gap` (CSS `column-gap`).
+ */
+columnGap: NumberOrExpression | null,
+/**
+ * `grid` only: the column tracks (count, track array or CSS list).
+ */
+columns: number | Array<number | string> | string | null,
+/**
+ * `grid` only: the row tracks. Rows past these are `auto`.
+ */
+rows: number | Array<number | string> | string | null, clipContent: boolean | null,
 /**
  * Direct child ids that remain pinned while this container scrolls.
  */
@@ -567,7 +747,26 @@ slideTransition: SlideTransition | null,
  * consumer can read; the renderer replaces it with the variable's value
  * for the active theme while the field still holds that value.
  */
-variableBindings: { [key in string]?: VariableBinding } | null, minWidth: number | null, maxWidth: number | null, minHeight: number | null, maxHeight: number | null, };
+variableBindings: { [key in string]?: VariableBinding } | null,
+/**
+ * Child of a `grid` container: its column line / span
+ * (`2`, `"span 2"`, `"1 / span 3"`). Unset = next free cell.
+ */
+gridColumn: number | string | null,
+/**
+ * Child of a `grid` container: its row line / span.
+ */
+gridRow: number | string | null,
+/**
+ * Child of a `grid` container: horizontal alignment in its cell
+ * (default: the container's `justifyContent`).
+ */
+justifySelf: SelfAlign | null,
+/**
+ * Child of a `grid` container: vertical alignment in its cell
+ * (default: the container's `alignItems`).
+ */
+alignSelf: SelfAlign | null, minWidth: number | null, maxWidth: number | null, minHeight: number | null, maxHeight: number | null, };
 
 export type ImageFillBody = { url: string, mode: ImageFillMode | null, originalSize: ImageOriginalSize | null, transform: ImageTransform | null,
 /**
@@ -613,7 +812,26 @@ slideTransition: SlideTransition | null,
  * consumer can read; the renderer replaces it with the variable's value
  * for the active theme while the field still holds that value.
  */
-variableBindings: { [key in string]?: VariableBinding } | null, minWidth: number | null, maxWidth: number | null, minHeight: number | null, maxHeight: number | null, };
+variableBindings: { [key in string]?: VariableBinding } | null,
+/**
+ * Child of a `grid` container: its column line / span
+ * (`2`, `"span 2"`, `"1 / span 3"`). Unset = next free cell.
+ */
+gridColumn: number | string | null,
+/**
+ * Child of a `grid` container: its row line / span.
+ */
+gridRow: number | string | null,
+/**
+ * Child of a `grid` container: horizontal alignment in its cell
+ * (default: the container's `justifyContent`).
+ */
+justifySelf: SelfAlign | null,
+/**
+ * Child of a `grid` container: vertical alignment in its cell
+ * (default: the container's `alignItems`).
+ */
+alignSelf: SelfAlign | null, minWidth: number | null, maxWidth: number | null, minHeight: number | null, maxHeight: number | null, };
 
 export type ImageOriginalSize = { width: number, height: number, };
 
@@ -627,7 +845,7 @@ export type JustifyContent = "start" | "center" | "end" | "space_between" | "spa
  */
 export type Keyframe = { offset: number, values: { [key in string]?: JsonValue }, } & ({ [key in string]?: JsonValue });
 
-export type LayoutMode = "none" | "vertical" | "horizontal";
+export type LayoutMode = "none" | "vertical" | "horizontal" | "grid";
 
 export type LineNode = { x2: number | null, y2: number | null, stroke: PenStroke | null, effects: Array<PenEffect> | null, state: { [key in string]?: StateEntry } | null, bindings: { [key in string]?: Expression } | null, events: EventHandlers | null, lifecycle: NodeLifecycleHooks | null, semantics: SemanticsMeta | null, gestures: GestureOverrides | null, route: NavigationRoute | null, id: string, name: string | null, role: string | null, explain: string | null, x: number | null, y: number | null, rotation: number | null, constraints: Constraints | null, opacity: NumberOrExpression | null, enabled: BoolOrExpression | null, visible: boolean | null, locked: boolean | null,
 /**
@@ -656,7 +874,26 @@ slideTransition: SlideTransition | null,
  * consumer can read; the renderer replaces it with the variable's value
  * for the active theme while the field still holds that value.
  */
-variableBindings: { [key in string]?: VariableBinding } | null, };
+variableBindings: { [key in string]?: VariableBinding } | null,
+/**
+ * Child of a `grid` container: its column line / span
+ * (`2`, `"span 2"`, `"1 / span 3"`). Unset = next free cell.
+ */
+gridColumn: number | string | null,
+/**
+ * Child of a `grid` container: its row line / span.
+ */
+gridRow: number | string | null,
+/**
+ * Child of a `grid` container: horizontal alignment in its cell
+ * (default: the container's `justifyContent`).
+ */
+justifySelf: SelfAlign | null,
+/**
+ * Child of a `grid` container: vertical alignment in its cell
+ * (default: the container's `alignItems`).
+ */
+alignSelf: SelfAlign | null, };
 
 export type LinearGradientBody = { angle: number | null, stops: Array<GradientStop>, explain: string | null, opacity: number | null, blendMode: BlendMode | null, };
 
@@ -776,7 +1013,26 @@ slideTransition: SlideTransition | null,
  * consumer can read; the renderer replaces it with the variable's value
  * for the active theme while the field still holds that value.
  */
-variableBindings: { [key in string]?: VariableBinding } | null, };
+variableBindings: { [key in string]?: VariableBinding } | null,
+/**
+ * Child of a `grid` container: its column line / span
+ * (`2`, `"span 2"`, `"1 / span 3"`). Unset = next free cell.
+ */
+gridColumn: number | string | null,
+/**
+ * Child of a `grid` container: its row line / span.
+ */
+gridRow: number | string | null,
+/**
+ * Child of a `grid` container: horizontal alignment in its cell
+ * (default: the container's `justifyContent`).
+ */
+justifySelf: SelfAlign | null,
+/**
+ * Child of a `grid` container: vertical alignment in its cell
+ * (default: the container's `alignItems`).
+ */
+alignSelf: SelfAlign | null, };
 
 /**
  * Numeric input with optional +/- steppers. Precise complement to
@@ -822,7 +1078,26 @@ slideTransition: SlideTransition | null,
  * consumer can read; the renderer replaces it with the variable's value
  * for the active theme while the field still holds that value.
  */
-variableBindings: { [key in string]?: VariableBinding } | null, minWidth: number | null, maxWidth: number | null, minHeight: number | null, maxHeight: number | null, };
+variableBindings: { [key in string]?: VariableBinding } | null,
+/**
+ * Child of a `grid` container: its column line / span
+ * (`2`, `"span 2"`, `"1 / span 3"`). Unset = next free cell.
+ */
+gridColumn: number | string | null,
+/**
+ * Child of a `grid` container: its row line / span.
+ */
+gridRow: number | string | null,
+/**
+ * Child of a `grid` container: horizontal alignment in its cell
+ * (default: the container's `justifyContent`).
+ */
+justifySelf: SelfAlign | null,
+/**
+ * Child of a `grid` container: vertical alignment in its cell
+ * (default: the container's `alignItems`).
+ */
+alignSelf: SelfAlign | null, minWidth: number | null, maxWidth: number | null, minHeight: number | null, maxHeight: number | null, };
 
 /**
  * Opacity can be a number or a `$variable` reference string.
@@ -883,7 +1158,26 @@ slideTransition: SlideTransition | null,
  * consumer can read; the renderer replaces it with the variable's value
  * for the active theme while the field still holds that value.
  */
-variableBindings: { [key in string]?: VariableBinding } | null, minWidth: number | null, maxWidth: number | null, minHeight: number | null, maxHeight: number | null, };
+variableBindings: { [key in string]?: VariableBinding } | null,
+/**
+ * Child of a `grid` container: its column line / span
+ * (`2`, `"span 2"`, `"1 / span 3"`). Unset = next free cell.
+ */
+gridColumn: number | string | null,
+/**
+ * Child of a `grid` container: its row line / span.
+ */
+gridRow: number | string | null,
+/**
+ * Child of a `grid` container: horizontal alignment in its cell
+ * (default: the container's `justifyContent`).
+ */
+justifySelf: SelfAlign | null,
+/**
+ * Child of a `grid` container: vertical alignment in its cell
+ * (default: the container's `alignItems`).
+ */
+alignSelf: SelfAlign | null, minWidth: number | null, maxWidth: number | null, minHeight: number | null, maxHeight: number | null, };
 
 export type PenDocument = {
 /**
@@ -986,7 +1280,26 @@ slideTransition: SlideTransition | null,
  * consumer can read; the renderer replaces it with the variable's value
  * for the active theme while the field still holds that value.
  */
-variableBindings: { [key in string]?: VariableBinding } | null, minWidth: number | null, maxWidth: number | null, minHeight: number | null, maxHeight: number | null, };
+variableBindings: { [key in string]?: VariableBinding } | null,
+/**
+ * Child of a `grid` container: its column line / span
+ * (`2`, `"span 2"`, `"1 / span 3"`). Unset = next free cell.
+ */
+gridColumn: number | string | null,
+/**
+ * Child of a `grid` container: its row line / span.
+ */
+gridRow: number | string | null,
+/**
+ * Child of a `grid` container: horizontal alignment in its cell
+ * (default: the container's `justifyContent`).
+ */
+justifySelf: SelfAlign | null,
+/**
+ * Child of a `grid` container: vertical alignment in its cell
+ * (default: the container's `alignItems`).
+ */
+alignSelf: SelfAlign | null, minWidth: number | null, maxWidth: number | null, minHeight: number | null, maxHeight: number | null, };
 
 export type PrimitiveType = "int" | "float" | "number" | "string" | "bool" | "array" | "object" | "date";
 
@@ -1024,7 +1337,26 @@ slideTransition: SlideTransition | null,
  * consumer can read; the renderer replaces it with the variable's value
  * for the active theme while the field still holds that value.
  */
-variableBindings: { [key in string]?: VariableBinding } | null, minWidth: number | null, maxWidth: number | null, minHeight: number | null, maxHeight: number | null, };
+variableBindings: { [key in string]?: VariableBinding } | null,
+/**
+ * Child of a `grid` container: its column line / span
+ * (`2`, `"span 2"`, `"1 / span 3"`). Unset = next free cell.
+ */
+gridColumn: number | string | null,
+/**
+ * Child of a `grid` container: its row line / span.
+ */
+gridRow: number | string | null,
+/**
+ * Child of a `grid` container: horizontal alignment in its cell
+ * (default: the container's `justifyContent`).
+ */
+justifySelf: SelfAlign | null,
+/**
+ * Child of a `grid` container: vertical alignment in its cell
+ * (default: the container's `alignItems`).
+ */
+alignSelf: SelfAlign | null, minWidth: number | null, maxWidth: number | null, minHeight: number | null, maxHeight: number | null, };
 
 /**
  * One node field a property drives.
@@ -1077,7 +1409,26 @@ slideTransition: SlideTransition | null,
  * consumer can read; the renderer replaces it with the variable's value
  * for the active theme while the field still holds that value.
  */
-variableBindings: { [key in string]?: VariableBinding } | null, minWidth: number | null, maxWidth: number | null, minHeight: number | null, maxHeight: number | null, };
+variableBindings: { [key in string]?: VariableBinding } | null,
+/**
+ * Child of a `grid` container: its column line / span
+ * (`2`, `"span 2"`, `"1 / span 3"`). Unset = next free cell.
+ */
+gridColumn: number | string | null,
+/**
+ * Child of a `grid` container: its row line / span.
+ */
+gridRow: number | string | null,
+/**
+ * Child of a `grid` container: horizontal alignment in its cell
+ * (default: the container's `justifyContent`).
+ */
+justifySelf: SelfAlign | null,
+/**
+ * Child of a `grid` container: vertical alignment in its cell
+ * (default: the container's `alignItems`).
+ */
+alignSelf: SelfAlign | null, minWidth: number | null, maxWidth: number | null, minHeight: number | null, maxHeight: number | null, };
 
 export type RectangleNode = { children: Array<PenNode> | null, state: { [key in string]?: StateEntry } | null, bindings: { [key in string]?: Expression } | null, events: EventHandlers | null, lifecycle: NodeLifecycleHooks | null, semantics: SemanticsMeta | null, gestures: GestureOverrides | null, route: NavigationRoute | null, id: string, name: string | null, role: string | null, explain: string | null, x: number | null, y: number | null, rotation: number | null, constraints: Constraints | null, opacity: NumberOrExpression | null, enabled: BoolOrExpression | null, visible: boolean | null, locked: boolean | null,
 /**
@@ -1106,7 +1457,48 @@ slideTransition: SlideTransition | null,
  * consumer can read; the renderer replaces it with the variable's value
  * for the active theme while the field still holds that value.
  */
-variableBindings: { [key in string]?: VariableBinding } | null, width: SizingBehavior | null, height: SizingBehavior | null, layout: LayoutMode | null, gap: NumberOrExpression | null, padding: Padding | null, justifyContent: JustifyContent | null, alignItems: AlignItems | null, clipContent: boolean | null,
+variableBindings: { [key in string]?: VariableBinding } | null,
+/**
+ * Child of a `grid` container: its column line / span
+ * (`2`, `"span 2"`, `"1 / span 3"`). Unset = next free cell.
+ */
+gridColumn: number | string | null,
+/**
+ * Child of a `grid` container: its row line / span.
+ */
+gridRow: number | string | null,
+/**
+ * Child of a `grid` container: horizontal alignment in its cell
+ * (default: the container's `justifyContent`).
+ */
+justifySelf: SelfAlign | null,
+/**
+ * Child of a `grid` container: vertical alignment in its cell
+ * (default: the container's `alignItems`).
+ */
+alignSelf: SelfAlign | null, width: SizingBehavior | null, height: SizingBehavior | null, layout: LayoutMode | null, gap: NumberOrExpression | null, padding: Padding | null, justifyContent: JustifyContent | null, alignItems: AlignItems | null,
+/**
+ * `horizontal` / `vertical` only: children that do not fit move onto
+ * a new line (CSS `flex-wrap: wrap`).
+ */
+wrap: boolean | null,
+/**
+ * Space between rows: wrapped lines and grid rows. Falls back to
+ * `gap` (CSS `row-gap`).
+ */
+rowGap: NumberOrExpression | null,
+/**
+ * Space between columns. Falls back to `gap` (CSS `column-gap`).
+ */
+columnGap: NumberOrExpression | null,
+/**
+ * `grid` only: the column tracks (count, track array or CSS list).
+ */
+columns: number | Array<number | string> | string | null,
+/**
+ * `grid` only: the row tracks. Rows past these are `auto`.
+ */
+rows: number | Array<number | string> | string | null, clipContent: boolean | null,
 /**
  * Direct child ids that remain pinned while this container scrolls.
  */
@@ -1145,7 +1537,26 @@ slideTransition: SlideTransition | null,
  * consumer can read; the renderer replaces it with the variable's value
  * for the active theme while the field still holds that value.
  */
-variableBindings: { [key in string]?: VariableBinding } | null, };
+variableBindings: { [key in string]?: VariableBinding } | null,
+/**
+ * Child of a `grid` container: its column line / span
+ * (`2`, `"span 2"`, `"1 / span 3"`). Unset = next free cell.
+ */
+gridColumn: number | string | null,
+/**
+ * Child of a `grid` container: its row line / span.
+ */
+gridRow: number | string | null,
+/**
+ * Child of a `grid` container: horizontal alignment in its cell
+ * (default: the container's `justifyContent`).
+ */
+justifySelf: SelfAlign | null,
+/**
+ * Child of a `grid` container: vertical alignment in its cell
+ * (default: the container's `alignItems`).
+ */
+alignSelf: SelfAlign | null, };
 
 export type RouteSpec = { pageId: string, preload: boolean | null, guards: Array<Action> | null,
 /**
@@ -1244,7 +1655,48 @@ slideTransition: SlideTransition | null,
  * consumer can read; the renderer replaces it with the variable's value
  * for the active theme while the field still holds that value.
  */
-variableBindings: { [key in string]?: VariableBinding } | null, width: SizingBehavior | null, height: SizingBehavior | null, layout: LayoutMode | null, gap: NumberOrExpression | null, padding: Padding | null, justifyContent: JustifyContent | null, alignItems: AlignItems | null, clipContent: boolean | null,
+variableBindings: { [key in string]?: VariableBinding } | null,
+/**
+ * Child of a `grid` container: its column line / span
+ * (`2`, `"span 2"`, `"1 / span 3"`). Unset = next free cell.
+ */
+gridColumn: number | string | null,
+/**
+ * Child of a `grid` container: its row line / span.
+ */
+gridRow: number | string | null,
+/**
+ * Child of a `grid` container: horizontal alignment in its cell
+ * (default: the container's `justifyContent`).
+ */
+justifySelf: SelfAlign | null,
+/**
+ * Child of a `grid` container: vertical alignment in its cell
+ * (default: the container's `alignItems`).
+ */
+alignSelf: SelfAlign | null, width: SizingBehavior | null, height: SizingBehavior | null, layout: LayoutMode | null, gap: NumberOrExpression | null, padding: Padding | null, justifyContent: JustifyContent | null, alignItems: AlignItems | null,
+/**
+ * `horizontal` / `vertical` only: children that do not fit move onto
+ * a new line (CSS `flex-wrap: wrap`).
+ */
+wrap: boolean | null,
+/**
+ * Space between rows: wrapped lines and grid rows. Falls back to
+ * `gap` (CSS `row-gap`).
+ */
+rowGap: NumberOrExpression | null,
+/**
+ * Space between columns. Falls back to `gap` (CSS `column-gap`).
+ */
+columnGap: NumberOrExpression | null,
+/**
+ * `grid` only: the column tracks (count, track array or CSS list).
+ */
+columns: number | Array<number | string> | string | null,
+/**
+ * `grid` only: the row tracks. Rows past these are `auto`.
+ */
+rows: number | Array<number | string> | string | null, clipContent: boolean | null,
 /**
  * Direct child ids that remain pinned while this container scrolls.
  */
@@ -1291,12 +1743,36 @@ slideTransition: SlideTransition | null,
  * consumer can read; the renderer replaces it with the variable's value
  * for the active theme while the field still holds that value.
  */
-variableBindings: { [key in string]?: VariableBinding } | null, minWidth: number | null, maxWidth: number | null, minHeight: number | null, maxHeight: number | null, };
+variableBindings: { [key in string]?: VariableBinding } | null,
+/**
+ * Child of a `grid` container: its column line / span
+ * (`2`, `"span 2"`, `"1 / span 3"`). Unset = next free cell.
+ */
+gridColumn: number | string | null,
+/**
+ * Child of a `grid` container: its row line / span.
+ */
+gridRow: number | string | null,
+/**
+ * Child of a `grid` container: horizontal alignment in its cell
+ * (default: the container's `justifyContent`).
+ */
+justifySelf: SelfAlign | null,
+/**
+ * Child of a `grid` container: vertical alignment in its cell
+ * (default: the container's `alignItems`).
+ */
+alignSelf: SelfAlign | null, minWidth: number | null, maxWidth: number | null, minHeight: number | null, maxHeight: number | null, };
 
 /**
  * A single dropdown option: the persisted `value` and its display `label`.
  */
 export type SelectOption = { value: string, label: string, };
+
+/**
+ * A grid child's alignment inside its cell (`justifySelf` / `alignSelf`).
+ */
+export type SelfAlign = "start" | "center" | "end" | "stretch";
 
 export type SemanticAction = { name: string, label: string, handler: Array<Action>, };
 
@@ -1451,7 +1927,26 @@ slideTransition: SlideTransition | null,
  * consumer can read; the renderer replaces it with the variable's value
  * for the active theme while the field still holds that value.
  */
-variableBindings: { [key in string]?: VariableBinding } | null, minWidth: number | null, maxWidth: number | null, minHeight: number | null, maxHeight: number | null, };
+variableBindings: { [key in string]?: VariableBinding } | null,
+/**
+ * Child of a `grid` container: its column line / span
+ * (`2`, `"span 2"`, `"1 / span 3"`). Unset = next free cell.
+ */
+gridColumn: number | string | null,
+/**
+ * Child of a `grid` container: its row line / span.
+ */
+gridRow: number | string | null,
+/**
+ * Child of a `grid` container: horizontal alignment in its cell
+ * (default: the container's `justifyContent`).
+ */
+justifySelf: SelfAlign | null,
+/**
+ * Child of a `grid` container: vertical alignment in its cell
+ * (default: the container's `alignItems`).
+ */
+alignSelf: SelfAlign | null, minWidth: number | null, maxWidth: number | null, minHeight: number | null, maxHeight: number | null, };
 
 export type SolidFillBody = { color: string, explain: string | null, opacity: number | null, blendMode: BlendMode | null, };
 
@@ -1506,7 +2001,26 @@ slideTransition: SlideTransition | null,
  * consumer can read; the renderer replaces it with the variable's value
  * for the active theme while the field still holds that value.
  */
-variableBindings: { [key in string]?: VariableBinding } | null, minWidth: number | null, maxWidth: number | null, minHeight: number | null, maxHeight: number | null, };
+variableBindings: { [key in string]?: VariableBinding } | null,
+/**
+ * Child of a `grid` container: its column line / span
+ * (`2`, `"span 2"`, `"1 / span 3"`). Unset = next free cell.
+ */
+gridColumn: number | string | null,
+/**
+ * Child of a `grid` container: its row line / span.
+ */
+gridRow: number | string | null,
+/**
+ * Child of a `grid` container: horizontal alignment in its cell
+ * (default: the container's `justifyContent`).
+ */
+justifySelf: SelfAlign | null,
+/**
+ * Child of a `grid` container: vertical alignment in its cell
+ * (default: the container's `alignItems`).
+ */
+alignSelf: SelfAlign | null, minWidth: number | null, maxWidth: number | null, minHeight: number | null, maxHeight: number | null, };
 
 /**
  * Tabbed panel switcher. Unlike the leaf widgets this is a CONTAINER:
@@ -1553,7 +2067,26 @@ slideTransition: SlideTransition | null,
  * consumer can read; the renderer replaces it with the variable's value
  * for the active theme while the field still holds that value.
  */
-variableBindings: { [key in string]?: VariableBinding } | null, minWidth: number | null, maxWidth: number | null, minHeight: number | null, maxHeight: number | null, };
+variableBindings: { [key in string]?: VariableBinding } | null,
+/**
+ * Child of a `grid` container: its column line / span
+ * (`2`, `"span 2"`, `"1 / span 3"`). Unset = next free cell.
+ */
+gridColumn: number | string | null,
+/**
+ * Child of a `grid` container: its row line / span.
+ */
+gridRow: number | string | null,
+/**
+ * Child of a `grid` container: horizontal alignment in its cell
+ * (default: the container's `justifyContent`).
+ */
+justifySelf: SelfAlign | null,
+/**
+ * Child of a `grid` container: vertical alignment in its cell
+ * (default: the container's `alignItems`).
+ */
+alignSelf: SelfAlign | null, minWidth: number | null, maxWidth: number | null, minHeight: number | null, maxHeight: number | null, };
 
 export type TextAlign = "left" | "center" | "right" | "justify";
 
@@ -1610,7 +2143,26 @@ slideTransition: SlideTransition | null,
  * consumer can read; the renderer replaces it with the variable's value
  * for the active theme while the field still holds that value.
  */
-variableBindings: { [key in string]?: VariableBinding } | null, minWidth: number | null, maxWidth: number | null, minHeight: number | null, maxHeight: number | null, };
+variableBindings: { [key in string]?: VariableBinding } | null,
+/**
+ * Child of a `grid` container: its column line / span
+ * (`2`, `"span 2"`, `"1 / span 3"`). Unset = next free cell.
+ */
+gridColumn: number | string | null,
+/**
+ * Child of a `grid` container: its row line / span.
+ */
+gridRow: number | string | null,
+/**
+ * Child of a `grid` container: horizontal alignment in its cell
+ * (default: the container's `justifyContent`).
+ */
+justifySelf: SelfAlign | null,
+/**
+ * Child of a `grid` container: vertical alignment in its cell
+ * (default: the container's `alignItems`).
+ */
+alignSelf: SelfAlign | null, minWidth: number | null, maxWidth: number | null, minHeight: number | null, maxHeight: number | null, };
 
 export type TextContent = string | Array<StyledTextSegment>;
 
@@ -1681,7 +2233,26 @@ slideTransition: SlideTransition | null,
  * consumer can read; the renderer replaces it with the variable's value
  * for the active theme while the field still holds that value.
  */
-variableBindings: { [key in string]?: VariableBinding } | null, minWidth: number | null, maxWidth: number | null, minHeight: number | null, maxHeight: number | null, };
+variableBindings: { [key in string]?: VariableBinding } | null,
+/**
+ * Child of a `grid` container: its column line / span
+ * (`2`, `"span 2"`, `"1 / span 3"`). Unset = next free cell.
+ */
+gridColumn: number | string | null,
+/**
+ * Child of a `grid` container: its row line / span.
+ */
+gridRow: number | string | null,
+/**
+ * Child of a `grid` container: horizontal alignment in its cell
+ * (default: the container's `justifyContent`).
+ */
+justifySelf: SelfAlign | null,
+/**
+ * Child of a `grid` container: vertical alignment in its cell
+ * (default: the container's `alignItems`).
+ */
+alignSelf: SelfAlign | null, minWidth: number | null, maxWidth: number | null, minHeight: number | null, maxHeight: number | null, };
 
 export type TextNode = { width: SizingBehavior | null, height: SizingBehavior | null, content: TextContent, fontFamily: string | null, fontSize: number | null, fontWeight: FontWeight | null, fontStyle: FontStyleKind | null, letterSpacing: number | null, lineHeight: number | null, textAlign: TextAlign | null, textAlignVertical: TextAlignVertical | null, textGrowth: TextGrowth | null,
 /**
@@ -1718,7 +2289,26 @@ slideTransition: SlideTransition | null,
  * consumer can read; the renderer replaces it with the variable's value
  * for the active theme while the field still holds that value.
  */
-variableBindings: { [key in string]?: VariableBinding } | null, minWidth: number | null, maxWidth: number | null, minHeight: number | null, maxHeight: number | null, };
+variableBindings: { [key in string]?: VariableBinding } | null,
+/**
+ * Child of a `grid` container: its column line / span
+ * (`2`, `"span 2"`, `"1 / span 3"`). Unset = next free cell.
+ */
+gridColumn: number | string | null,
+/**
+ * Child of a `grid` container: its row line / span.
+ */
+gridRow: number | string | null,
+/**
+ * Child of a `grid` container: horizontal alignment in its cell
+ * (default: the container's `justifyContent`).
+ */
+justifySelf: SelfAlign | null,
+/**
+ * Child of a `grid` container: vertical alignment in its cell
+ * (default: the container's `alignItems`).
+ */
+alignSelf: SelfAlign | null, minWidth: number | null, maxWidth: number | null, minHeight: number | null, maxHeight: number | null, };
 
 /**
  * What a line of text that does not wrap shows where it runs past its
@@ -1728,7 +2318,10 @@ export type TextOverflow = "clip" | "ellipsis";
 
 export type ThemedValue = { value: VariableScalar, theme: { [key in string]?: string } | null, };
 
-export type Transition = "push" | "fade" | "modal" | "none";
+/**
+ * A node-level transition applied to runtime paint changes.
+ */
+export type Transition = { durationMs: bigint, easing: Easing, properties: Array<string> | null, } & ({ [key in string]?: JsonValue });
 
 /**
  * Vertical anchoring for an absolutely positioned node.
