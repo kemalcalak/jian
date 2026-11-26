@@ -80,7 +80,7 @@ fn visit_own_sources<'a>(
             visit_stroke(node.container.stroke.as_ref(), visit);
             node.children.as_deref()
         }
-        PenNode::Group(node) => {
+        PenNode::Group(node) | PenNode::Boolean(crate::node::BooleanNode { group: node, .. }) => {
             visit_fills(node.container.fill.as_deref(), visit);
             visit_stroke(node.container.stroke.as_ref(), visit);
             node.children.as_deref()

@@ -238,7 +238,10 @@ fn root_frame_size(schema: &jian_ops_schema::document::PenDocument) -> Option<(f
     let first = roots.first()?;
     let (w, h) = match first {
         PenNode::Frame(f) => (pick(&f.container.width), pick(&f.container.height)),
-        PenNode::Group(g) => (pick(&g.container.width), pick(&g.container.height)),
+        PenNode::Group(g)
+        | PenNode::Boolean(jian_ops_schema::node::BooleanNode { group: g, .. }) => {
+            (pick(&g.container.width), pick(&g.container.height))
+        }
         PenNode::Rectangle(r) => (pick(&r.container.width), pick(&r.container.height)),
         _ => (None, None),
     };

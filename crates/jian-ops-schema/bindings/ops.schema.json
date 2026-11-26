@@ -10034,6 +10034,434 @@
               "format": "double"
             }
           }
+        },
+        {
+          "description": "A non-destructive boolean group: its children's outlines combined by `op`.",
+          "type": "object",
+          "required": [
+            "id",
+            "type"
+          ],
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": [
+                "boolean"
+              ]
+            },
+            "op": {
+              "description": "How the children's outlines combine, first child first.",
+              "default": "union",
+              "allOf": [
+                {
+                  "$ref": "#/definitions/BooleanOperation"
+                }
+              ]
+            },
+            "children": {
+              "type": [
+                "array",
+                "null"
+              ],
+              "items": {
+                "$ref": "#/definitions/PenNode"
+              }
+            },
+            "state": {
+              "type": [
+                "object",
+                "null"
+              ],
+              "additionalProperties": {
+                "$ref": "#/definitions/StateEntry"
+              }
+            },
+            "bindings": {
+              "type": [
+                "object",
+                "null"
+              ],
+              "additionalProperties": {
+                "type": "string"
+              }
+            },
+            "events": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/EventHandlers"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "lifecycle": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/NodeLifecycleHooks"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "semantics": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/SemanticsMeta"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "gestures": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/GestureOverrides"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "route": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/NavigationRoute"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "id": {
+              "type": "string"
+            },
+            "name": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "role": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "explain": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "x": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "format": "double"
+            },
+            "y": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "format": "double"
+            },
+            "rotation": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "format": "double"
+            },
+            "constraints": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/Constraints"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "opacity": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/NumberOrExpression"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "enabled": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/BoolOrExpression"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "visible": {
+              "type": [
+                "boolean",
+                "null"
+              ]
+            },
+            "locked": {
+              "type": [
+                "boolean",
+                "null"
+              ]
+            },
+            "pin": {
+              "description": "Keep this node at its authored viewport position while its nearest scrollable ancestor moves ordinary content.",
+              "type": [
+                "boolean",
+                "null"
+              ]
+            },
+            "flipX": {
+              "type": [
+                "boolean",
+                "null"
+              ]
+            },
+            "flipY": {
+              "type": [
+                "boolean",
+                "null"
+              ]
+            },
+            "maskType": {
+              "description": "Sibling-mask semantics. Absence means this node is painted normally.",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/MaskType"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "blendMode": {
+              "description": "Composite this node's complete rendered subtree with the backdrop. Absence is the source-over default; pass-through groups also stay absent.",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/BlendMode"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "theme": {
+              "type": [
+                "object",
+                "null"
+              ],
+              "additionalProperties": {
+                "type": "string"
+              }
+            },
+            "transition": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/Transition"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "animations": {
+              "type": [
+                "array",
+                "null"
+              ],
+              "items": {
+                "$ref": "#/definitions/NodeAnimation"
+              }
+            },
+            "slideTransition": {
+              "description": "The transition a presentation plays when it arrives on this node as a slide. Read on top-level frames only.",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/SlideTransition"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "variableBindings": {
+              "description": "Typed fields of this node that follow a design variable, keyed by the field's JSON path in the node (`fontSize`, `padding/1`, `stroke/thickness/top`). The field keeps a concrete value every consumer can read; the renderer replaces it with the variable's value for the active theme while the field still holds that value.",
+              "type": [
+                "object",
+                "null"
+              ],
+              "additionalProperties": {
+                "$ref": "#/definitions/VariableBinding"
+              }
+            },
+            "width": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/SizingBehavior"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "height": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/SizingBehavior"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "layout": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/LayoutMode"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "gap": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/NumberOrExpression"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "padding": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/Padding"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "justifyContent": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/JustifyContent"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "alignItems": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/AlignItems"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "clipContent": {
+              "type": [
+                "boolean",
+                "null"
+              ]
+            },
+            "stickyChildren": {
+              "description": "Direct child ids that remain pinned while this container scrolls.",
+              "type": [
+                "array",
+                "null"
+              ],
+              "items": {
+                "type": "string"
+              }
+            },
+            "cornerRadius": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/CornerRadius"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "fill": {
+              "type": [
+                "array",
+                "null"
+              ],
+              "items": {
+                "$ref": "#/definitions/PenFill"
+              }
+            },
+            "stroke": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/PenStroke"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "effects": {
+              "type": [
+                "array",
+                "null"
+              ],
+              "items": {
+                "$ref": "#/definitions/PenEffect"
+              }
+            },
+            "minWidth": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "format": "double"
+            },
+            "maxWidth": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "format": "double"
+            },
+            "minHeight": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "format": "double"
+            },
+            "maxHeight": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "format": "double"
+            }
+          }
         }
       ]
     },
@@ -12596,6 +13024,16 @@
         {
           "type": "string"
         }
+      ]
+    },
+    "BooleanOperation": {
+      "description": "The four path booleans. `subtract` removes every later child from the first; `exclude` keeps the regions covered an odd number of times.",
+      "type": "string",
+      "enum": [
+        "union",
+        "subtract",
+        "intersect",
+        "exclude"
       ]
     },
     "PageLifecycleHooks": {
