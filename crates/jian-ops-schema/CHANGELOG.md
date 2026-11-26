@@ -7,6 +7,11 @@ additions targeted at the workspace's `0.0.1` development release.
 
 ### Added
 
+- Boolean groups: `PenNode::Boolean` (`type: "boolean"`), a group body
+  plus `op` (`union` | `subtract` | `intersect` | `exclude`, default
+  `union`). The children stay ordinary nodes; editors paint the result
+  of the op over their outlines with the group's own fill and stroke.
+  `PenNode::group_body()` reads the group of either kind.
 - Component properties: `FrameNode.componentProperties` (named `text` /
   `boolean` / `instance` / `color` inputs a master declares, each bound to
   node fields: `content`, `visible`, `ref`, `fill`, or `props.<name>` of a
