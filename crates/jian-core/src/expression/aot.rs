@@ -311,7 +311,10 @@ fn node_expression_surface(
         PenNode::Frame(n) | PenNode::Script(ScriptNode { frame: n, .. }) => {
             surface!(n, with_children)
         }
-        PenNode::Group(n) => surface!(n, with_children),
+        PenNode::Group(n)
+        | PenNode::Boolean(jian_ops_schema::node::BooleanNode { group: n, .. }) => {
+            surface!(n, with_children)
+        }
         PenNode::Rectangle(n) => surface!(n, with_children),
         PenNode::Ref(n) => surface!(n, with_children),
         PenNode::Ellipse(n) => surface!(n),

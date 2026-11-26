@@ -1,4 +1,5 @@
 pub mod base;
+pub mod boolean;
 pub mod browser;
 pub mod checkbox;
 pub mod container;
@@ -26,6 +27,7 @@ pub mod text_input;
 pub mod video;
 
 pub use base::{BoolOrExpression, MaskType, NumberOrExpression, PenNodeBase};
+pub use boolean::{BooleanNode, BooleanOperation};
 pub use browser::BrowserNode;
 pub use checkbox::CheckboxNode;
 pub use container::{
@@ -98,6 +100,9 @@ pub enum PenNode {
     Script(ScriptNode),
     /// A live web page on the canvas (pen.dev `browser`).
     Browser(BrowserNode),
+    /// A non-destructive boolean group: its children's outlines
+    /// combined by `op`.
+    Boolean(BooleanNode),
 }
 
 impl PenNode {
@@ -161,6 +166,10 @@ impl PenNode {
             PenNode::Browser(node) => {
                 (node.base.transition.as_ref(), node.base.animations.as_ref())
             }
+            PenNode::Boolean(node) => (
+                node.group.base.transition.as_ref(),
+                node.group.base.animations.as_ref(),
+            ),
         }
     }
 
@@ -197,6 +206,7 @@ impl PenNode {
             PenNode::Note(node) | PenNode::Context(node) | PenNode::Prompt(node) => &mut node.base,
             PenNode::Script(node) => &mut node.frame.base,
             PenNode::Browser(node) => &mut node.base,
+            PenNode::Boolean(node) => &mut node.group.base,
         }
     }
 
@@ -209,6 +219,7 @@ impl PenNode {
             PenNode::Tabs(node) => node.children.as_deref(),
             PenNode::Ref(node) => node.children.as_deref(),
             PenNode::Script(node) => node.frame.children.as_deref(),
+            PenNode::Boolean(node) => node.group.children.as_deref(),
             _ => None,
         }
     }
@@ -253,6 +264,7 @@ impl PenNode {
             PenNode::Note(_) | PenNode::Context(_) | PenNode::Prompt(_) => (None, None),
             PenNode::Script(n) => (n.frame.gestures.as_ref(), n.frame.semantics.as_ref()),
             PenNode::Browser(_) => (None, None),
+            PenNode::Boolean(n) => (n.group.gestures.as_ref(), n.group.semantics.as_ref()),
         }
     }
 
@@ -287,6 +299,7 @@ impl PenNode {
             PenNode::Note(_) | PenNode::Context(_) | PenNode::Prompt(_) => None,
             PenNode::Script(n) => n.frame.lifecycle.as_ref(),
             PenNode::Browser(_) => None,
+            PenNode::Boolean(n) => n.group.lifecycle.as_ref(),
         }
     }
 
@@ -321,6 +334,7 @@ impl PenNode {
             PenNode::Prompt(_) => "prompt",
             PenNode::Script(_) => "script",
             PenNode::Browser(_) => "browser",
+            PenNode::Boolean(_) => "boolean",
         }
     }
 
@@ -361,6 +375,26 @@ impl PenNode {
         match self {
             PenNode::Frame(n) => Some(n),
             PenNode::Script(n) => Some(&mut n.frame),
+            _ => None,
+        }
+    }
+
+    /// The group body of a group or a boolean group. A boolean group is a
+    /// group whose children's outlines it combines, so group logic
+    /// (children, layout, moves) applies to both through this.
+    pub fn group_body(&self) -> Option<&GroupNode> {
+        match self {
+            PenNode::Group(n) => Some(n),
+            PenNode::Boolean(n) => Some(&n.group),
+            _ => None,
+        }
+    }
+
+    /// Mutable twin of [`PenNode::group_body`].
+    pub fn group_body_mut(&mut self) -> Option<&mut GroupNode> {
+        match self {
+            PenNode::Group(n) => Some(n),
+            PenNode::Boolean(n) => Some(&mut n.group),
             _ => None,
         }
     }

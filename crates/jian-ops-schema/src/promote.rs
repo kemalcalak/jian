@@ -441,7 +441,9 @@ pub fn promote_frame(frame: &FrameNode, kind: WidgetKind) -> PenNode {
 pub(crate) fn children_mut(node: &mut PenNode) -> Option<&mut Vec<PenNode>> {
     match node {
         PenNode::Frame(f) | PenNode::Script(ScriptNode { frame: f, .. }) => f.children.as_mut(),
-        PenNode::Group(g) => g.children.as_mut(),
+        PenNode::Group(g) | PenNode::Boolean(crate::node::BooleanNode { group: g, .. }) => {
+            g.children.as_mut()
+        }
         PenNode::Rectangle(r) => r.children.as_mut(),
         PenNode::Tabs(t) => t.children.as_mut(),
         PenNode::Ref(r) => r.children.as_mut(),

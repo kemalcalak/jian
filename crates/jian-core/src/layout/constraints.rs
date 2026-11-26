@@ -143,7 +143,8 @@ fn numeric_size(node: &PenNode) -> (Option<f32>, Option<f32>) {
             number(node.container.width.as_ref()),
             number(node.container.height.as_ref()),
         ),
-        PenNode::Group(node) => (
+        PenNode::Group(node)
+        | PenNode::Boolean(jian_ops_schema::node::BooleanNode { group: node, .. }) => (
             number(node.container.width.as_ref()),
             number(node.container.height.as_ref()),
         ),
@@ -178,7 +179,8 @@ fn numeric_size(node: &PenNode) -> (Option<f32>, Option<f32>) {
 fn node_base(node: &PenNode) -> Option<&PenNodeBase> {
     Some(match node {
         PenNode::Frame(node) | PenNode::Script(ScriptNode { frame: node, .. }) => &node.base,
-        PenNode::Group(node) => &node.base,
+        PenNode::Group(node)
+        | PenNode::Boolean(jian_ops_schema::node::BooleanNode { group: node, .. }) => &node.base,
         PenNode::Rectangle(node) => &node.base,
         PenNode::Text(node) => &node.base,
         PenNode::TextInput(node) => &node.base,
@@ -208,7 +210,10 @@ fn node_limits(node: &PenNode) -> Option<&SizeLimits> {
         PenNode::Frame(node) | PenNode::Script(ScriptNode { frame: node, .. }) => {
             Some(&node.container.limits)
         }
-        PenNode::Group(node) => Some(&node.container.limits),
+        PenNode::Group(node)
+        | PenNode::Boolean(jian_ops_schema::node::BooleanNode { group: node, .. }) => {
+            Some(&node.container.limits)
+        }
         PenNode::Rectangle(node) => Some(&node.container.limits),
         PenNode::Text(node) => Some(&node.limits),
         PenNode::TextInput(node) => Some(&node.limits),

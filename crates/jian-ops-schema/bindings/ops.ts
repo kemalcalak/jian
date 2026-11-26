@@ -76,6 +76,58 @@ export type BlurBody = { radius: number, visible: boolean | null, };
 export type BoolOrExpression = boolean | string;
 
 /**
+ * A non-destructive boolean group (Figma's boolean operation). Its
+ * children stay ordinary, editable nodes; what paints, hit-tests and
+ * exports is the result of `op` applied to their outlines, filled and
+ * stroked with the group's own `fill` / `stroke`.
+ *
+ * The group body is embedded as is, so everything that walks a group's
+ * children walks these too.
+ */
+export type BooleanNode = {
+/**
+ * How the children's outlines combine, first child first.
+ */
+op: BooleanOperation, children: Array<PenNode> | null, state: { [key in string]?: StateEntry } | null, bindings: { [key in string]?: Expression } | null, events: EventHandlers | null, lifecycle: NodeLifecycleHooks | null, semantics: SemanticsMeta | null, gestures: GestureOverrides | null, route: NavigationRoute | null, id: string, name: string | null, role: string | null, explain: string | null, x: number | null, y: number | null, rotation: number | null, constraints: Constraints | null, opacity: NumberOrExpression | null, enabled: BoolOrExpression | null, visible: boolean | null, locked: boolean | null,
+/**
+ * Keep this node at its authored viewport position while its nearest
+ * scrollable ancestor moves ordinary content.
+ */
+pin: boolean | null, flipX: boolean | null, flipY: boolean | null,
+/**
+ * Sibling-mask semantics. Absence means this node is painted normally.
+ */
+maskType?: MaskType | null,
+/**
+ * Composite this node's complete rendered subtree with the backdrop.
+ * Absence is the source-over default; pass-through groups also stay absent.
+ */
+blendMode?: BlendMode | null, theme: { [key in string]?: string } | null, transition: Transition | null, animations: Array<NodeAnimation> | null,
+/**
+ * The transition a presentation plays when it arrives on this node
+ * as a slide. Read on top-level frames only.
+ */
+slideTransition: SlideTransition | null,
+/**
+ * Typed fields of this node that follow a design variable, keyed by
+ * the field's JSON path in the node (`fontSize`, `padding/1`,
+ * `stroke/thickness/top`). The field keeps a concrete value every
+ * consumer can read; the renderer replaces it with the variable's value
+ * for the active theme while the field still holds that value.
+ */
+variableBindings: { [key in string]?: VariableBinding } | null, width: SizingBehavior | null, height: SizingBehavior | null, layout: LayoutMode | null, gap: NumberOrExpression | null, padding: Padding | null, justifyContent: JustifyContent | null, alignItems: AlignItems | null, clipContent: boolean | null,
+/**
+ * Direct child ids that remain pinned while this container scrolls.
+ */
+stickyChildren: Array<string> | null, cornerRadius: CornerRadius | null, fill: Array<PenFill> | null, stroke: PenStroke | null, effects: Array<PenEffect> | null, minWidth: number | null, maxWidth: number | null, minHeight: number | null, maxHeight: number | null, };
+
+/**
+ * The four path booleans. `subtract` removes every later child from the
+ * first; `exclude` keeps the regions covered an odd number of times.
+ */
+export type BooleanOperation = "union" | "subtract" | "intersect" | "exclude";
+
+/**
  * Inclusive viewport-width range for a responsive screen variant.
  */
 export type BreakpointRange = { minWidth: number | null, maxWidth: number | null, };
@@ -883,7 +935,7 @@ export type PenFill = { "type": "solid" } & SolidFillBody | { "type": "linear_gr
  * Union of all concrete node types.
  * Tag is the JSON `"type"` field.
  */
-export type PenNode = { "type": "frame" } & FrameNode | { "type": "group" } & GroupNode | { "type": "rectangle" } & RectangleNode | { "type": "ellipse" } & EllipseNode | { "type": "line" } & LineNode | { "type": "polygon" } & PolygonNode | { "type": "path" } & PathNode | { "type": "text" } & TextNode | { "type": "text_input" } & TextInputNode | { "type": "image" } & ImageNode | { "type": "icon_font" } & IconFontNode | { "type": "text_area" } & TextAreaNode | { "type": "select" } & SelectNode | { "type": "switch" } & SwitchNode | { "type": "checkbox" } & CheckboxNode | { "type": "slider" } & SliderNode | { "type": "radio_group" } & RadioGroupNode | { "type": "number_input" } & NumberInputNode | { "type": "progress" } & ProgressNode | { "type": "tabs" } & TabsNode | { "type": "ref" } & RefNode | { "type": "note" } & NoteNode | { "type": "context" } & NoteNode | { "type": "prompt" } & NoteNode | { "type": "script" } & ScriptNode | { "type": "browser" } & BrowserNode;
+export type PenNode = { "type": "frame" } & FrameNode | { "type": "group" } & GroupNode | { "type": "rectangle" } & RectangleNode | { "type": "ellipse" } & EllipseNode | { "type": "line" } & LineNode | { "type": "polygon" } & PolygonNode | { "type": "path" } & PathNode | { "type": "text" } & TextNode | { "type": "text_input" } & TextInputNode | { "type": "image" } & ImageNode | { "type": "icon_font" } & IconFontNode | { "type": "text_area" } & TextAreaNode | { "type": "select" } & SelectNode | { "type": "switch" } & SwitchNode | { "type": "checkbox" } & CheckboxNode | { "type": "slider" } & SliderNode | { "type": "radio_group" } & RadioGroupNode | { "type": "number_input" } & NumberInputNode | { "type": "progress" } & ProgressNode | { "type": "tabs" } & TabsNode | { "type": "ref" } & RefNode | { "type": "note" } & NoteNode | { "type": "context" } & NoteNode | { "type": "prompt" } & NoteNode | { "type": "script" } & ScriptNode | { "type": "browser" } & BrowserNode | { "type": "boolean" } & BooleanNode;
 
 export type PenPage = { id: string, name: string, children: Array<PenNode>,
 /**
@@ -1676,10 +1728,7 @@ export type TextOverflow = "clip" | "ellipsis";
 
 export type ThemedValue = { value: VariableScalar, theme: { [key in string]?: string } | null, };
 
-/**
- * A node-level transition applied to runtime paint changes.
- */
-export type Transition = { durationMs: bigint, easing: Easing, properties: Array<string> | null, } & ({ [key in string]?: JsonValue });
+export type Transition = "push" | "fade" | "modal" | "none";
 
 /**
  * Vertical anchoring for an absolutely positioned node.
