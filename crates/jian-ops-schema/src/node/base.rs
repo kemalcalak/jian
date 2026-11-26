@@ -98,6 +98,23 @@ pub struct PenNodeBase {
     /// for the active theme while the field still holds that value.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub variable_bindings: Option<BTreeMap<String, VariableBinding>>,
+    /// Child of a `grid` container: its column line / span
+    /// (`2`, `"span 2"`, `"1 / span 3"`). Unset = next free cell.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[cfg_attr(feature = "export-ts", ts(type = "number | string | null"))]
+    pub grid_column: Option<crate::node::grid::GridPlacement>,
+    /// Child of a `grid` container: its row line / span.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[cfg_attr(feature = "export-ts", ts(type = "number | string | null"))]
+    pub grid_row: Option<crate::node::grid::GridPlacement>,
+    /// Child of a `grid` container: horizontal alignment in its cell
+    /// (default: the container's `justifyContent`).
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub justify_self: Option<crate::node::grid::SelfAlign>,
+    /// Child of a `grid` container: vertical alignment in its cell
+    /// (default: the container's `alignItems`).
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub align_self: Option<crate::node::grid::SelfAlign>,
 }
 
 /// One field's link to a design variable.

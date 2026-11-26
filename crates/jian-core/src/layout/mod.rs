@@ -15,6 +15,7 @@
 
 pub mod constraints;
 mod flow_child;
+pub mod grid_style;
 pub mod measure;
 pub mod resolve;
 mod responsive;
@@ -279,6 +280,9 @@ impl LayoutEngine {
                     // line and would fight the stack (`main_axis` has no
                     // meaning when every child starts at the same origin).
                     resolve::apply_stack_child(&mut style);
+                } else if grid_style::node_is_grid_container(parent) {
+                    // Grid cells own both axes; the flex remedies assume a line.
+                    grid_style::apply_grid_parent_child(&mut style, &data.schema, parent);
                 } else {
                     let parent_horizontal = resolve::node_is_horizontal(parent);
                     if resolve::main_axis_is_fixed_number(&data.schema, parent_horizontal) {

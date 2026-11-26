@@ -10,6 +10,16 @@ pub enum LayoutMode {
     None,
     Vertical,
     Horizontal,
+    /// CSS-grid layout over `columns` × `rows` tracks.
+    Grid,
+}
+
+impl LayoutMode {
+    /// True for the modes that place children themselves (flex and grid),
+    /// as opposed to free / stacked positioning.
+    pub fn is_auto_layout(&self) -> bool {
+        matches!(self, Self::Vertical | Self::Horizontal | Self::Grid)
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, schemars::JsonSchema)]
@@ -120,6 +130,31 @@ pub struct ContainerProps {
     pub justify_content: Option<JustifyContent>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub align_items: Option<AlignItems>,
+    /// `horizontal` / `vertical` only: children that do not fit move onto
+    /// a new line (CSS `flex-wrap: wrap`).
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub wrap: Option<bool>,
+    /// Space between rows: wrapped lines and grid rows. Falls back to
+    /// `gap` (CSS `row-gap`).
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub row_gap: Option<crate::node::base::NumberOrExpression>,
+    /// Space between columns. Falls back to `gap` (CSS `column-gap`).
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub column_gap: Option<crate::node::base::NumberOrExpression>,
+    /// `grid` only: the column tracks (count, track array or CSS list).
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[cfg_attr(
+        feature = "export-ts",
+        ts(type = "number | Array<number | string> | string | null")
+    )]
+    pub columns: Option<crate::node::grid::GridTemplate>,
+    /// `grid` only: the row tracks. Rows past these are `auto`.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[cfg_attr(
+        feature = "export-ts",
+        ts(type = "number | Array<number | string> | string | null")
+    )]
+    pub rows: Option<crate::node::grid::GridTemplate>,
     #[serde(default, alias = "clip", skip_serializing_if = "Option::is_none")]
     pub clip_content: Option<bool>,
     /// Direct child ids that remain pinned while this container scrolls.
@@ -133,6 +168,27 @@ pub struct ContainerProps {
     pub stroke: Option<PenStroke>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub effects: Option<Vec<PenEffect>>,
+}
+
+impl ContainerProps {
+    /// Resolved row gap: `rowGap`, else `gap`.
+    pub fn row_gap_value(&self) -> Option<&crate::node::base::NumberOrExpression> {
+        self.row_gap.as_ref().or(self.gap.as_ref())
+    }
+
+    /// Resolved column gap: `columnGap`, else `gap`.
+    pub fn column_gap_value(&self) -> Option<&crate::node::base::NumberOrExpression> {
+        self.column_gap.as_ref().or(self.gap.as_ref())
+    }
+
+    /// True for a flex container that wraps its children.
+    pub fn wraps(&self) -> bool {
+        self.wrap == Some(true)
+            && matches!(
+                self.layout,
+                Some(LayoutMode::Horizontal | LayoutMode::Vertical)
+            )
+    }
 }
 
 #[cfg(test)]
@@ -185,6 +241,34 @@ mod tests {
             Some(JustifyContent::SpaceBetween)
         ));
         assert!(matches!(c.align_items, Some(AlignItems::Center)));
+    }
+
+    #[test]
+    fn wrap_and_grid_fields_round_trip() {
+        let j = r#"{"layout":"horizontal","gap":8.0,"wrap":true,"rowGap":12.0}"#;
+        let c: ContainerProps = serde_json::from_str(j).unwrap();
+        assert!(c.wraps());
+        assert_eq!(serde_json::to_string(&c).unwrap(), j);
+
+        let j = r#"{"layout":"grid","columnGap":16.0,"columns":3,"rows":["auto",120]}"#;
+        let c: ContainerProps = serde_json::from_str(j).unwrap();
+        assert!(matches!(c.layout, Some(LayoutMode::Grid)));
+        assert_eq!(c.columns.as_ref().map(|t| t.len()), Some(3));
+        assert!(!c.wraps());
+        assert_eq!(serde_json::to_string(&c).unwrap(), j);
+    }
+
+    #[test]
+    fn gaps_fall_back_to_gap() {
+        let c: ContainerProps = serde_json::from_str(r#"{"gap":8,"rowGap":20}"#).unwrap();
+        assert_eq!(
+            c.row_gap_value(),
+            Some(&crate::node::base::NumberOrExpression::Number(20.0))
+        );
+        assert_eq!(
+            c.column_gap_value(),
+            Some(&crate::node::base::NumberOrExpression::Number(8.0))
+        );
     }
 
     #[test]

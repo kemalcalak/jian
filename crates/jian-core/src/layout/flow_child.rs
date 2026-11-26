@@ -42,7 +42,7 @@ fn is_auto_layout(n: &PenNode) -> bool {
         PenNode::Rectangle(r) => r.container.layout.as_ref(),
         _ => None,
     };
-    matches!(layout, Some(LayoutMode::Vertical | LayoutMode::Horizontal))
+    layout.is_some_and(LayoutMode::is_auto_layout)
 }
 
 /// Keep in sync with de-pen-loader's `layout_repair::layout_child`, which
