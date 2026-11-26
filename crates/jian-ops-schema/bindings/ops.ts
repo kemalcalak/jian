@@ -160,7 +160,12 @@ rows: number | Array<number | string> | string | null, clipContent: boolean | nu
 /**
  * Direct child ids that remain pinned while this container scrolls.
  */
-stickyChildren: Array<string> | null, cornerRadius: CornerRadius | null, fill: Array<PenFill> | null, stroke: PenStroke | null, effects: Array<PenEffect> | null, minWidth: number | null, maxWidth: number | null, minHeight: number | null, maxHeight: number | null, };
+stickyChildren: Array<string> | null, cornerRadius: CornerRadius | null,
+/**
+ * Corner smoothing, `0..=1` (Figma's iOS-style squircle; `0` = plain
+ * circular corners, `0.6` = iOS). Absent = `0`.
+ */
+cornerSmoothing: number | null, fill: Array<PenFill> | null, stroke: PenStroke | null, effects: Array<PenEffect> | null, minWidth: number | null, maxWidth: number | null, minHeight: number | null, maxHeight: number | null, };
 
 /**
  * The four path booleans. `subtract` removes every later child from the
@@ -598,7 +603,12 @@ rows: number | Array<number | string> | string | null, clipContent: boolean | nu
 /**
  * Direct child ids that remain pinned while this container scrolls.
  */
-stickyChildren: Array<string> | null, cornerRadius: CornerRadius | null, fill: Array<PenFill> | null, stroke: PenStroke | null, effects: Array<PenEffect> | null, minWidth: number | null, maxWidth: number | null, minHeight: number | null, maxHeight: number | null, };
+stickyChildren: Array<string> | null, cornerRadius: CornerRadius | null,
+/**
+ * Corner smoothing, `0..=1` (Figma's iOS-style squircle; `0` = plain
+ * circular corners, `0.6` = iOS). Absent = `0`.
+ */
+cornerSmoothing: number | null, fill: Array<PenFill> | null, stroke: PenStroke | null, effects: Array<PenEffect> | null, minWidth: number | null, maxWidth: number | null, minHeight: number | null, maxHeight: number | null, };
 
 export type GestureOverrides = {
 /**
@@ -731,7 +741,12 @@ rows: number | Array<number | string> | string | null, clipContent: boolean | nu
 /**
  * Direct child ids that remain pinned while this container scrolls.
  */
-stickyChildren: Array<string> | null, cornerRadius: CornerRadius | null, fill: Array<PenFill> | null, stroke: PenStroke | null, effects: Array<PenEffect> | null, minWidth: number | null, maxWidth: number | null, minHeight: number | null, maxHeight: number | null, };
+stickyChildren: Array<string> | null, cornerRadius: CornerRadius | null,
+/**
+ * Corner smoothing, `0..=1` (Figma's iOS-style squircle; `0` = plain
+ * circular corners, `0.6` = iOS). Absent = `0`.
+ */
+cornerSmoothing: number | null, fill: Array<PenFill> | null, stroke: PenStroke | null, effects: Array<PenEffect> | null, minWidth: number | null, maxWidth: number | null, minHeight: number | null, maxHeight: number | null, };
 
 /**
  * Horizontal anchoring for an absolutely positioned node.
@@ -1155,7 +1170,17 @@ export type PathNode = { iconId: string | null, d: string | null, anchors: Array
  * their byte shape. It is the legacy opaque-path marker; newer alpha,
  * vector, and luminance semantics use the shared `mask_type` field.
  */
-mask?: boolean | null, width: SizingBehavior | null, height: SizingBehavior | null, fill: Array<PenFill> | null, stroke: PenStroke | null, effects: Array<PenEffect> | null, state: { [key in string]?: StateEntry } | null, bindings: { [key in string]?: Expression } | null, events: EventHandlers | null, lifecycle: NodeLifecycleHooks | null, semantics: SemanticsMeta | null, gestures: GestureOverrides | null, route: NavigationRoute | null, id: string, name: string | null, role: string | null, explain: string | null, x: number | null, y: number | null, rotation: number | null, constraints: Constraints | null, opacity: NumberOrExpression | null, enabled: BoolOrExpression | null, visible: boolean | null, locked: boolean | null,
+mask?: boolean | null, width: SizingBehavior | null, height: SizingBehavior | null,
+/**
+ * Radius rounding the path's sharp vertices (an anchor with no
+ * handles between two straight segments). Absent = sharp.
+ */
+cornerRadius: number | null,
+/**
+ * Corner smoothing, `0..=1` (Figma's iOS-style squircle; `0` = plain
+ * circular corners, `0.6` = iOS). Absent = `0`.
+ */
+cornerSmoothing: number | null, fill: Array<PenFill> | null, stroke: PenStroke | null, effects: Array<PenEffect> | null, state: { [key in string]?: StateEntry } | null, bindings: { [key in string]?: Expression } | null, events: EventHandlers | null, lifecycle: NodeLifecycleHooks | null, semantics: SemanticsMeta | null, gestures: GestureOverrides | null, route: NavigationRoute | null, id: string, name: string | null, role: string | null, explain: string | null, x: number | null, y: number | null, rotation: number | null, constraints: Constraints | null, opacity: NumberOrExpression | null, enabled: BoolOrExpression | null, visible: boolean | null, locked: boolean | null,
 /**
  * Keep this node at its authored viewport position while its nearest
  * scrollable ancestor moves ordinary content.
@@ -1268,9 +1293,31 @@ export type PenPathHandle = { x: number, y: number, };
 
 export type PenPathPointType = "corner" | "mirrored" | "independent";
 
-export type PenStroke = { thickness: StrokeThickness, align: StrokeAlign | null, join: StrokeJoin | null, cap: StrokeCap | null, dashPattern: Array<number> | null, dashOffset: number | null, fill: Array<PenFill> | null, };
+export type PenStroke = { thickness: StrokeThickness, align: StrokeAlign | null, join: StrokeJoin | null, cap: StrokeCap | null, dashPattern: Array<number> | null, dashOffset: number | null, fill: Array<PenFill> | null,
+/**
+ * What the start of an open stroke draws. Absent = `cap`.
+ */
+strokeStart?: StrokeEndCap | null,
+/**
+ * What the end of an open stroke draws. Absent = `cap`.
+ */
+strokeEnd?: StrokeEndCap | null,
+/**
+ * Miter joins longer than this multiple of the stroke width are
+ * bevelled (SVG `stroke-miterlimit`). Absent = 4, the SVG default.
+ */
+miterLimit?: number | null,
+/**
+ * Variable width along the stroke. Absent = uniform.
+ */
+widthProfile?: StrokeWidthProfile | null, };
 
 export type PolygonNode = { polygonCount: number, width: SizingBehavior | null, height: SizingBehavior | null, cornerRadius: number | null,
+/**
+ * Corner smoothing, `0..=1` (Figma's iOS-style squircle; `0` = plain
+ * circular corners, `0.6` = iOS). Absent = `0`.
+ */
+cornerSmoothing: number | null,
 /**
  * Star inner radius as a fraction of the outer radius (`0.0..=1.0`).
  * Absent = a regular polygon; present = a star with `polygon_count`
@@ -1526,7 +1573,12 @@ rows: number | Array<number | string> | string | null, clipContent: boolean | nu
 /**
  * Direct child ids that remain pinned while this container scrolls.
  */
-stickyChildren: Array<string> | null, cornerRadius: CornerRadius | null, fill: Array<PenFill> | null, stroke: PenStroke | null, effects: Array<PenEffect> | null, minWidth: number | null, maxWidth: number | null, minHeight: number | null, maxHeight: number | null, };
+stickyChildren: Array<string> | null, cornerRadius: CornerRadius | null,
+/**
+ * Corner smoothing, `0..=1` (Figma's iOS-style squircle; `0` = plain
+ * circular corners, `0.6` = iOS). Absent = `0`.
+ */
+cornerSmoothing: number | null, fill: Array<PenFill> | null, stroke: PenStroke | null, effects: Array<PenEffect> | null, minWidth: number | null, maxWidth: number | null, minHeight: number | null, maxHeight: number | null, };
 
 export type RefNode = { ref: string, descendants: { [key in string]?: JsonValue } | null,
 /**
@@ -1740,7 +1792,12 @@ rows: number | Array<number | string> | string | null, clipContent: boolean | nu
 /**
  * Direct child ids that remain pinned while this container scrolls.
  */
-stickyChildren: Array<string> | null, cornerRadius: CornerRadius | null, fill: Array<PenFill> | null, stroke: PenStroke | null, effects: Array<PenEffect> | null, minWidth: number | null, maxWidth: number | null, minHeight: number | null, maxHeight: number | null, };
+stickyChildren: Array<string> | null, cornerRadius: CornerRadius | null,
+/**
+ * Corner smoothing, `0..=1` (Figma's iOS-style squircle; `0` = plain
+ * circular corners, `0.6` = iOS). Absent = `0`.
+ */
+cornerSmoothing: number | null, fill: Array<PenFill> | null, stroke: PenStroke | null, effects: Array<PenEffect> | null, minWidth: number | null, maxWidth: number | null, minHeight: number | null, maxHeight: number | null, };
 
 export type ScrollBehavior = "auto" | "contain" | "none";
 
@@ -2003,9 +2060,48 @@ export type StrokeAlign = "inside" | "center" | "outside";
 
 export type StrokeCap = "none" | "round" | "square";
 
+/**
+ * What an open stroke draws at one of its two ends: a cap, or an
+ * arrowhead / marker whose size scales with the stroke width (Figma's
+ * per-end stroke caps). Closed shapes have no ends and ignore it.
+ */
+export type StrokeEndCap = "none" | "round" | "square" | "line_arrow" | "triangle_arrow" | "reversed_triangle" | "circle" | "diamond";
+
 export type StrokeJoin = "miter" | "bevel" | "round";
 
 export type StrokeThickness = number | [number, number, number, number] | SidedThickness;
+
+/**
+ * One width stop of a variable-width stroke.
+ */
+export type StrokeWidthPoint = {
+/**
+ * Position along the stroke as a fraction of its length, `0..=1`.
+ */
+t: number,
+/**
+ * Width at `t` as a multiple of the stroke thickness (`1` = the
+ * thickness, `0` = a point). Widths between stops interpolate
+ * linearly; before the first and after the last they hold.
+ */
+width: number, };
+
+/**
+ * Named stroke width profiles. Every preset but `custom` is fully
+ * described by its name; `custom` reads [`StrokeWidthProfile::points`].
+ */
+export type StrokeWidthPreset = "uniform" | "taper_start" | "taper_end" | "taper_both" | "custom";
+
+/**
+ * A variable-width stroke (Figma's width profiles, Illustrator's width
+ * tool). Editors paint it as a filled outline around the centre line,
+ * so `align` does not apply.
+ */
+export type StrokeWidthProfile = { preset: StrokeWidthPreset,
+/**
+ * `custom` only: the width stops, in any order.
+ */
+points?: Array<StrokeWidthPoint> | null, };
 
 export type StyleOverride = { fill: Array<PenFill> | null, stroke: PenStroke | null, effects: Array<PenEffect> | null, opacity: number | null, };
 
@@ -2358,10 +2454,7 @@ export type TextOverflow = "clip" | "ellipsis";
 
 export type ThemedValue = { value: VariableScalar, theme: { [key in string]?: string } | null, };
 
-/**
- * A node-level transition applied to runtime paint changes.
- */
-export type Transition = { durationMs: bigint, easing: Easing, properties: Array<string> | null, } & ({ [key in string]?: JsonValue });
+export type Transition = "push" | "fade" | "modal" | "none";
 
 /**
  * Vertical anchoring for an absolutely positioned node.

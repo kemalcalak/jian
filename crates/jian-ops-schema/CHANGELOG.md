@@ -7,6 +7,16 @@ additions targeted at the workspace's `0.0.1` development release.
 
 ### Added
 
+- Stroke shape (`PenStroke`): `strokeStart` / `strokeEnd` (`StrokeEndCap`:
+  `none` | `round` | `square` | `line_arrow` | `triangle_arrow` |
+  `reversed_triangle` | `circle` | `diamond`; absent = `cap`) for the two
+  ends of an open stroke, sized by the stroke width; `miterLimit` (SVG
+  `stroke-miterlimit`, absent = 4); `widthProfile` (`preset` `uniform` |
+  `taper_start` | `taper_end` | `taper_both` | `custom`, plus `points`
+  `[{t, width}]` with `width` a multiple of the thickness).
+- Corner smoothing (`cornerSmoothing`, `0..=1`, Figma's squircle) on
+  containers (frame / group / rectangle), polygons and paths; paths also
+  take `cornerRadius` for their sharp vertices.
 - Component sets: `FrameNode.componentSet` (axes in order with their
   values, plus per-axis defaults) groups a component's variant masters,
   each a `reusable` frame with `variantValues` (an axis left out matches

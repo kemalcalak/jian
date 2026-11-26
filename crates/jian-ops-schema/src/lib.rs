@@ -32,6 +32,7 @@ pub mod semantics;
 pub mod sizing;
 pub mod state;
 pub mod state_override;
+pub mod stroke_shape;
 pub mod style;
 pub mod variable;
 pub mod version;

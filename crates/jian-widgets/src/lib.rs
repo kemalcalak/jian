@@ -8,6 +8,7 @@
 pub mod components;
 pub mod geometry;
 pub mod painter;
+pub mod stroke_shape;
 pub mod stroke_style;
 pub mod tokens;
 
@@ -18,7 +19,9 @@ pub use geometry::{Color, Point2D, Rect};
 pub use painter::{
     ImageAdjustments, ImageBlendMode, ImageDrawMode, Painter, TextBaselineRequest, TextLayout,
 };
-pub use stroke_style::{StrokeCap, StrokeDash, StrokeJoin, StrokeStyle};
+pub use stroke_style::{
+    StrokeCap, StrokeDash, StrokeEnd, StrokeJoin, StrokeStyle, StrokeWidthProfile,
+};
 pub use tokens::{Density, Tokens};
 
 /// The baseline `y` that vertically centers `font_size` text in the box

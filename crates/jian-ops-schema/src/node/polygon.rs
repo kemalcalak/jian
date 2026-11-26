@@ -19,6 +19,10 @@ pub struct PolygonNode {
     pub limits: crate::sizing::SizeLimits,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub corner_radius: Option<f64>,
+    /// Corner smoothing, `0..=1` (Figma's iOS-style squircle; `0` = plain
+    /// circular corners, `0.6` = iOS). Absent = `0`.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub corner_smoothing: Option<f64>,
     /// Star inner radius as a fraction of the outer radius (`0.0..=1.0`).
     /// Absent = a regular polygon; present = a star with `polygon_count`
     /// points whose valleys sit at this fraction (Figma `STAR` /
@@ -57,6 +61,11 @@ mod tests {
         let node: PolygonNode = serde_json::from_str(star).expect("parse star");
         assert_eq!(node.inner_radius, Some(0.382));
         assert_eq!(serde_json::to_string(&node).unwrap(), star);
+
+        let smooth = r#"{"id":"q","polygonCount":3,"cornerRadius":8.0,"cornerSmoothing":0.6}"#;
+        let node: PolygonNode = serde_json::from_str(smooth).expect("parse smooth polygon");
+        assert_eq!(node.corner_smoothing, Some(0.6));
+        assert_eq!(serde_json::to_string(&node).unwrap(), smooth);
 
         let plain = r#"{"id":"p","polygonCount":6}"#;
         let node: PolygonNode = serde_json::from_str(plain).expect("parse polygon");

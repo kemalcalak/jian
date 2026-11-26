@@ -35,7 +35,9 @@ pub use crate::scene_geometry::{
 };
 pub use jian_ops_schema::node::MaskType;
 use jian_widgets::{Color, ImageAdjustments, ImageBlendMode, ImageDrawMode, Point2D, Rect};
-pub use jian_widgets::{StrokeCap, StrokeDash, StrokeJoin, StrokeStyle};
+pub use jian_widgets::{
+    StrokeCap, StrokeDash, StrokeEnd, StrokeJoin, StrokeStyle, StrokeWidthProfile,
+};
 #[cfg(any(test, feature = "test-support"))]
 use std::cell::Cell;
 use std::sync::Arc;
@@ -594,6 +596,10 @@ pub struct SceneNode {
     /// Per-corner radii in top-left, top-right, bottom-right,
     /// bottom-left order. `None` uses `corner_radius` uniformly.
     pub corner_radii: Option<[f32; 4]>,
+    /// Corner smoothing, `0..=1` (Figma's squircle; `0` = circular
+    /// corners). Applies to whatever corners `corner_radius` /
+    /// `corner_radii` round.
+    pub corner_smoothing: f32,
     /// Whether this container clips its children to its bounds
     /// (rounded by `corner_radius`, clamped to half the height — TS
     /// flattener rule). The scene builder also sets this for root
@@ -938,6 +944,7 @@ impl SceneNode {
             flip_y: false,
             corner_radius: 0.0,
             corner_radii: None,
+            corner_smoothing: 0.0,
             clip_content: false,
             fill: None,
             fill_layers: Vec::new(),

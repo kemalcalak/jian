@@ -375,6 +375,10 @@ pub enum StrokeCap {
     Square,
 }
 
+pub use crate::stroke_shape::{
+    StrokeEndCap, StrokeWidthPoint, StrokeWidthPreset, StrokeWidthProfile, MAX_WIDTH_FACTOR,
+};
+
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, schemars::JsonSchema)]
 #[cfg_attr(feature = "export-ts", derive(ts_rs::TS))]
 #[cfg_attr(feature = "export-ts", ts(export, export_to = "ops.ts"))]
@@ -393,7 +397,28 @@ pub struct PenStroke {
     pub dash_offset: Option<f32>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub fill: Option<Vec<PenFill>>,
+    /// What the start of an open stroke draws. Absent = `cap`.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[cfg_attr(feature = "export-ts", ts(optional = nullable))]
+    pub stroke_start: Option<StrokeEndCap>,
+    /// What the end of an open stroke draws. Absent = `cap`.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[cfg_attr(feature = "export-ts", ts(optional = nullable))]
+    pub stroke_end: Option<StrokeEndCap>,
+    /// Miter joins longer than this multiple of the stroke width are
+    /// bevelled (SVG `stroke-miterlimit`). Absent = 4, the SVG default.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[cfg_attr(feature = "export-ts", ts(optional = nullable))]
+    pub miter_limit: Option<f32>,
+    /// Variable width along the stroke. Absent = uniform.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[cfg_attr(feature = "export-ts", ts(optional = nullable))]
+    pub width_profile: Option<StrokeWidthProfile>,
 }
+
+#[cfg(test)]
+#[path = "style_stroke_tests.rs"]
+mod stroke_tests;
 
 // --- Effect ---
 
