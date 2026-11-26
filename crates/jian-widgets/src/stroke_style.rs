@@ -6,7 +6,7 @@
 //! per-primitive default, so a plain stroke paints exactly as before.
 //! Every type here is `Copy`, so it rides inside `Copy` scene strokes.
 
-pub use crate::stroke_shape::{StrokeEnd, StrokeWidthProfile};
+pub use crate::stroke_shape::StrokeEnd;
 
 /// Stroke end-cap shape.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -87,9 +87,10 @@ impl StrokeDash {
 /// Cap, join and dash for subsequent stroke calls. `Default` is the
 /// plain style: every field unset.
 ///
-/// `start`, `end` and `width_profile` describe stroke geometry that
-/// backends do not draw: the host paints arrowheads and variable-width
-/// outlines itself and hands backends the remaining plain stroke.
+/// `start` and `end` describe stroke geometry that backends do not draw:
+/// the host paints arrowheads itself and hands backends the remaining
+/// plain stroke. The style stays small and `Copy` (a variable-width
+/// profile is baked into geometry by the host instead of riding here).
 #[derive(Debug, Clone, Copy, PartialEq, Default)]
 pub struct StrokeStyle {
     pub cap: Option<StrokeCap>,
@@ -102,8 +103,6 @@ pub struct StrokeStyle {
     pub start: Option<StrokeEnd>,
     /// What an open stroke draws at its end. Unset = `cap`.
     pub end: Option<StrokeEnd>,
-    /// Variable width along the stroke. Unset = uniform.
-    pub width_profile: Option<StrokeWidthProfile>,
 }
 
 impl StrokeStyle {
@@ -115,7 +114,6 @@ impl StrokeStyle {
             && self.miter_limit.is_none()
             && self.start.is_none()
             && self.end.is_none()
-            && self.width_profile.is_none()
     }
 
     /// This style with the dash scaled by `scale`.
@@ -177,12 +175,15 @@ mod tests {
                 end: Some(StrokeEnd::TriangleArrow),
                 ..StrokeStyle::default()
             },
-            StrokeStyle {
-                width_profile: StrokeWidthProfile::new(&[[0.0, 0.0], [1.0, 1.0]]),
-                ..StrokeStyle::default()
-            },
         ] {
             assert!(!set.is_plain(), "{set:?}");
         }
+    }
+
+    #[test]
+    fn style_stays_small_enough_to_copy_per_node() {
+        // Scene strokes copy this on every node; a profile or another
+        // array here would multiply every recursive scene frame (#389).
+        assert!(std::mem::size_of::<StrokeStyle>() <= 96);
     }
 }

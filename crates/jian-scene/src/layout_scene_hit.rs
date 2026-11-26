@@ -272,6 +272,21 @@ fn rotation_pivot(node: &SceneNode, bounds: Rect) -> Option<Point2D> {
     None
 }
 
+/// Whether `local` (doc space) falls on one of the end shapes (#389) of
+/// the node's precomputed stroke geometry: arrowheads and end dots reach
+/// past the stroke band, and clicking them selects the line.
+fn hits_stroke_heads(node: &SceneNode, local: Point2D, slack: f32) -> bool {
+    let Some(geometry) = node.stroke_geometry.as_deref() else {
+        return false;
+    };
+    let b = node.bounds;
+    let origin = Point2D::new(
+        b.origin.x.min(b.origin.x + b.size.x),
+        b.origin.y.min(b.origin.y + b.size.y),
+    );
+    geometry.hits_head(Point2D::new(local.x - origin.x, local.y - origin.y), slack)
+}
+
 /// Per-NodeKind hit-test. Frames / Groups / Rects / Text / Other
 /// use the axis-aligned bounds; Ellipse / Polygon / Line use tighter
 /// geometry so the click area matches what the painter draws.
@@ -292,13 +307,13 @@ fn point_in_node(
         if raw.size.x.abs() < f32::EPSILON && raw.size.y.abs() < f32::EPSILON {
             return false;
         }
-        let from = raw.origin;
-        let to = Point2D::new(raw.origin.x + raw.size.x, raw.origin.y + raw.size.y);
+        let (from, to) = node.line_endpoints();
         let stroke_half = node.stroke.map(|s| s.width / 2.0).unwrap_or(1.0);
         // 4 screen px of slack regardless of zoom — the point is in
         // doc space, so scale by `1/zoom`.
         let screen_slack = 4.0 / zoom.max(0.0001);
-        return distance_point_to_segment(local, from, to) <= stroke_half + screen_slack;
+        return distance_point_to_segment(local, from, to) <= stroke_half + screen_slack
+            || hits_stroke_heads(node, local, screen_slack);
     }
     // Paths hit-test against their flattened (bezier-aware) outline,
     // not the bounding box — a curved / thin path otherwise selects
@@ -331,6 +346,9 @@ fn point_in_node(
         }
         let stroke_half = node.stroke.map(|s| s.width / 2.0).unwrap_or(1.0);
         let slack = 4.0 / zoom.max(0.0001);
+        if hits_stroke_heads(node, local, slack) {
+            return true;
+        }
         for seg in points.windows(2) {
             if distance_point_to_segment(local, seg[0], seg[1]) <= stroke_half + slack {
                 return true;
@@ -1045,5 +1063,55 @@ mod tests {
         assert_eq!(at(50.0, 250.0).as_deref(), Some("path"));
         assert_eq!(at(98.0, 250.0).as_deref(), Some("path"), "on the edge");
         assert!(at(8.0, 208.0).is_none());
+    }
+
+    #[test]
+    fn an_up_right_line_hits_its_own_diagonal_not_the_other_one() {
+        // Drawn from bottom-left to top-right: the box is normalised and
+        // `line_direction` keeps the diagonal.
+        let mut line = leaf("l", NodeKind::Line, Rect::xywh(0.0, 0.0, 100.0, 100.0));
+        line.line_direction = crate::layout_scene::SceneLineDirection {
+            right_to_left: false,
+            bottom_to_top: true,
+        };
+        let scene = one_page(vec![line]);
+        let at = |x, y| scene.node_at_doc_point(Point2D::new(x, y), 1.0);
+        assert_eq!(at(20.0, 80.0).as_deref(), Some("l"));
+        assert_eq!(at(80.0, 20.0).as_deref(), Some("l"));
+        assert!(at(20.0, 20.0).is_none(), "the other diagonal is empty");
+        assert!(at(80.0, 80.0).is_none(), "the other diagonal is empty");
+    }
+
+    #[test]
+    fn arrowheads_past_the_stroke_band_are_hit() {
+        use crate::layout_scene::{SceneStrokeGeometry, SceneStrokeHead};
+        let mut line = leaf("l", NodeKind::Line, Rect::xywh(10.0, 50.0, 100.0, 0.0));
+        line.stroke = Some(crate::layout_scene::SceneStroke {
+            color: jian_widgets::geometry::Color::WHITE,
+            width: 2.0,
+            sides: None,
+            align: crate::layout_scene::SceneStrokeAlign::Center,
+            style: Default::default(),
+        });
+        // A head at the end, 10 px across, node-local.
+        line.stroke_geometry = Some(std::sync::Arc::new(SceneStrokeGeometry {
+            head_hits: vec![SceneStrokeHead {
+                center: Point2D::new(95.0, 0.0),
+                radius: 10.0,
+            }],
+            ..SceneStrokeGeometry::default()
+        }));
+        let mut path = leaf("p", NodeKind::Path, Rect::xywh(10.0, 150.0, 100.0, 0.0));
+        path.points = vec![Point2D::new(10.0, 150.0), Point2D::new(110.0, 150.0)];
+        path.stroke = line.stroke;
+        path.stroke_geometry = line.stroke_geometry.clone();
+        let scene = one_page(vec![line, path]);
+        let at = |x, y| scene.node_at_doc_point(Point2D::new(x, y), 1.0);
+        // 12 px off the line, beside the head: only the head reaches it.
+        assert_eq!(at(105.0, 62.0).as_deref(), Some("l"));
+        assert_eq!(at(105.0, 162.0).as_deref(), Some("p"));
+        // As far off the line away from the head: a miss.
+        assert!(at(40.0, 62.0).is_none());
+        assert!(at(40.0, 162.0).is_none());
     }
 }

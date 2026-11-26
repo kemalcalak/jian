@@ -376,7 +376,8 @@ pub enum StrokeCap {
 }
 
 pub use crate::stroke_shape::{
-    StrokeEndCap, StrokeWidthPoint, StrokeWidthPreset, StrokeWidthProfile, MAX_WIDTH_FACTOR,
+    width_at, StrokeEndCap, StrokeWidthPoint, StrokeWidthPreset, StrokeWidthProfile,
+    MAX_WIDTH_FACTOR, MAX_WIDTH_STOPS,
 };
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, schemars::JsonSchema)]

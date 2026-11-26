@@ -1174,8 +1174,14 @@ mask?: boolean | null, width: SizingBehavior | null, height: SizingBehavior | nu
 /**
  * Radius rounding the path's sharp vertices (an anchor with no
  * handles between two straight segments). Absent = sharp.
+ *
+ * Named `vertexRadius`, not `cornerRadius`: older tools wrote a
+ * `cornerRadius` on paths whose outline already carried its rounding
+ * (a rounded rect flattened to a path), which this schema used to
+ * ignore. Reading that key as a vertex radius would round those
+ * files a second time, so it stays ignored.
  */
-cornerRadius: number | null,
+vertexRadius: number | null,
 /**
  * Corner smoothing, `0..=1` (Figma's iOS-style squircle; `0` = plain
  * circular corners, `0.6` = iOS). Absent = `0`.

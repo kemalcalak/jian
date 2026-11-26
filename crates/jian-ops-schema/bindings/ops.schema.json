@@ -3150,8 +3150,8 @@
                 }
               ]
             },
-            "cornerRadius": {
-              "description": "Radius rounding the path's sharp vertices (an anchor with no handles between two straight segments). Absent = sharp.",
+            "vertexRadius": {
+              "description": "Radius rounding the path's sharp vertices (an anchor with no handles between two straight segments). Absent = sharp.\n\nNamed `vertexRadius`, not `cornerRadius`: older tools wrote a `cornerRadius` on paths whose outline already carried its rounding (a rounded rect flattened to a path), which this schema used to ignore. Reading that key as a vertex radius would round those files a second time, so it stays ignored.",
               "type": [
                 "number",
                 "null"

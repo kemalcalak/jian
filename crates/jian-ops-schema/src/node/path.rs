@@ -77,8 +77,14 @@ pub struct PathNode {
     pub limits: crate::sizing::SizeLimits,
     /// Radius rounding the path's sharp vertices (an anchor with no
     /// handles between two straight segments). Absent = sharp.
+    ///
+    /// Named `vertexRadius`, not `cornerRadius`: older tools wrote a
+    /// `cornerRadius` on paths whose outline already carried its rounding
+    /// (a rounded rect flattened to a path), which this schema used to
+    /// ignore. Reading that key as a vertex radius would round those
+    /// files a second time, so it stays ignored.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub corner_radius: Option<f64>,
+    pub vertex_radius: Option<f64>,
     /// Corner smoothing, `0..=1` (Figma's iOS-style squircle; `0` = plain
     /// circular corners, `0.6` = iOS). Absent = `0`.
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -121,15 +127,21 @@ mod tests {
     }
 
     #[test]
-    fn corner_radius_and_smoothing_round_trip_and_stay_absent_by_default() {
-        let rounded = r#"{"id":"r","cornerRadius":6.0,"cornerSmoothing":0.6}"#;
+    fn vertex_radius_and_smoothing_round_trip_and_stay_absent_by_default() {
+        let rounded = r#"{"id":"r","vertexRadius":6.0,"cornerSmoothing":0.6}"#;
         let path: PathNode = serde_json::from_str(rounded).expect("parse rounded path");
-        assert_eq!(path.corner_radius, Some(6.0));
+        assert_eq!(path.vertex_radius, Some(6.0));
         assert_eq!(path.corner_smoothing, Some(0.6));
         assert_eq!(serde_json::to_string(&path).unwrap(), rounded);
 
         let plain: PathNode = serde_json::from_str(r#"{"id":"p"}"#).unwrap();
-        assert_eq!((plain.corner_radius, plain.corner_smoothing), (None, None));
+        assert_eq!((plain.vertex_radius, plain.corner_smoothing), (None, None));
+
+        // An older file's path `cornerRadius` stays ignored (its outline
+        // already holds the rounding) and is not written back.
+        let legacy: PathNode = serde_json::from_str(r#"{"id":"l","cornerRadius":8}"#).unwrap();
+        assert_eq!(legacy.vertex_radius, None);
+        assert_eq!(serde_json::to_string(&legacy).unwrap(), r#"{"id":"l"}"#);
     }
 
     #[test]

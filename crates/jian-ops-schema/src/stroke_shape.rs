@@ -76,7 +76,13 @@ pub struct StrokeWidthProfile {
 impl StrokeWidthProfile {
     /// The width stops this profile describes, sorted by `t`: the
     /// preset's own stops, or the `custom` points with non-finite stops
-    /// dropped and `t` / `width` clamped into range. Empty means uniform.
+    /// dropped, `t` clamped into `0..=1` and `width` into
+    /// `0..=MAX_WIDTH_FACTOR`, and more than [`MAX_WIDTH_STOPS`] points
+    /// resampled evenly over their span (both ends kept). Empty means
+    /// uniform, including a custom profile whose every stop is `1`.
+    ///
+    /// This is the one place a profile's limits are applied: hosts build
+    /// variable-width geometry from these stops at scene build time.
     pub fn stops(&self) -> Vec<StrokeWidthPoint> {
         let point = |t: f32, width: f32| StrokeWidthPoint { t, width };
         match self.preset {
@@ -94,13 +100,54 @@ impl StrokeWidthProfile {
                     .filter(|p| p.t.is_finite() && p.width.is_finite())
                     .map(|p| point(p.t.clamp(0.0, 1.0), p.width.clamp(0.0, MAX_WIDTH_FACTOR)))
                     .collect();
+                if stops.iter().all(|p| (p.width - 1.0).abs() < 1e-6) {
+                    return Vec::new();
+                }
                 stops.sort_by(|a, b| a.t.total_cmp(&b.t));
+                if stops.len() > MAX_WIDTH_STOPS {
+                    let (first, last) = (stops[0].t, stops[stops.len() - 1].t);
+                    let resampled = (0..MAX_WIDTH_STOPS)
+                        .map(|i| {
+                            let t =
+                                first + (last - first) * i as f32 / (MAX_WIDTH_STOPS - 1) as f32;
+                            point(t, width_at(&stops, t))
+                        })
+                        .collect();
+                    return resampled;
+                }
                 stops
             }
         }
     }
 }
 
+/// The width factor at `t` (`0..=1`) of `stops` sorted by `t`: linear
+/// between stops, held before the first and after the last, `1` when
+/// there are none.
+pub fn width_at(stops: &[StrokeWidthPoint], t: f32) -> f32 {
+    let Some(first) = stops.first() else {
+        return 1.0;
+    };
+    if t <= first.t {
+        return first.width;
+    }
+    for pair in stops.windows(2) {
+        let (a, b) = (pair[0], pair[1]);
+        if t <= b.t {
+            let span = b.t - a.t;
+            return if span <= f32::EPSILON {
+                b.width
+            } else {
+                a.width + (b.width - a.width) * (t - a.t) / span
+            };
+        }
+    }
+    stops[stops.len() - 1].width
+}
+
 /// Largest width a profile stop can ask for, as a multiple of the
 /// stroke thickness.
 pub const MAX_WIDTH_FACTOR: f32 = 16.0;
+
+/// Most stops a profile keeps; longer custom profiles are resampled.
+pub const MAX_WIDTH_STOPS: usize = 32;

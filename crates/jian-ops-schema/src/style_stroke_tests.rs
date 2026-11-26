@@ -71,3 +71,30 @@ fn profile_stops_cover_presets_and_clean_custom_points() {
     assert_eq!((stops[0].t, stops[0].width), (0.0, super::MAX_WIDTH_FACTOR));
     assert_eq!((stops[1].t, stops[1].width), (0.8, 3.0));
 }
+
+#[test]
+fn long_custom_profiles_resample_to_the_cap_and_flat_ones_are_uniform() {
+    let custom = |points: Vec<StrokeWidthPoint>| StrokeWidthProfile {
+        preset: StrokeWidthPreset::Custom,
+        points: Some(points),
+    };
+    let ramp: Vec<StrokeWidthPoint> = (0..=100)
+        .map(|i| StrokeWidthPoint {
+            t: i as f32 / 100.0,
+            width: i as f32 / 100.0,
+        })
+        .collect();
+    let stops = custom(ramp).stops();
+    assert_eq!(stops.len(), super::MAX_WIDTH_STOPS);
+    assert_eq!((stops[0].t, stops[0].width), (0.0, 0.0));
+    let last = stops[super::MAX_WIDTH_STOPS - 1];
+    assert_eq!((last.t, last.width), (1.0, 1.0));
+    assert!((super::width_at(&stops, 0.5) - 0.5).abs() < 1e-4);
+
+    let flat = vec![
+        StrokeWidthPoint { t: 0.0, width: 1.0 },
+        StrokeWidthPoint { t: 1.0, width: 1.0 },
+    ];
+    assert!(custom(flat).stops().is_empty());
+    assert_eq!(super::width_at(&[], 0.3), 1.0);
+}

@@ -33,11 +33,10 @@ pub use crate::scene_geometry::{
     polygon_points, regular_polygon_points, stable_image_source_id, star_polygon_points,
     STAR_MAX_INNER_RADIUS, STAR_MIN_INNER_RADIUS,
 };
+pub use crate::scene_stroke::{SceneLineDirection, SceneStrokeGeometry, SceneStrokeHead};
 pub use jian_ops_schema::node::MaskType;
 use jian_widgets::{Color, ImageAdjustments, ImageBlendMode, ImageDrawMode, Point2D, Rect};
-pub use jian_widgets::{
-    StrokeCap, StrokeDash, StrokeEnd, StrokeJoin, StrokeStyle, StrokeWidthProfile,
-};
+pub use jian_widgets::{StrokeCap, StrokeDash, StrokeEnd, StrokeJoin, StrokeStyle};
 #[cfg(any(test, feature = "test-support"))]
 use std::cell::Cell;
 use std::sync::Arc;
@@ -591,6 +590,10 @@ pub struct SceneNode {
     pub flip_x: bool,
     /// Mirror vertically around the node's aggregate-bounds centre.
     pub flip_y: bool,
+    /// Which way a `Line` runs across its (normalised) `bounds`; see
+    /// [`SceneNode::line_endpoints`]. Default (top-left to bottom-right)
+    /// for every other kind.
+    pub line_direction: SceneLineDirection,
     /// Corner radius in doc-px — honoured by Rect / Frame paint.
     pub corner_radius: f32,
     /// Per-corner radii in top-left, top-right, bottom-right,
@@ -836,6 +839,12 @@ impl SceneWidget {
 }
 
 impl SceneNode {
+    /// A line's start and end in doc space: across `bounds`, the way
+    /// `line_direction` says it runs (before rotation and flips).
+    pub fn line_endpoints(&self) -> (Point2D, Point2D) {
+        self.line_direction.endpoints(self.bounds)
+    }
+
     /// Children that participate in paint **and** hit-test.
     ///
     /// `tabs` is the only first-class widget whose children are alternative
@@ -953,6 +962,7 @@ impl SceneNode {
             rotation: 0.0,
             flip_x: false,
             flip_y: false,
+            line_direction: SceneLineDirection::default(),
             corner_radius: 0.0,
             corner_radii: None,
             stroke_geometry: None,
@@ -1026,20 +1036,6 @@ pub struct SceneStroke {
     /// (`StrokeStyle::default()`) when the source sets none, so painters
     /// keep their per-primitive defaults.
     pub style: StrokeStyle,
-}
-
-/// Precomputed stroke geometry, as SVG path data in node-local doc px
-/// (relative to `bounds.origin`). Any part may be empty.
-#[derive(Debug, Clone, PartialEq, Default)]
-pub struct SceneStrokeGeometry {
-    /// Centre line, stroked at the stroke width with butt caps and the
-    /// stroke's join / dash / miter limit.
-    pub stroke_d: String,
-    /// Shapes filled with the stroke paint (arrowheads, end dots, caps).
-    pub fill_d: String,
-    /// Open arms stroked at the stroke width with miter joins and butt
-    /// caps, never dashed (line arrows).
-    pub arms_d: String,
 }
 
 /// A node's rounded / smoothed outline (#389), precomputed once per scene
