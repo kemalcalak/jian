@@ -326,6 +326,20 @@ bind: Array<PropertyBinding>,
 preferred: Array<string> | null, };
 
 /**
+ * What makes a frame a component set.
+ */
+export type ComponentSet = {
+/**
+ * Axis name → its values, in order.
+ */
+axes: { [key in string]?: Array<string> },
+/**
+ * The value an instance takes on an axis it does not name. An axis
+ * missing here defaults to its first value.
+ */
+default: { [key in string]?: string }, };
+
+/**
  * Figma-style per-axis anchoring for absolutely positioned nodes.
  */
 export type Constraints = { h: HConstraint, v: VConstraint, };
@@ -502,7 +516,17 @@ placeholder: boolean | null,
  * Component master only: the named properties its instances set
  * (`RefNode::props`). Additive 1.x.
  */
-componentProperties: { [key in string]?: ComponentProperty } | null, id: string, name: string | null, role: string | null, explain: string | null, x: number | null, y: number | null, rotation: number | null, constraints: Constraints | null, opacity: NumberOrExpression | null, enabled: BoolOrExpression | null, visible: boolean | null, locked: boolean | null,
+componentProperties: { [key in string]?: ComponentProperty } | null,
+/**
+ * Component set only: the axes its variant masters (its reusable
+ * children) vary on, and their defaults. Additive 1.x.
+ */
+componentSet: ComponentSet | null,
+/**
+ * Variant master only: its value on each axis of the component set
+ * holding it. An axis left out matches any value. Additive 1.x.
+ */
+variantValues: { [key in string]?: string } | null, id: string, name: string | null, role: string | null, explain: string | null, x: number | null, y: number | null, rotation: number | null, constraints: Constraints | null, opacity: NumberOrExpression | null, enabled: BoolOrExpression | null, visible: boolean | null, locked: boolean | null,
 /**
  * Keep this node at its authored viewport position while its nearest
  * scrollable ancestor moves ordinary content.
@@ -1510,7 +1534,13 @@ export type RefNode = { ref: string, descendants: { [key in string]?: JsonValue 
  * them into `descendants` patches; an explicit `descendants` entry for
  * the same field wins. Additive 1.x.
  */
-props: { [key in string]?: JsonValue } | null, children: Array<PenNode> | null, state: { [key in string]?: StateEntry } | null, bindings: { [key in string]?: Expression } | null, events: EventHandlers | null, lifecycle: NodeLifecycleHooks | null, semantics: SemanticsMeta | null, gestures: GestureOverrides | null, route: NavigationRoute | null, id: string, name: string | null, role: string | null, explain: string | null, x: number | null, y: number | null, rotation: number | null, constraints: Constraints | null, opacity: NumberOrExpression | null, enabled: BoolOrExpression | null, visible: boolean | null, locked: boolean | null,
+props: { [key in string]?: JsonValue } | null,
+/**
+ * The variant this instance shows, by axis, when its component is a
+ * variant of a component set (or `ref` names the set). Axes left out
+ * take the set's default. Additive 1.x.
+ */
+variant: { [key in string]?: string } | null, children: Array<PenNode> | null, state: { [key in string]?: StateEntry } | null, bindings: { [key in string]?: Expression } | null, events: EventHandlers | null, lifecycle: NodeLifecycleHooks | null, semantics: SemanticsMeta | null, gestures: GestureOverrides | null, route: NavigationRoute | null, id: string, name: string | null, role: string | null, explain: string | null, x: number | null, y: number | null, rotation: number | null, constraints: Constraints | null, opacity: NumberOrExpression | null, enabled: BoolOrExpression | null, visible: boolean | null, locked: boolean | null,
 /**
  * Keep this node at its authored viewport position while its nearest
  * scrollable ancestor moves ordinary content.
@@ -1628,7 +1658,17 @@ placeholder: boolean | null,
  * Component master only: the named properties its instances set
  * (`RefNode::props`). Additive 1.x.
  */
-componentProperties: { [key in string]?: ComponentProperty } | null, id: string, name: string | null, role: string | null, explain: string | null, x: number | null, y: number | null, rotation: number | null, constraints: Constraints | null, opacity: NumberOrExpression | null, enabled: BoolOrExpression | null, visible: boolean | null, locked: boolean | null,
+componentProperties: { [key in string]?: ComponentProperty } | null,
+/**
+ * Component set only: the axes its variant masters (its reusable
+ * children) vary on, and their defaults. Additive 1.x.
+ */
+componentSet: ComponentSet | null,
+/**
+ * Variant master only: its value on each axis of the component set
+ * holding it. An axis left out matches any value. Additive 1.x.
+ */
+variantValues: { [key in string]?: string } | null, id: string, name: string | null, role: string | null, explain: string | null, x: number | null, y: number | null, rotation: number | null, constraints: Constraints | null, opacity: NumberOrExpression | null, enabled: BoolOrExpression | null, visible: boolean | null, locked: boolean | null,
 /**
  * Keep this node at its authored viewport position while its nearest
  * scrollable ancestor moves ordinary content.

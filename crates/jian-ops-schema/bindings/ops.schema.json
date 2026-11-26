@@ -428,6 +428,27 @@
                 "$ref": "#/definitions/ComponentProperty"
               }
             },
+            "componentSet": {
+              "description": "Component set only: the axes its variant masters (its reusable children) vary on, and their defaults. Additive 1.x.",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/ComponentSet"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "variantValues": {
+              "description": "Variant master only: its value on each axis of the component set holding it. An axis left out matches any value. Additive 1.x.",
+              "type": [
+                "object",
+                "null"
+              ],
+              "additionalProperties": {
+                "type": "string"
+              }
+            },
             "id": {
               "type": "string"
             },
@@ -9070,6 +9091,16 @@
               ],
               "additionalProperties": true
             },
+            "variant": {
+              "description": "The variant this instance shows, by axis, when its component is a variant of a component set (or `ref` names the set). Axes left out take the set's default. Additive 1.x.",
+              "type": [
+                "object",
+                "null"
+              ],
+              "additionalProperties": {
+                "type": "string"
+              }
+            },
             "children": {
               "type": [
                 "array",
@@ -10557,6 +10588,27 @@
               ],
               "additionalProperties": {
                 "$ref": "#/definitions/ComponentProperty"
+              }
+            },
+            "componentSet": {
+              "description": "Component set only: the axes its variant masters (its reusable children) vary on, and their defaults. Additive 1.x.",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/ComponentSet"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "variantValues": {
+              "description": "Variant master only: its value on each axis of the component set holding it. An axis left out matches any value. Additive 1.x.",
+              "type": [
+                "object",
+                "null"
+              ],
+              "additionalProperties": {
+                "type": "string"
               }
             },
             "id": {
@@ -12654,6 +12706,38 @@
         },
         "field": {
           "description": "`content`, `visible`, `ref`, `fill`, or `props.<name>` to pass the value on to a property of the nested instance `node`.",
+          "type": "string"
+        }
+      }
+    },
+    "ComponentSet": {
+      "description": "What makes a frame a component set.",
+      "type": "object",
+      "properties": {
+        "axes": {
+          "description": "Axis name → its values, in order.",
+          "default": {},
+          "allOf": [
+            {
+              "$ref": "#/definitions/VariantAxes"
+            }
+          ]
+        },
+        "default": {
+          "description": "The value an instance takes on an axis it does not name. An axis missing here defaults to its first value.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "VariantAxes": {
+      "description": "Axis name → its values, in order. The order breaks fallback ties.",
+      "type": "object",
+      "additionalProperties": {
+        "type": "array",
+        "items": {
           "type": "string"
         }
       }

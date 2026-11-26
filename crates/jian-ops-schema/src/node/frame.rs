@@ -53,6 +53,14 @@ pub struct FrameNode {
     /// (`RefNode::props`). Additive 1.x.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub component_properties: Option<crate::component_props::ComponentProperties>,
+    /// Component set only: the axes its variant masters (its reusable
+    /// children) vary on, and their defaults. Additive 1.x.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub component_set: Option<crate::component_set::ComponentSet>,
+    /// Variant master only: its value on each axis of the component set
+    /// holding it. An axis left out matches any value. Additive 1.x.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub variant_values: Option<crate::component_set::VariantValues>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, schemars::JsonSchema)]
