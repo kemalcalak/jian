@@ -1,5 +1,9 @@
 //! Runtime blur-up thumbnail registry and serialized `imageThumbs` helpers.
 //!
+//! Each document can own its table ([`ImageThumbs`]); one table is active for
+//! paint and for the free functions below ([`set_active`]). See
+//! [`registry`] for why multi-document hosts keep them apart.
+//!
 //! Entries are keyed directly by the stable paint id and own compact encoded
 //! JPEG bytes behind an [`Arc`]. The 4 KiB limit is enforced both for runtime
 //! stores and persisted input because platform painters may decode these small
@@ -10,6 +14,9 @@ use serde_json::{Map, Value};
 use std::collections::{BTreeSet, HashMap, VecDeque};
 use std::sync::atomic::{AtomicUsize, Ordering};
 use std::sync::{Arc, Mutex, OnceLock};
+
+mod registry;
+pub use registry::{active, set_active, with_thread_table, ImageThumbs};
 
 /// Key of the top-level thumbnail table in serialized documents.
 pub(crate) const IMAGE_THUMBS_KEY: &str = "imageThumbs";
@@ -31,10 +38,25 @@ pub struct ImageThumbSnapshot(ThumbMap);
 
 /// Capture the active thumbnail registry without copying encoded JPEG bytes.
 pub fn capture_snapshot() -> ImageThumbSnapshot {
-    ImageThumbSnapshot(lock_thumbs().clone())
+    registry::with_active(ImageThumbs::snapshot)
 }
 
 impl ImageThumbSnapshot {
+    /// Number of thumbnails in the snapshot.
+    pub fn len(&self) -> usize {
+        self.0.len()
+    }
+
+    /// Whether the snapshot holds no thumbnail.
+    pub fn is_empty(&self) -> bool {
+        self.0.is_empty()
+    }
+
+    /// The snapshot's thumbnail for `paint_id`.
+    pub fn get(&self, paint_id: u64) -> Option<&Arc<[u8]>> {
+        self.0.get(&paint_id)
+    }
+
     pub(crate) fn serialized_for(&self, referenced_ids: &BTreeSet<u64>) -> Map<String, Value> {
         referenced_ids
             .iter()
@@ -125,22 +147,11 @@ impl PendingDocumentSeeds {
     }
 }
 
-static THUMBS: OnceLock<Mutex<ThumbMap>> = OnceLock::new();
 static PENDING_DOCUMENT_SEEDS: OnceLock<Mutex<PendingDocumentSeeds>> = OnceLock::new();
 static NEXT_DOCUMENT_TAG: AtomicUsize = AtomicUsize::new(0);
 const MAX_PENDING_DOCUMENT_SEEDS: usize = 128;
 const DOCUMENT_TAG_VARIANTS: usize = 64;
 const DOCUMENT_TAG_BASE_CAPACITY: usize = 32;
-
-fn thumbs() -> &'static Mutex<ThumbMap> {
-    THUMBS.get_or_init(|| Mutex::new(HashMap::new()))
-}
-
-fn lock_thumbs() -> std::sync::MutexGuard<'static, ThumbMap> {
-    thumbs()
-        .lock()
-        .unwrap_or_else(|poisoned| poisoned.into_inner())
-}
 
 fn pending_document_seeds() -> &'static Mutex<PendingDocumentSeeds> {
     PENDING_DOCUMENT_SEEDS.get_or_init(|| Mutex::new(PendingDocumentSeeds::default()))
@@ -180,16 +191,26 @@ pub fn attach_to_document(doc: &mut crate::PenDocument, pending: PendingThumbSee
     lock_pending_document_seeds().insert(DocumentSeedKey::for_document(doc), seed);
 }
 
-/// Activate and consume the present seed associated with `doc`.
+/// Activate and consume the present seed associated with `doc`: it becomes
+/// a fresh process-wide table ([`set_active`]). The table that was active is
+/// left untouched, since it may be a document's own.
 ///
 /// Returns `false` for documents loaded without `imageThumbs`; that path is a
 /// strict no-op so unrelated inline parses keep the active content cache.
+///
+/// Hosts that keep several documents in flight take the seed into the
+/// document's own table with [`ImageThumbs::take_for_document`] instead.
 pub fn activate_for_document(doc: &crate::PenDocument) -> bool {
-    let Some(seed) = lock_pending_document_seeds().take(DocumentSeedKey::for_document(doc)) else {
+    let Some(seed) = take_seed_for_document(doc) else {
         return false;
     };
     replace_from_load(seed);
     true
+}
+
+/// Consume the pending seed associated with `doc` without publishing it.
+fn take_seed_for_document(doc: &crate::PenDocument) -> Option<ThumbMap> {
+    lock_pending_document_seeds().take(DocumentSeedKey::for_document(doc))
 }
 
 /// Discard a document's pending seed without changing the active registry.
@@ -224,14 +245,13 @@ pub(crate) fn propagate_to_clone(source: &crate::PenDocument, cloned: &mut crate
 /// [`MAX_THUMB_BYTES`] are ignored.
 pub fn store_thumb(paint_id: u64, jpeg_bytes: impl Into<Arc<[u8]>>) {
     let jpeg_bytes = jpeg_bytes.into();
-    if jpeg_bytes.len() <= MAX_THUMB_BYTES {
-        lock_thumbs().insert(paint_id, jpeg_bytes);
-    }
+    registry::with_active(|thumbs| thumbs.store(paint_id, jpeg_bytes));
 }
 
-/// Return the encoded JPEG thumbnail registered for `paint_id`.
+/// Return the encoded JPEG thumbnail registered for `paint_id` in the active
+/// table.
 pub fn thumb_for(paint_id: u64) -> Option<Arc<[u8]>> {
-    lock_thumbs().get(&paint_id).cloned()
+    registry::with_active(|thumbs| thumbs.get(paint_id))
 }
 
 /// Consume a serialized `imageThumbs` table and seed the active registry.
@@ -298,22 +318,12 @@ fn take_present_from_document(root: &mut Value) -> Option<ThumbMap> {
     )
 }
 
-/// Clear active and pending thumbnail state.
+/// Replace the process-wide table with a fresh empty one and drop every
+/// pending seed. The previous table is left as it was (a document may own
+/// it).
 ///
 /// Normal document loads never call this; it is an explicit baseline seam
 /// for tests and diagnostic sessions.
-/// Restore a previously captured registry, discarding whatever is active.
-///
-/// The counterpart to [`capture_snapshot`], for a caller that must undo an
-/// activation: a collaboration session can install a document (activating its
-/// thumbnails) and then have the edit rejected and rolled back, which leaves
-/// the refused document's thumbnails resolving live ids. Rolling the document
-/// back does not roll these back, because the old document's pending seed was
-/// consumed by its own activation and re-activating it is a no-op.
-pub fn restore_snapshot(snapshot: ImageThumbSnapshot) {
-    replace_from_load(snapshot.0);
-}
-
 pub fn clear_registry() {
     #[cfg(test)]
     return with_test_serialized(clear_registry_inner);
@@ -323,7 +333,7 @@ pub fn clear_registry() {
 }
 
 fn clear_registry_inner() {
-    lock_thumbs().clear();
+    registry::publish_fresh(ThumbMap::new());
     let mut pending = lock_pending_document_seeds();
     pending.entries.clear();
     pending.order.clear();
@@ -334,15 +344,14 @@ pub(crate) fn pending_document_seed_count() -> usize {
     lock_pending_document_seeds().entries.len()
 }
 
-/// Atomically replace the active document's runtime thumbnail registry.
+/// Publish a loaded table as a fresh process-wide table, never writing into
+/// the table that was active (it may be a document's own).
 pub(crate) fn replace_from_load(loaded: ThumbMap) {
     #[cfg(test)]
-    return with_test_serialized(|| *lock_thumbs() = loaded);
+    return with_test_serialized(|| registry::publish_fresh(loaded));
 
     #[cfg(not(test))]
-    {
-        *lock_thumbs() = loaded;
-    }
+    registry::publish_fresh(loaded);
 }
 
 #[cfg(test)]
@@ -471,6 +480,129 @@ mod tests {
             );
             assert!(thumb_for(42).is_none(), "malformed base64 is skipped");
         });
+    }
+
+    #[test]
+    fn document_tables_are_independent_of_each_other_and_of_the_active_one() {
+        with_test_serialized(|| {
+            replace_from_load(Default::default());
+            store_thumb(7, vec![7]);
+            let first = crate::load_str(
+                r#"{"version":"0.8.0","imageThumbs":{"41":"/9j/2Q=="},"children":[]}"#,
+            )
+            .expect("first document")
+            .value;
+            let second = crate::load_str(
+                r#"{"version":"0.8.0","imageThumbs":{"42":"/9j/2Q=="},"children":[]}"#,
+            )
+            .expect("second document")
+            .value;
+
+            let first = ImageThumbs::take_for_document(&first).expect("first seed");
+            let second = ImageThumbs::take_for_document(&second).expect("second seed");
+            assert!(first.contains(41) && !first.contains(42));
+            assert!(second.contains(42) && !second.contains(41));
+            assert!(
+                thumb_for(7).is_some(),
+                "taking a seed leaves the active table"
+            );
+            assert!(thumb_for(41).is_none());
+
+            second.store(43, vec![4, 3]);
+            assert!(!first.contains(43), "a store reaches only its own table");
+            assert!(first.clone().same_table(&first));
+            assert!(!first.same_table(&second));
+
+            let before = active();
+            set_active(&first);
+            assert_eq!(&*thumb_for(41).expect("active table"), JPEG);
+            store_thumb(44, vec![4, 4]);
+            assert!(first.contains(44), "free functions write the active table");
+            set_active(&before);
+            assert!(thumb_for(41).is_none());
+        });
+    }
+
+    #[test]
+    fn legacy_activation_never_writes_into_the_table_that_was_active() {
+        with_test_serialized(|| {
+            let owned = ImageThumbs::new();
+            owned.store(7, vec![7]);
+            let before = active();
+            set_active(&owned);
+            let doc = crate::load_str(
+                r#"{"version":"0.8.0","imageThumbs":{"41":"/9j/2Q=="},"children":[]}"#,
+            )
+            .expect("document")
+            .value;
+            assert!(activate_for_document(&doc));
+            assert!(thumb_for(41).is_some(), "the runtime reads its own table");
+            assert!(
+                owned.contains(7) && !owned.contains(41),
+                "owned table untouched"
+            );
+            clear_registry();
+            assert!(owned.contains(7), "clearing installs a fresh table");
+            set_active(&before);
+        });
+    }
+
+    #[test]
+    fn thread_tables_isolate_concurrent_painters_and_nest() {
+        let outer = ImageThumbs::new();
+        outer.store(1, vec![1]);
+        let inner = ImageThumbs::new();
+        inner.store(1, vec![2]);
+        with_thread_table(&outer, || {
+            assert_eq!(&*thumb_for(1).expect("outer"), &[1]);
+            with_thread_table(&inner, || {
+                assert_eq!(&*thumb_for(1).expect("inner"), &[2]);
+                store_thumb(2, vec![2]);
+            });
+            assert_eq!(&*thumb_for(1).expect("outer restored"), &[1]);
+            assert!(capture_snapshot().get(1).is_some());
+        });
+        assert!(
+            inner.contains(2),
+            "a store inside a scope reaches its table"
+        );
+        assert!(!outer.contains(2));
+
+        let threads: Vec<_> = (0..8u8)
+            .map(|doc| {
+                std::thread::spawn(move || {
+                    let table = ImageThumbs::new();
+                    table.store(99, vec![doc]);
+                    with_thread_table(&table, || {
+                        for _ in 0..500 {
+                            assert_eq!(&*thumb_for(99).expect("own table"), &[doc]);
+                            std::thread::yield_now();
+                        }
+                    });
+                })
+            })
+            .collect();
+        for thread in threads {
+            thread.join().expect("painter thread");
+        }
+    }
+
+    #[test]
+    fn store_if_absent_keeps_the_first_writer() {
+        let thumbs = ImageThumbs::new();
+        assert!(thumbs.store_if_absent(1, vec![1]));
+        assert!(!thumbs.store_if_absent(1, vec![2]));
+        assert!(!thumbs.store_if_absent(2, vec![0; MAX_THUMB_BYTES + 1]));
+        assert_eq!(&*thumbs.get(1).expect("first"), &[1]);
+        assert_eq!(thumbs.usage(), (1, 1));
+        let snapshot = thumbs.snapshot();
+        let copy = ImageThumbs::from_snapshot(snapshot.clone());
+        copy.store(3, vec![3]);
+        assert!(
+            !thumbs.contains(3),
+            "from_snapshot makes a table of its own"
+        );
+        assert_eq!(snapshot.len(), 1);
     }
 
     #[test]
