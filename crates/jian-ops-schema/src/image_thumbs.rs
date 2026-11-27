@@ -16,7 +16,7 @@ use std::sync::atomic::{AtomicUsize, Ordering};
 use std::sync::{Arc, Mutex, OnceLock};
 
 mod registry;
-pub use registry::{active, set_active, ImageThumbs};
+pub use registry::{active, set_active, with_thread_table, ImageThumbs};
 
 /// Key of the top-level thumbnail table in serialized documents.
 pub(crate) const IMAGE_THUMBS_KEY: &str = "imageThumbs";
@@ -191,7 +191,9 @@ pub fn attach_to_document(doc: &mut crate::PenDocument, pending: PendingThumbSee
     lock_pending_document_seeds().insert(DocumentSeedKey::for_document(doc), seed);
 }
 
-/// Activate and consume the present seed associated with `doc`.
+/// Activate and consume the present seed associated with `doc`: it becomes
+/// a fresh process-wide table ([`set_active`]). The table that was active is
+/// left untouched, since it may be a document's own.
 ///
 /// Returns `false` for documents loaded without `imageThumbs`; that path is a
 /// strict no-op so unrelated inline parses keep the active content cache.
@@ -316,19 +318,9 @@ fn take_present_from_document(root: &mut Value) -> Option<ThumbMap> {
     )
 }
 
-/// Restore a previously captured registry, discarding whatever is active.
-///
-/// The counterpart to [`capture_snapshot`], for a caller that must undo an
-/// activation: a collaboration session can install a document (activating its
-/// thumbnails) and then have the edit rejected and rolled back, which leaves
-/// the refused document's thumbnails resolving live ids. Rolling the document
-/// back does not roll these back, because the old document's pending seed was
-/// consumed by its own activation and re-activating it is a no-op.
-pub fn restore_snapshot(snapshot: ImageThumbSnapshot) {
-    replace_from_load(snapshot.0);
-}
-
-/// Clear the active table and every pending seed.
+/// Replace the process-wide table with a fresh empty one and drop every
+/// pending seed. The previous table is left as it was (a document may own
+/// it).
 ///
 /// Normal document loads never call this; it is an explicit baseline seam
 /// for tests and diagnostic sessions.
@@ -341,7 +333,7 @@ pub fn clear_registry() {
 }
 
 fn clear_registry_inner() {
-    registry::with_active(ImageThumbs::clear);
+    registry::publish_fresh(ThumbMap::new());
     let mut pending = lock_pending_document_seeds();
     pending.entries.clear();
     pending.order.clear();
@@ -352,13 +344,14 @@ pub(crate) fn pending_document_seed_count() -> usize {
     lock_pending_document_seeds().entries.len()
 }
 
-/// Atomically replace the active document's runtime thumbnail registry.
+/// Publish a loaded table as a fresh process-wide table, never writing into
+/// the table that was active (it may be a document's own).
 pub(crate) fn replace_from_load(loaded: ThumbMap) {
     #[cfg(test)]
-    return with_test_serialized(|| registry::with_active(|thumbs| thumbs.replace_map(loaded)));
+    return with_test_serialized(|| registry::publish_fresh(loaded));
 
     #[cfg(not(test))]
-    registry::with_active(|thumbs| thumbs.replace_map(loaded));
+    registry::publish_fresh(loaded);
 }
 
 #[cfg(test)]
@@ -528,6 +521,70 @@ mod tests {
             set_active(&before);
             assert!(thumb_for(41).is_none());
         });
+    }
+
+    #[test]
+    fn legacy_activation_never_writes_into_the_table_that_was_active() {
+        with_test_serialized(|| {
+            let owned = ImageThumbs::new();
+            owned.store(7, vec![7]);
+            let before = active();
+            set_active(&owned);
+            let doc = crate::load_str(
+                r#"{"version":"0.8.0","imageThumbs":{"41":"/9j/2Q=="},"children":[]}"#,
+            )
+            .expect("document")
+            .value;
+            assert!(activate_for_document(&doc));
+            assert!(thumb_for(41).is_some(), "the runtime reads its own table");
+            assert!(
+                owned.contains(7) && !owned.contains(41),
+                "owned table untouched"
+            );
+            clear_registry();
+            assert!(owned.contains(7), "clearing installs a fresh table");
+            set_active(&before);
+        });
+    }
+
+    #[test]
+    fn thread_tables_isolate_concurrent_painters_and_nest() {
+        let outer = ImageThumbs::new();
+        outer.store(1, vec![1]);
+        let inner = ImageThumbs::new();
+        inner.store(1, vec![2]);
+        with_thread_table(&outer, || {
+            assert_eq!(&*thumb_for(1).expect("outer"), &[1]);
+            with_thread_table(&inner, || {
+                assert_eq!(&*thumb_for(1).expect("inner"), &[2]);
+                store_thumb(2, vec![2]);
+            });
+            assert_eq!(&*thumb_for(1).expect("outer restored"), &[1]);
+            assert!(capture_snapshot().get(1).is_some());
+        });
+        assert!(
+            inner.contains(2),
+            "a store inside a scope reaches its table"
+        );
+        assert!(!outer.contains(2));
+
+        let threads: Vec<_> = (0..8u8)
+            .map(|doc| {
+                std::thread::spawn(move || {
+                    let table = ImageThumbs::new();
+                    table.store(99, vec![doc]);
+                    with_thread_table(&table, || {
+                        for _ in 0..500 {
+                            assert_eq!(&*thumb_for(99).expect("own table"), &[doc]);
+                            std::thread::yield_now();
+                        }
+                    });
+                })
+            })
+            .collect();
+        for thread in threads {
+            thread.join().expect("painter thread");
+        }
     }
 
     #[test]

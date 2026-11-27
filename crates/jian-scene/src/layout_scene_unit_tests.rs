@@ -18,11 +18,13 @@ fn active_page_indexes_into_pages() {
                 id: "a".into(),
                 name: "A".into(),
                 children: Vec::new(),
+                image_thumbs: Default::default(),
             },
             ScenePage {
                 id: "b".into(),
                 name: "B".into(),
                 children: Vec::new(),
+                image_thumbs: Default::default(),
             },
         ],
         active_page_index: 1,
@@ -40,6 +42,7 @@ fn find_locates_a_nested_node() {
         id: "p".into(),
         name: "P".into(),
         children: vec![group],
+        image_thumbs: Default::default(),
     };
     assert_eq!(page.find("deep").map(|n| n.id.as_str()), Some("deep"));
     assert!(page.find("missing").is_none());
@@ -94,6 +97,7 @@ fn translate_nodes_moves_matching_subtree_once() {
             id: "p".into(),
             name: "P".into(),
             children: vec![parent],
+            image_thumbs: Default::default(),
         }],
         active_page_index: 0,
     };
@@ -122,6 +126,7 @@ fn translate_nodes_moves_path_absolute_geometry() {
             id: "p".into(),
             name: "P".into(),
             children: vec![path],
+            image_thumbs: Default::default(),
         }],
         active_page_index: 0,
     };
@@ -151,6 +156,7 @@ fn set_node_fill_patches_matching_node_and_reports_match() {
             id: "p".into(),
             name: "P".into(),
             children: vec![parent],
+            image_thumbs: Default::default(),
         }],
         active_page_index: 0,
     };
@@ -178,6 +184,7 @@ fn legacy_set_node_fill_bakes_node_opacity_into_alpha() {
             id: "p".into(),
             name: "P".into(),
             children: vec![node],
+            image_thumbs: Default::default(),
         }],
         active_page_index: 0,
     };
@@ -213,6 +220,7 @@ fn layered_set_node_fill_keeps_authored_alpha_for_group_compositing() {
             id: "p".into(),
             name: "P".into(),
             children: vec![node],
+            image_thumbs: Default::default(),
         }],
         active_page_index: 0,
     };
@@ -254,6 +262,7 @@ fn set_node_stroke_color_only_patches_an_existing_stroke() {
             id: "p".into(),
             name: "P".into(),
             children: vec![bare, styled],
+            image_thumbs: Default::default(),
         }],
         active_page_index: 0,
     };
@@ -304,6 +313,7 @@ fn set_node_stroke_color_leaves_a_rich_stroke_paint_to_the_rebuild() {
             id: "p".into(),
             name: "P".into(),
             children: vec![rich],
+            image_thumbs: Default::default(),
         }],
         active_page_index: 0,
     };
@@ -336,6 +346,7 @@ fn content_bounds_unions_top_level_nodes() {
             id: "p".into(),
             name: "P".into(),
             children: vec![a, b],
+            image_thumbs: Default::default(),
         }],
         active_page_index: 0,
     };
@@ -351,6 +362,7 @@ fn content_bounds_none_for_empty_page() {
             id: "p".into(),
             name: "P".into(),
             children: vec![],
+            image_thumbs: Default::default(),
         }],
         active_page_index: 0,
     };
@@ -384,6 +396,7 @@ fn visual_bounds_include_only_unclipped_descendant_overflow() {
             id: "p".into(),
             name: "P".into(),
             children: vec![node],
+            image_thumbs: Default::default(),
         }],
         active_page_index: 0,
     };

@@ -1,4 +1,4 @@
-//! Per-document thumbnail tables and the paint-active table.
+//! Per-document thumbnail tables and the table painters read.
 //!
 //! A host that keeps several documents in flight (an editor serving MCP calls
 //! on other files, a CLI running tasks in parallel, a decode worker finishing
@@ -6,10 +6,12 @@
 //! [`ImageThumbs`]: its load seeds that table, its saves snapshot it, and its
 //! workers store into it, so no document ever sees another one's entries.
 //!
-//! Painters still look thumbnails up by paint id alone, so one table is
-//! *active* for paint ([`set_active`]). The free functions in the parent
-//! module (`thumb_for`, `store_thumb`, `capture_snapshot`, …) act on that
-//! table, which keeps single-document runtimes working unchanged.
+//! Painters still look thumbnails up by paint id alone. A painter that knows
+//! its document scopes its paint with [`with_thread_table`], a thread-local
+//! override that concurrent renders on other threads never see. Outside such
+//! a scope the free functions in the parent module (`thumb_for`,
+//! `store_thumb`, `capture_snapshot`, …) use one process-wide table
+//! ([`set_active`]), which keeps single-document runtimes working unchanged.
 
 use super::{ImageThumbSnapshot, ThumbMap, MAX_THUMB_BYTES};
 use std::sync::{Arc, Mutex, MutexGuard, OnceLock};
@@ -108,6 +110,23 @@ impl ImageThumbs {
         *self.lock() = snapshot.0;
     }
 
+    /// A table of its own holding this table's entries overlaid by
+    /// `newer`'s (bytes shared). For a document replaced in a way that can be
+    /// undone: the old document's thumbnails must survive into the table its
+    /// next save reads, whichever document that save writes.
+    pub fn merged_with(&self, newer: &ImageThumbs) -> ImageThumbs {
+        let mut merged = self.lock().clone();
+        if !self.same_table(newer) {
+            merged.extend(
+                newer
+                    .lock()
+                    .iter()
+                    .map(|(id, bytes)| (*id, Arc::clone(bytes))),
+            );
+        }
+        Self(Arc::new(Mutex::new(merged)))
+    }
+
     /// Entry count and encoded bytes held, for memory reports.
     pub fn usage(&self) -> (usize, usize) {
         let table = self.lock();
@@ -118,17 +137,15 @@ impl ImageThumbs {
     pub fn same_table(&self, other: &Self) -> bool {
         Arc::ptr_eq(&self.0, &other.0)
     }
-
-    pub(super) fn replace_map(&self, loaded: ThumbMap) {
-        *self.lock() = loaded;
-    }
-
-    pub(super) fn clear(&self) {
-        self.lock().clear();
-    }
 }
 
 static ACTIVE: OnceLock<Mutex<ImageThumbs>> = OnceLock::new();
+
+thread_local! {
+    /// The table a [`with_thread_table`] scope set on this thread.
+    static THREAD_TABLE: std::cell::RefCell<Option<ImageThumbs>> =
+        const { std::cell::RefCell::new(None) };
+}
 
 fn lock_active() -> MutexGuard<'static, ImageThumbs> {
     ACTIVE
@@ -137,11 +154,12 @@ fn lock_active() -> MutexGuard<'static, ImageThumbs> {
         .unwrap_or_else(|poisoned| poisoned.into_inner())
 }
 
-/// Make `thumbs` the table painters and the free functions read and write.
+/// Make `thumbs` the process-wide table the free functions use outside a
+/// [`with_thread_table`] scope.
 ///
-/// A host calls this when a document becomes the one it paints (cheap when
-/// it already is: a pointer compare). Loads and saves of other documents
-/// never call it, so they cannot disturb the painted document's table.
+/// For single-document runtimes. A host with several documents in flight
+/// scopes each paint with [`with_thread_table`] instead and never calls this,
+/// because the process-wide table is shared by every thread.
 pub fn set_active(thumbs: &ImageThumbs) {
     let mut active = lock_active();
     if !active.same_table(thumbs) {
@@ -149,12 +167,50 @@ pub fn set_active(thumbs: &ImageThumbs) {
     }
 }
 
-/// The table painters currently read (a clone sharing it).
+/// The table the free functions use on this thread: the innermost
+/// [`with_thread_table`] scope's, else the process-wide one.
 pub fn active() -> ImageThumbs {
-    lock_active().clone()
+    THREAD_TABLE
+        .with(|table| table.borrow().clone())
+        .unwrap_or_else(|| lock_active().clone())
 }
 
-/// Run `f` on the active table without cloning its handle (paint hot path).
+/// Run `f` with `thumbs` as this thread's table: `thumb_for`, `store_thumb`
+/// and `capture_snapshot` inside it read and write `thumbs`, whatever any
+/// other thread does meanwhile. Scopes nest; the previous table is restored
+/// when `f` returns or unwinds.
+pub fn with_thread_table<R>(thumbs: &ImageThumbs, f: impl FnOnce() -> R) -> R {
+    struct Restore(Option<ImageThumbs>);
+    impl Drop for Restore {
+        fn drop(&mut self) {
+            let previous = self.0.take();
+            THREAD_TABLE.with(|table| *table.borrow_mut() = previous);
+        }
+    }
+    let previous = THREAD_TABLE.with(|table| table.borrow_mut().replace(thumbs.clone()));
+    let _restore = Restore(previous);
+    f()
+}
+
+/// Run `f` on this thread's table without cloning its handle (paint hot
+/// path: one thread-local read, then the process-wide lock only outside a
+/// scope).
 pub(super) fn with_active<R>(f: impl FnOnce(&ImageThumbs) -> R) -> R {
-    f(&lock_active())
+    let mut f = Some(f);
+    let scoped = THREAD_TABLE.with(|table| {
+        table
+            .borrow()
+            .as_ref()
+            .map(|thumbs| (f.take().expect("called once"))(thumbs))
+    });
+    match scoped {
+        Some(result) => result,
+        None => (f.take().expect("called once"))(&lock_active()),
+    }
+}
+
+/// Install a fresh process-wide table holding `loaded`. The previous table
+/// is left as it was: it may belong to a document that still owns it.
+pub(super) fn publish_fresh(loaded: ThumbMap) {
+    *lock_active() = ImageThumbs(Arc::new(Mutex::new(loaded)));
 }

@@ -34,6 +34,7 @@ pub use crate::scene_geometry::{
     STAR_MAX_INNER_RADIUS, STAR_MIN_INNER_RADIUS,
 };
 pub use crate::scene_stroke::{SceneLineDirection, SceneStrokeGeometry, SceneStrokeHead};
+pub use crate::scene_thumbs::SceneImageThumbs;
 pub use jian_ops_schema::node::MaskType;
 use jian_widgets::{Color, ImageAdjustments, ImageBlendMode, ImageDrawMode, Point2D, Rect};
 pub use jian_widgets::{StrokeCap, StrokeDash, StrokeEnd, StrokeJoin, StrokeStyle};
@@ -454,6 +455,10 @@ pub struct ScenePage {
     pub name: String,
     /// Top-level resolved render nodes for this page.
     pub children: Vec<SceneNode>,
+    /// The thumbnail table of the document this page was built from, when
+    /// the builder knew it; renderers paint the page inside its
+    /// [`SceneImageThumbs::scope`]. Never part of page equality.
+    pub image_thumbs: SceneImageThumbs,
 }
 
 /// A resolved render node — everything the canvas painter reads to
