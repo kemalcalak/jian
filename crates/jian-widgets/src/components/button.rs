@@ -76,7 +76,10 @@ impl Button<'_> {
             text_color = text_color.with_alpha(0.5);
         }
 
-        let label_width = p.measure_text(self.label, font_size);
+        // Measured in the face the label is drawn in: a family-blind
+        // measurement resolves the painter's default face, so a host whose
+        // default is not Inter would centre the label off its middle.
+        let label_width = p.measure_text_family(self.label, font_size, FONT_FAMILY);
         let icon_size = font_size + 3.0;
         let has_icon = self.icon_paths.is_some();
         let has_label = !self.label.is_empty();
@@ -248,6 +251,26 @@ mod tests {
         let (_, origin, _) = p.texts().next().expect("label should be painted");
         assert!(origin.x > rect.origin.x + 50.0);
         assert!(origin.x < rect.origin.x + 60.0);
+    }
+
+    #[test]
+    fn the_label_is_measured_in_the_face_it_is_drawn_in() {
+        let t = Tokens::dark();
+        let mut p = CapturePainter::default();
+        Button {
+            label: "Export",
+            icon_paths: None,
+            variant: ButtonVariant::Primary,
+            enabled: true,
+            hovered: false,
+            pressed: false,
+            font_size: 13.0,
+        }
+        .paint(&mut p, Rect::xywh(0.0, 0.0, 120.0, 30.0), &t);
+        assert_eq!(
+            p.family_measurements,
+            vec![("Export".to_owned(), FONT_FAMILY.to_owned())]
+        );
     }
 
     #[test]

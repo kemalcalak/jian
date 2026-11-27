@@ -40,6 +40,9 @@ pub(crate) enum PaintOp {
 #[derive(Default)]
 pub(crate) struct CapturePainter {
     pub(crate) ops: Vec<PaintOp>,
+    /// `(text, family)` of every `measure_text_family` call, in order, so a
+    /// test can see which face a component measured a run in.
+    pub(crate) family_measurements: Vec<(String, String)>,
 }
 
 impl CapturePainter {
@@ -74,6 +77,12 @@ impl CapturePainter {
 }
 
 impl Painter for CapturePainter {
+    fn measure_text_family(&mut self, text: &str, font_size: f32, family: &str) -> f32 {
+        self.family_measurements
+            .push((text.to_owned(), family.to_owned()));
+        self.measure_text(text, font_size)
+    }
+
     fn begin_frame(&mut self) {}
     fn end_frame(&mut self) {}
 
