@@ -326,13 +326,17 @@ fn point_in_node(
             .filter(|c| c.hit_ring.len() >= 2),
     ) {
         // Rounded vertices (#389): the precomputed outline, node-local.
+        // Stroke ends follow the rounded line, so their heads hit too.
+        let slack = 4.0 / zoom.max(0.0001);
+        if hits_stroke_heads(node, local, slack) {
+            return true;
+        }
         let local = Point2D::new(
             local.x - node.bounds.origin.x,
             local.y - node.bounds.origin.y,
         );
         let ring = outline.hit_ring.as_slice();
         let stroke_half = node.stroke.map(|s| s.width / 2.0).unwrap_or(1.0);
-        let slack = 4.0 / zoom.max(0.0001);
         let near = ring
             .windows(2)
             .any(|seg| distance_point_to_segment(local, seg[0], seg[1]) <= stroke_half + slack);
@@ -1105,13 +1109,24 @@ mod tests {
         path.points = vec![Point2D::new(10.0, 150.0), Point2D::new(110.0, 150.0)];
         path.stroke = line.stroke;
         path.stroke_geometry = line.stroke_geometry.clone();
-        let scene = one_page(vec![line, path]);
+        // A path with rounded vertices hit-tests its corner outline; its
+        // heads still count.
+        let mut rounded = path.clone();
+        rounded.id = "r".into();
+        rounded.bounds.origin.y = 250.0;
+        rounded.corner_path = Some(std::sync::Arc::new(crate::layout_scene::SceneCornerPath {
+            hit_ring: vec![Point2D::new(0.0, 0.0), Point2D::new(100.0, 0.0)],
+            ..Default::default()
+        }));
+        let scene = one_page(vec![line, path, rounded]);
         let at = |x, y| scene.node_at_doc_point(Point2D::new(x, y), 1.0);
         // 12 px off the line, beside the head: only the head reaches it.
         assert_eq!(at(105.0, 62.0).as_deref(), Some("l"));
         assert_eq!(at(105.0, 162.0).as_deref(), Some("p"));
+        assert_eq!(at(105.0, 262.0).as_deref(), Some("r"));
         // As far off the line away from the head: a miss.
         assert!(at(40.0, 62.0).is_none());
         assert!(at(40.0, 162.0).is_none());
+        assert!(at(40.0, 262.0).is_none());
     }
 }
